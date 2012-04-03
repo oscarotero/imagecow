@@ -1,0 +1,43 @@
+IMAGECOW
+
+Librería en PHP para manipular imaxes. Baseada na librería empregada polo framework phpCan.
+
+- Usa as librerías GD e Imagick indistintamente (e ampliable a máis)
+- Escrito en php 5
+
+
+COMO SE USA?
+
+1. Instancias a clase:
+
+$Imaxe = Imagecow\Image::create('Gd'); //Instancia coa librería Gd
+$Imaxe = Imagecow\Image::create('Imagick'); //Instancia coa librería Imagick
+
+$Imaxe = Imagecow\Image::create(); //Detecta a librería automáticamente (por orde de preferencia: Imagick, Gd)
+
+2. Cargas unha imaxe:
+
+$Imaxe->load('imaxe.jpg');
+
+3. Modificas a imaxe coas funcións dispoñibles:
+
+$Imaxe->crop(200, 300); //Recorta a imaxe a 200x300
+$Imaxe->resize(200, 300); //Redimensiona a imaxe a un máximo de 200x300 (mantendo as proporcións orixinais)
+$Imaxe->rotate(10); //Xira a imaxe 10grados
+etc...
+
+Tamén podes facer todas as funcións xuntas:
+
+$Imaxe->crop(200, 300)->resize(100, 100)->rotate(10);
+
+Outra opción é coa función transform, que colle un string con toda a secuencia de cambios (útil para enviar cambios por variables)
+
+$Imaxe->transform('resize,200,300|rotate,10');
+
+4. Recolles a imaxe, gárdala ou móstrala:
+
+$datos = $Imaxe->toString(); //Recolles os datos da imaxe nunha variable
+
+$Imaxe->save('nova-imaxe.jpg'); //Garda a imaxe nun novo arquivo
+
+$Imaxe->show(); //Mostra a imaxe no navegador

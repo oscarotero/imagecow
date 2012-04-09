@@ -1,0 +1,28 @@
+<!doctype html>
+
+<html>
+<head>
+	<title></title>
+	<script src="imageCow.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript">
+		window.imageCow.init();
+	</script>
+
+	<style type="text/css" media="screen">
+		img {
+			max-width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<p id="speed"></p>
+	<p id="dimmensions"></p>
+	<img src="proba.php?transform=zoomCrop,800,500|resize,700;max-width=400:resize,400;">
+
+	<script type="text/javascript">
+		document.getElementById('speed').innerHTML = imageCow.getConnectionSpeed();
+		document.getElementById('dimmensions').innerHTML = imageCow.getClientDimmensions();
+	</script>
+</body>
+</html>

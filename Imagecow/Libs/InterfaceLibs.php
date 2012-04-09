@@ -1,6 +1,6 @@
 <?php
 /**
- * Library Interface for Imagecow (version 0.2)
+ * Library Interface for Imagecow (version 0.3)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -19,9 +19,10 @@ interface InterfaceLibs {
 	public function crop ($width, $height, $x = 'center', $y = 'middle');
 	public function flip ();
 	public function flop ();
-	public function zoomCrop ($width, $height, $x = 'center', $y = 'middle');
 	public function toString ();
 	public function getMimeType ();
+	public function getWidth ();
+	public function getHeight ();
 	public function rotate ($degrees, $background = null);
 	public function merge ($image, $x = 'center', $y = 'middle');
 	public function convert ($format);

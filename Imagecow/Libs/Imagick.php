@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagick library for Imagecow (version 0.2)
+ * Imagick library for Imagecow (version 0.3)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -137,28 +137,6 @@ class Imagick extends Image implements InterfaceLibs {
 	}
 
 
-	/**
-	 * public function zoomCrop (int $width, int $height, [int $x], [int $y])
-	 *
-	 * Crops an resize an image to specific dimmensions
-	 * Returns this
-	 */
-	public function zoomCrop ($width, $height, $x = 'center', $y = 'middle') {
-		$width_resize = ($width/$this->image->getImageWidth()) * 100;
-		$height_resize = ($height/$this->image->getImageHeight()) * 100;
-
-		if ($width_resize < $height_resize) {
-			$this->resize(0, $height);
-		} else {
-			$this->resize($width, 0);
-		}
-
-		$this->crop($width, $height, 'center', 'middle');
-
-		return $this;
-	}
-
-
 
 	/**
 	 * public function toString (void)
@@ -188,6 +166,30 @@ class Imagick extends Image implements InterfaceLibs {
 			case 'png':
 				return "image/$format";
 		}
+	}
+
+
+
+	/**
+	 * public function getWidth (void)
+	 *
+	 * Gets the image width
+	 * Returns integer
+	 */
+	public function getWidth () {
+		return $this->image->getImageWidth();
+	}
+
+
+
+	/**
+	 * public function getHeight (void)
+	 *
+	 * Gets the image height
+	 * Returns integer
+	 */
+	public function getHeight () {
+		return $this->image->getImageHeight();
 	}
 
 

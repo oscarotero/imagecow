@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagecow PHP library (version 0.2)
+ * Imagecow PHP library (version 0.3)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -72,6 +72,114 @@ abstract class Image {
 		}
 
 		return $return;
+	}
+
+
+
+	/**
+	 * private function getProperties (array $properties)
+	 *
+	 * Splits string properties and convert it to array
+	 * Returns array
+	 */
+	private function getProperties ($properties) {
+		$return = array();
+		$array = explode('|', $properties);
+
+		foreach ($array as $each) {
+			$params = explode(',', $each);
+
+			while (empty($params[0]) && (count($params) > 0)) {
+				array_shift($params);
+			}
+
+			$return[array_shift($params)] = $params;
+		}
+
+		return $return;
+	}
+
+
+	/**
+	 * public function getResponsiveOperations (string $global_properties, [string $image_properties])
+	 *
+	 * Transform the image according the client properties
+	 * Returns string
+	 */
+	public function getResponsiveOperations ($global_properties, $image_properties = '') {
+		if (!$global_properties || !$image_properties) {
+			return '';
+		}
+
+		$global_properties = $this->getProperties($global_properties);
+
+		$width = isset($global_properties['dimmensions'][0]) ? intval($global_properties['dimmensions'][0]) : 0;
+		$height = isset($global_properties['dimmensions'][1]) ? intval($global_properties['dimmensions'][1]) : 0;
+
+		$image_properties = explode(';', $image_properties);
+
+		$transform = array();
+
+		foreach ($image_properties as $image_properties) {
+			if (empty($image_properties)) {
+				continue;
+			}
+
+			$image_properties = explode(':', $image_properties, 2);
+
+			if (count($image_properties) === 1) {
+				$transform[] = $image_properties[0];
+				continue;
+			}
+
+			$rules = explode(',', $image_properties[0]);
+
+			foreach ($rules as $rule) {
+				$rule = explode('=', $rule, 2);
+
+				switch ($rule[0]) {
+					case 'max-width':
+						if ($width > intval($rule[1])) {
+							continue 2;
+						}
+						break;
+
+					case 'min-width':
+						if ($width < intval($rule[1])) {
+							continue 2;
+						}
+						break;
+
+					case 'width':
+						if ($width != intval($rule[1])) {
+							continue 2;
+						}
+						break;
+
+					case 'max-height':
+						if ($height > intval($rule[1])) {
+							continue 2;
+						}
+						break;
+
+					case 'min-height':
+						if ($height < intval($rule[1])) {
+							continue 2;
+						}
+						break;
+
+					case 'height':
+						if ($height != intval($rule[1])) {
+							continue 2;
+						}
+						break;
+				}
+
+				$transform[] = $image_properties[1];
+			}
+		}
+
+		return implode('|', $transform);
 	}
 
 
@@ -159,6 +267,35 @@ abstract class Image {
 		}
 
 		return $position;
+	}
+
+
+	/**
+	 * public function zoomCrop (int $width, int $height, [int $x], [int $y])
+	 *
+	 * Crops an resize an image to specific dimmensions
+	 * Returns this
+	 */
+	public function zoomCrop ($width, $height, $x = 'center', $y = 'middle') {
+		$width = $this->getSize($width, $this->getWidth());
+		$height = $this->getSize($height, $this->getHeight());
+
+		if (($width === 0) || ($height === 0)) {
+			return false;
+		}
+
+		$width_resize = ($width / $this->getWidth()) * 100;
+		$height_resize = ($height / $this->getHeight()) * 100;
+
+		if ($width_resize < $height_resize) {
+			$this->resize(0, $height);
+		} else {
+			$this->resize($width, 0);
+		}
+
+		$this->crop($width, $height, $x, $y);
+
+		return $this;
 	}
 
 

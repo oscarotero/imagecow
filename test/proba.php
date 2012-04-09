@@ -6,12 +6,11 @@ use Fol\Loader;
 Loader::setLibrariesPath(dirname(__DIR__));
 Loader::register();
 
-
 $Image = Imagecow\Image::create();
 
-$Image->load('imaxe.jpg');
+$Image->load('img.jpg');
 
-$Image->crop(200, 200, 'center', 'bottom');
-$Image->transform(isset($_GET['transform']) ? $_GET['transform'] : 'resize,30%');
+$transform = $Image->getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
+$Image->transform($transform);
 $Image->show();
 ?>

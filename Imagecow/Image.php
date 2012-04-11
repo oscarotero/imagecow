@@ -12,6 +12,7 @@
 namespace Imagecow;
 
 abstract class Image {
+	static $operations = array('resize', 'zoomCrop', 'crop', 'convert');
 
 	static function create ($library = null) {
 		if (!$library) {
@@ -37,9 +38,9 @@ abstract class Image {
 			return $this;
 		}
 
-		$array_operations = $this->getOperations($operations);
+		$operations = $this->getOperations($operations);
 
-		foreach ($array_operations as $operation) {
+		foreach ($operations as $operation) {
 			call_user_func_array(array($this, $operation['function']), $operation['params']);
 		}
 
@@ -56,17 +57,18 @@ abstract class Image {
 	 */
 	private function getOperations ($operations) {
 		$return = array();
-		$array = explode('|', $operations);
+		$operations = explode('|', str_replace(' ', '', $operations));
 
-		foreach ($array as $each) {
-			$params = explode(',', $each);
+		foreach ($operations as $operations) {
+			$params = explode(',', $operations);
+			$function = trim(array_shift($params));
 
-			while (empty($params[0]) && (count($params) > 0)) {
-				array_shift($params);
+			if (!in_array($function, self::$operations)) {
+				continue;
 			}
 
 			$return[] = array(
-				'function' => array_shift($params),
+				'function' => $function,
 				'params' => $params
 			);
 		}
@@ -83,17 +85,16 @@ abstract class Image {
 	 * Returns array
 	 */
 	private function getProperties ($properties) {
-		$return = array();
-		$array = explode('|', $properties);
+		$return = array(
+			'dimensions' => array(0, 0),
+			'speed' => 'fast'
+		);
 
-		foreach ($array as $each) {
-			$params = explode(',', $each);
+		$properties = explode('|', str_replace(' ', '', $properties));
 
-			while (empty($params[0]) && (count($params) > 0)) {
-				array_shift($params);
-			}
-
-			$return[array_shift($params)] = $params;
+		foreach ($properties as $properties) {
+			$properties = explode(',', $properties);
+			$return[array_shift($properties)] = $properties;
 		}
 
 		return $return;
@@ -113,8 +114,8 @@ abstract class Image {
 
 		$global_properties = $this->getProperties($global_properties);
 
-		$width = isset($global_properties['dimmensions'][0]) ? intval($global_properties['dimmensions'][0]) : 0;
-		$height = isset($global_properties['dimmensions'][1]) ? intval($global_properties['dimmensions'][1]) : 0;
+		$width = isset($global_properties['dimensions'][0]) ? intval($global_properties['dimensions'][0]) : 0;
+		$height = isset($global_properties['dimensions'][1]) ? intval($global_properties['dimensions'][1]) : 0;
 
 		$image_properties = explode(';', $image_properties);
 
@@ -271,12 +272,12 @@ abstract class Image {
 
 
 	/**
-	 * public function zoomCrop (int $width, int $height, [int $x], [int $y])
+	 * public function resizeCrop (int $width, int $height, [int $x], [int $y])
 	 *
-	 * Crops an resize an image to specific dimmensions
+	 * Crops an resize an image to specific dimensions
 	 * Returns this
 	 */
-	public function zoomCrop ($width, $height, $x = 'center', $y = 'middle') {
+	public function resizeCrop ($width, $height, $x = 'center', $y = 'middle') {
 		$width = $this->getSize($width, $this->getWidth());
 		$height = $this->getSize($height, $this->getHeight());
 

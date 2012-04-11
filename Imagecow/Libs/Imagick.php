@@ -69,75 +69,6 @@ class Imagick extends Image implements InterfaceLibs {
 	}
 
 
-
-	/**
-	 * public function resize (int $width, [int $height], [bool $enlarge])
-	 *
-	 * Resizes an image
-	 * Returns this
-	 */
-	public function resize ($width, $height = 0, $enlarge = false) {
-		$width = intval($width);
-		$height = intval($height);
-
-		if (!$enlarge && $this->enlarge($width, $height, $this->image->getImageWidth(), $this->image->getImageHeight())) {
-			return $this;
-		}
-
-		$fit = ($width === 0 || $height === 0) ? false : true;
-
-		$this->image->scaleImage($width, $height, $fit);
-
-		return $this;
-	}
-
-
-
-	/**
-	 * public function crop (int $width, int $height, [int $x], [int $y])
-	 *
-	 * Crops an image
-	 * Returns this
-	 */
-	public function crop ($width, $height, $x = 'center', $y = 'middle') {
-		$x = $this->position($x, $width, $this->image->getImageWidth());
-		$y = $this->position($y, $height, $this->image->getImageHeight());
-
-		$this->image->cropImage($width, $height, $x, $y);
-
-		return $this;
-	}
-
-
-
-	/**
-	 * public function flip (void)
-	 *
-	 * Inverts an image vertically
-	 * Returns this
-	 */
-	public function flip () {
-		$this->image->flipImage();
-
-		return $this;
-	}
-
-
-
-	/**
-	 * public function flop (void)
-	 *
-	 * Inverts an image horizontally
-	 * Returns this
-	 */
-	public function flop () {
-		$this->image->flopImage();
-
-		return $this;
-	}
-
-
-
 	/**
 	 * public function toString (void)
 	 *
@@ -195,55 +126,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function rotate (int $degrees, [int $background])
-	 *
-	 * Rotates the image
-	 * Returns this
-	 */
-	public function rotate ($degrees, $background = null) {
-		if (is_null($background)) {
-			$background = 'white';
-		}
-
-		if (preg_match('/^#?[0-9abcdef]{6}$/i', $background) && !strstr($background, '#')) {
-			$background = '#'.$background;
-		}
-
-		$this->image->rotateImage($background, $degrees);
-
-		return $this;
-	}
-
-
-
-	/**
-	 * public function merge (string/object $image, [int $x], [int $y])
-	 *
-	 * Merges two images in one
-	 * Returns this
-	 */
-	public function merge ($image, $x = 'center', $y = 'middle') {
-		if (is_object($image)) {
-			$object_image = $image;
-		} else {
-			global $Config;
-
-			$object_image = new Imagick();
-			$object_image->readImage($Config->paths['web'].$image);
-		}
-
-		$x = $this->position($x, $object_image->getImageWidth(), $this->image->getImageWidth());
-		$y = $this->position($y, $object_image->getImageHeight(), $this->image->getImageHeight());
-
-		$this->image->compositeImage($object_image, $object_image->getImageCompose(), $x, $y);
-		$this->image->flattenImages();
-
-		return $this;
-	}
-
-
-
-	/**
 	 * public function convert (string $format)
 	 *
 	 * Converts an image to another format
@@ -251,6 +133,46 @@ class Imagick extends Image implements InterfaceLibs {
 	 */
 	public function convert ($format) {
 		$this->image->setImageFormat($format);
+
+		return $this;
+	}
+
+
+
+	/**
+	 * public function resize (int $width, [int $height], [bool $enlarge])
+	 *
+	 * Resizes an image
+	 * Returns this
+	 */
+	public function resize ($width, $height = 0, $enlarge = false) {
+		$width = intval($width);
+		$height = intval($height);
+
+		if (!$enlarge && $this->enlarge($width, $height, $this->image->getImageWidth(), $this->image->getImageHeight())) {
+			return $this;
+		}
+
+		$fit = ($width === 0 || $height === 0) ? false : true;
+
+		$this->image->scaleImage($width, $height, $fit);
+
+		return $this;
+	}
+
+
+
+	/**
+	 * public function crop (int $width, int $height, [int $x], [int $y])
+	 *
+	 * Crops an image
+	 * Returns this
+	 */
+	public function crop ($width, $height, $x = 'center', $y = 'middle') {
+		$x = $this->position($x, $width, $this->image->getImageWidth());
+		$y = $this->position($y, $height, $this->image->getImageHeight());
+
+		$this->image->cropImage($width, $height, $x, $y);
 
 		return $this;
 	}

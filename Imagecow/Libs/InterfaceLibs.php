@@ -15,16 +15,14 @@ interface InterfaceLibs {
 	public function load ($image);
 	public function unload ();
 	public function save ($filename = '');
-	public function resize ($width, $height = 0, $enlarge = false);
-	public function crop ($width, $height, $x = 'center', $y = 'middle');
-	public function flip ();
-	public function flop ();
 	public function toString ();
+
 	public function getMimeType ();
 	public function getWidth ();
 	public function getHeight ();
-	public function rotate ($degrees, $background = null);
-	public function merge ($image, $x = 'center', $y = 'middle');
+
 	public function convert ($format);
+	public function resize ($width, $height = 0, $enlarge = false);
+	public function crop ($width, $height, $x = 'center', $y = 'middle');
 }
 ?>

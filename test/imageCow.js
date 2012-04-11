@@ -4,16 +4,16 @@ window.imageCow = {
 	cookie_path: '/',
 
 	init: function () {
-		var dimmensions = this.getClientDimmensions();
+		var dimensions = this.getClientDimensions();
 		var speed = this.getConnectionSpeed();
-		var value = 'dimmensions,' + dimmensions + '|speed,' + speed;
+		var value = 'dimensions,' + dimensions + '|speed,' + speed;
 
 		if (value != this.getCookie()) {
 			this.setCookie(value);
 		}
 	},
 
-	getClientDimmensions: function () {
+	getClientDimensions: function () {
 		if (typeof window.innerWidth != 'undefined') {
 			return window.innerWidth + ',' + window.innerHeight;
 		} else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {

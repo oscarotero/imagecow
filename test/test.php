@@ -1,14 +1,3 @@
-<?php
-include('loader.php');
-
-use Fol\Loader;
-
-Loader::setLibrariesPath(dirname(__DIR__));
-Loader::register();
-
-$Image = Imagecow\Image::create();
-?>
-
 <!doctype html>
 
 <html>
@@ -57,8 +46,12 @@ $Image = Imagecow\Image::create();
 			'img.jpg'
 		);
 		$transforms = array(
+			'resize,400,200|convert,jpg',
+			//'resize,0,200',
+			//'crop,400,200',
+			//'resize,400,200|crop,500,100',
 			//'resize,600,400|crop,100%,300,center,center',
-			'resizeCrop,200,200;max-width=400:resize,100'
+			//'resizeCrop,200,200;max-width=400:resize,100'
 		);
 		?>
 

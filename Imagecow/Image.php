@@ -19,6 +19,8 @@ use Imagecow\ImageException;
 
 abstract class Image {
 	static $operations = array('resize', 'resizeCrop', 'crop', 'convert');
+
+	protected $image;
 	protected $Error;
 
 	static function create ($library = null) {
@@ -31,6 +33,109 @@ abstract class Image {
 		if (class_exists($class)) {
 			return new $class;
 		}
+
+		throw new Exception('The image library is not valid');
+	}
+
+
+
+	/**
+	 * static function getResponsiveOperations (string $client_properties, [string $operations])
+	 *
+	 * Transform the image according the client properties
+	 * Returns string
+	 */
+	static function getResponsiveOperations ($client_properties, $operations = '') {
+		if (!$operations) {
+			return '';
+		}
+
+		$client = array();
+
+		foreach (explode('|', str_replace(' ', '', $client_properties)) as $client_properties) {
+			$client_properties = explode(',', $client_properties);
+			$client[array_shift($client_properties)] = $client_properties;
+		}
+
+		$width = isset($client['dimensions'][0]) ? intval($client['dimensions'][0]) : null;
+		$height = isset($client['dimensions'][1]) ? intval($client['dimensions'][1]) : null;
+
+		$transform = array();
+
+		foreach (explode(';', str_replace(' ', '', $operations)) as $operation) {
+			if (empty($operation)) {
+				continue;
+			}
+
+			if (strpos($operation, ':') === false) {
+				$transform[] = $operation;
+				continue;
+			}
+
+			if (!isset($width) || !isset($height)) {
+				continue;
+			}
+
+			list($rules, $operation) = explode(':', $operation, 2);
+
+			foreach (explode(',', $rules) as $rule) {
+				$rule = explode('=', $rule, 2);
+				$value = intval($rule[1]);
+
+				switch ($rule[0]) {
+					case 'max-width':
+						if ($width > $value) {
+							continue 2;
+						}
+						break;
+
+					case 'min-width':
+						if ($width < $value) {
+							continue 2;
+						}
+						break;
+
+					case 'width':
+						if ($width != $value) {
+							continue 2;
+						}
+						break;
+
+					case 'max-height':
+						if ($height > $value) {
+							continue 2;
+						}
+						break;
+
+					case 'min-height':
+						if ($height < $value) {
+							continue 2;
+						}
+						break;
+
+					case 'height':
+						if ($height != $value) {
+							continue 2;
+						}
+						break;
+				}
+
+				$transform[] = $operation;
+			}
+		}
+
+		return implode('|', $transform);
+	}
+
+
+	/**
+	 * public function getImage ()
+	 *
+	 * Gets the image original object or resource
+	 * Returns object/resource/null
+	 */
+	public function getImage () {
+		return $this->image;
 	}
 
 
@@ -104,113 +209,6 @@ abstract class Image {
 		}
 
 		return $return;
-	}
-
-
-
-	/**
-	 * private function getProperties (array $properties)
-	 *
-	 * Splits string properties and convert it to array
-	 * Returns array
-	 */
-	private function getProperties ($properties) {
-		$return = array(
-			'dimensions' => array(0, 0),
-			'speed' => 'fast'
-		);
-
-		$properties = explode('|', str_replace(' ', '', $properties));
-
-		foreach ($properties as $properties) {
-			$properties = explode(',', $properties);
-			$return[array_shift($properties)] = $properties;
-		}
-
-		return $return;
-	}
-
-
-	/**
-	 * public function getResponsiveOperations (string $global_properties, [string $image_properties])
-	 *
-	 * Transform the image according the client properties
-	 * Returns string
-	 */
-	public function getResponsiveOperations ($global_properties, $image_properties = '') {
-		if (!$global_properties || !$image_properties) {
-			return '';
-		}
-
-		$global_properties = $this->getProperties($global_properties);
-
-		$width = isset($global_properties['dimensions'][0]) ? intval($global_properties['dimensions'][0]) : 0;
-		$height = isset($global_properties['dimensions'][1]) ? intval($global_properties['dimensions'][1]) : 0;
-
-		$image_properties = explode(';', $image_properties);
-
-		$transform = array();
-
-		foreach ($image_properties as $image_properties) {
-			if (empty($image_properties)) {
-				continue;
-			}
-
-			$image_properties = explode(':', $image_properties, 2);
-
-			if (count($image_properties) === 1) {
-				$transform[] = $image_properties[0];
-				continue;
-			}
-
-			$rules = explode(',', $image_properties[0]);
-
-			foreach ($rules as $rule) {
-				$rule = explode('=', $rule, 2);
-
-				switch ($rule[0]) {
-					case 'max-width':
-						if ($width > intval($rule[1])) {
-							continue 2;
-						}
-						break;
-
-					case 'min-width':
-						if ($width < intval($rule[1])) {
-							continue 2;
-						}
-						break;
-
-					case 'width':
-						if ($width != intval($rule[1])) {
-							continue 2;
-						}
-						break;
-
-					case 'max-height':
-						if ($height > intval($rule[1])) {
-							continue 2;
-						}
-						break;
-
-					case 'min-height':
-						if ($height < intval($rule[1])) {
-							continue 2;
-						}
-						break;
-
-					case 'height':
-						if ($height != intval($rule[1])) {
-							continue 2;
-						}
-						break;
-				}
-
-				$transform[] = $image_properties[1];
-			}
-		}
-
-		return implode('|', $transform);
 	}
 
 

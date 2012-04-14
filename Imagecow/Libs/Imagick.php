@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagick library for Imagecow (version 0.3)
+ * Imagick library for Imagecow (version 0.4)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -14,9 +14,6 @@ namespace Imagecow\Libs;
 use Imagecow\Image;
 
 class Imagick extends Image implements InterfaceLibs {
-	protected $image;
-	protected $info;
-
 
 	/**
 	 * public function load (string $image)
@@ -25,13 +22,26 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns this
 	 */
 	public function load ($image) {
-		$this->image = new Imagick();
+		$this->image = new \Imagick();
 
-		$this->image->readImage($image);
+		if ($this->image->readImage($image) !== true) {
+			$this->setError('The image file "'.$image.'" cannot be loaded', IMAGECOW_ERROR_LOADING);
+			$this->image = $this->file = null;
+		}
 
-		$this->info = array(
-			'file' => $image,
-		);
+		return $this;
+	}
+
+
+
+	/**
+	 * public function setImage (Imagick $image)
+	 *
+	 * Sets a new Imagick object
+	 * Returns this
+	 */
+	public function setImage (\Imagick $image) {
+		$this->filename = $image;
 
 		return $this;
 	}
@@ -60,9 +70,11 @@ class Imagick extends Image implements InterfaceLibs {
 	 */
 	public function save ($filename = '') {
 		if (!$filename) {
-			$this->image->writeImage();
-		} else {
-			$this->image->writeImage($filename);
+			if ($this->image->writeImage() !== true) {
+				$this->setError('The image file cannot be saved', IMAGECOW_ERROR_LOADING);
+			}
+		} else if ($this->image->writeImage($filename) !== true) {
+			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
 		}
 
 		return $this;
@@ -88,6 +100,10 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns string
 	 */
 	public function getMimeType () {
+		if (!$this->image) {
+			return false;
+		}
+
 		$format = strtolower($this->image->getImageFormat());
 
 		switch ($format) {
@@ -108,6 +124,10 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns integer
 	 */
 	public function getWidth () {
+		if (!$this->image) {
+			return false;
+		}
+
 		return $this->image->getImageWidth();
 	}
 
@@ -120,6 +140,10 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns integer
 	 */
 	public function getHeight () {
+		if (!$this->image) {
+			return false;
+		}
+
 		return $this->image->getImageHeight();
 	}
 
@@ -132,7 +156,10 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns this
 	 */
 	public function convert ($format) {
-		$this->image->setImageFormat($format);
+		if (!$this->image || $this->image->setImageFormat($format) !== true) {
+			$this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
+			return $this;
+		}
 
 		return $this;
 	}
@@ -146,16 +173,25 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns this
 	 */
 	public function resize ($width, $height = 0, $enlarge = false) {
-		$width = intval($width);
-		$height = intval($height);
-
-		if (!$enlarge && $this->enlarge($width, $height, $this->image->getImageWidth(), $this->image->getImageHeight())) {
+		if (!$this->image) {
 			return $this;
 		}
 
-		$fit = ($width === 0 || $height === 0) ? false : true;
+		$imageWidth = $this->getWidth();
+		$imageHeight = $this->getHeight();
 
-		$this->image->scaleImage($width, $height, $fit);
+		$width = $this->getSize($width, $imageWidth);
+		$height = $this->getSize($height, $imageHeight);
+
+		if (!$enlarge && $this->enlarge($width, $height, $imageWidth, $imageHeight)) {
+			return $this;
+		}
+
+		if ($this->image->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true)) !== true) {
+			$this->setError('There was an error resizing the image', IMAGECOW_ERROR_FUNCTION);
+		} else {
+			$this->image->setImagePage(0, 0, 0, 0);
+		}
 
 		return $this;
 	}
@@ -169,10 +205,24 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns this
 	 */
 	public function crop ($width, $height, $x = 'center', $y = 'middle') {
-		$x = $this->position($x, $width, $this->image->getImageWidth());
-		$y = $this->position($y, $height, $this->image->getImageHeight());
+		if (!$this->image) {
+			return $this;
+		}
 
-		$this->image->cropImage($width, $height, $x, $y);
+		$imageWidth = $this->getWidth();
+		$imageHeight = $this->getHeight();
+
+		$width = $this->getSize($width, $imageWidth);
+		$height = $this->getSize($height, $imageHeight);
+
+		$x = $this->position($x, $width, $imageWidth);
+		$y = $this->position($y, $height, $imageHeight);
+
+		if ($this->image->cropImage($width, $height, $x, $y) !== true) {
+			$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
+		} else {
+			$this->image->setImagePage(0, 0, 0, 0);
+		}
 
 		return $this;
 	}

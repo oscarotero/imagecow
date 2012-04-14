@@ -12,7 +12,7 @@ HOW USE IT?
 
 ----------------------------------
 
-* Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose) class:
+* Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose):
 
 $GDimage = new Imagecow\Libs\Gd();
 
@@ -98,7 +98,6 @@ $image->set(); //Sets manually a new image resource or Imagik instance
 
 $image->setError('message'); //Sets an error manually
 $image->getError(); //Returns an ImageException object in case of error
-$image->getImageError(); //Returns an Imagecow instance of an image with the error printed
 
 ----------------------------------
 
@@ -129,13 +128,13 @@ imageCow.cookie_path = '/';
 
 * In the server-side, use the cookie to generate the responsive operations:
 
-$Image = Imagecow\Image::create();
+use Imagecow\Image;
 
-$Image->load($_GET['img']);
+$operations = Image::getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
 
-$operations = $myImage->getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
+$Image = Image::create();
 
-$myImage->transform($operations)->show();
+$Image->load($_GET['img'])->transform($operations)->show();
 
 ----------------------------------
 

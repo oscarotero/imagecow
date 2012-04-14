@@ -2,19 +2,19 @@
 include('loader.php');
 
 use Fol\Loader;
+use Imagecow\Image;
 
 Loader::setLibrariesPath(dirname(__DIR__));
 Loader::register();
 
-$Image = Imagecow\Image::create();
+$transform = Image::getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
 
-$Image->load(isset($_GET['img']) ? $_GET['img'] : 'img.jpg');
+$Image = Image::create();
 
-$transform = $Image->getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
-$Image->transform($transform);
+$Image->load($_GET['img'])->transform($transform);
 
 if ($Error = $Image->getError()) {
-	$Image->getImageError()->show();
+	$Error->getImage()->show();
 } else {
 	$Image->show();
 }

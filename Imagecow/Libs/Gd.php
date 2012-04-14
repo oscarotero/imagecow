@@ -1,6 +1,6 @@
 <?php
 /**
- * GD library for Imagecow (version 0.3)
+ * GD library for Imagecow (version 0.4)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -14,11 +14,23 @@ namespace Imagecow\Libs;
 use Imagecow\Image;
 
 class Gd extends Image implements InterfaceLibs {
-	protected $image;
 	protected $type;
 	protected $filename;
 
-	private static $image_types = array('gif', 'jpeg', 'png', 'swf', 'psd', 'bmp', 'tiff_ii', 'tiff_mm', 'jpc', 'jp2', 'jpx', 'jb2', 'swc', 'iff', 'wbmp', 'xbm', 'ico');
+
+
+	/**
+	 * public function __construct ([string/resource $image])
+	 */
+	public function __construct ($image = null) {
+		if (isset($image)) {
+			if (is_resource($image)) {
+				$this->setImage($image);
+			} else if (is_string($image)) {
+				$this->load($image);
+			}
+		}
+	}
 
 
 
@@ -56,7 +68,7 @@ class Gd extends Image implements InterfaceLibs {
 		if (is_resource($image)) {
 			$this->image = $image;
 			$this->file = null;
-			$this->type = isset($type) ? $type : IMAGETYPE_JPEG;
+			$this->type = isset($type) ? $type : IMAGETYPE_PNG;
 
 			imagealphablending($this->image, true);
 			imagesavealpha($this->image, true);
@@ -67,18 +79,6 @@ class Gd extends Image implements InterfaceLibs {
 		}
 
 		return $this;
-	}
-
-
-
-	/**
-	 * public function getImage ()
-	 *
-	 * Gets the GD resource
-	 * Returns resource/null
-	 */
-	public function getImage () {
-		return $this->image;
 	}
 
 
@@ -206,44 +206,29 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function getImageError ([int $width], [int $height])
-	 *
-	 * Returns an Image with the error string or null
-	 */
-	public function getImageError ($width = 400, $height = 400) {
-		if (!$this->Error) {
-			return null;
-		}
-
-		$imageError = imagecreate($width, $height);
-
-		$bgColor = imagecolorallocate($imageError, 128, 128, 128);
-		$textColor = imagecolorallocate($imageError, 255, 255, 255);
-
-		foreach (str_split($this->Error->getMessage(), intval($width/10)) as $line => $text) {
-			imagestring($imageError, 5, 10, (($line + 1) * 18), $text, $textColor);
-		}
-
-		$image = new static();
-
-		return $image->setImage($imageError);
-	}
-
-
-
-	/**
 	 * public function convert (string $format)
 	 *
 	 * Converts an image to another format
 	 * Returns this
 	 */
 	public function convert ($format) {
-		if (!$this->image || ($type = array_search($format, selft::$image_types)) === false) {
-			$this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
-			return $this;
-		}
+		switch (strtolower($format)) {
+			case 'jpg':
+			case 'jpeg':
+				$this->type = IMAGETYPE_JPEG;
+				break;
 
-		$this->type = $type + 1;
+			case 'gif':
+				$this->type = IMAGETYPE_GIF;
+				break;
+
+			case 'png':
+				$this->type = IMAGETYPE_PNG;
+				break;
+
+			default:
+				$this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
+		}
 
 		return $this;
 	}

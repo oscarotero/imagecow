@@ -1,43 +1,150 @@
-IMAGECOW
+imageCow PHP library (version 0.4)
 
-Librería en PHP para manipular imaxes. Baseada na librería empregada polo framework phpCan.
+It's a php library to manipulate images to web. It's based in the image library of phpCan framework (http://idc.anavallasuiza.com)
 
-- Usa as librerías GD e Imagick indistintamente (e ampliable a máis)
-- Escrito en php 5
+- Written in PHP 5.3
+- Use GD2 or Imagick libraries (and can be extended with more)
+- Has optional client-side resources to generate responsive images
+- Very simple and easy to use.
 
 
-COMO SE USA?
+HOW USE IT?
 
-1. Instancias a clase:
+----------------------------------
 
-$Imaxe = Imagecow\Image::create('Gd'); //Instancia coa librería Gd
-$Imaxe = Imagecow\Image::create('Imagick'); //Instancia coa librería Imagick
+* Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose) class:
 
-$Imaxe = Imagecow\Image::create(); //Detecta a librería automáticamente (por orde de preferencia: Imagick, Gd)
+$GDimage = new Imagecow\Libs\Gd();
 
-2. Cargas unha imaxe:
+----------------------------------
 
-$Imaxe->load('imaxe.jpg');
+* You can use also the static function Imagecow\Image::create() to returns an instance:
 
-3. Modificas a imaxe coas funcións dispoñibles:
+use Imagecow\Image;
 
-$Imaxe->crop(200, 300); //Recorta a imaxe a 200x300
-$Imaxe->resize(200, 300); //Redimensiona a imaxe a un máximo de 200x300 (mantendo as proporcións orixinais)
-$Imaxe->rotate(10); //Xira a imaxe 10grados
-etc...
+$MyImagickImage = Image::create('Imagick'); //Returns an instance using the Imagick library
 
-Tamén podes facer todas as funcións xuntas:
+$MyImage = Image::create(); //Detects automatically the library to use (in order of preference: Imagick, GD2)
 
-$Imaxe->crop(200, 300)->resize(100, 100)->rotate(10);
+----------------------------------
 
-Outra opción é coa función transform, que colle un string con toda a secuencia de cambios (útil para enviar cambios por variables)
+* Load an image file:
 
-$Imaxe->transform('resize,200,300|rotate,10');
+$MyImage->load('picture.jpg');
 
-4. Recolles a imaxe, gárdala ou móstrala:
+----------------------------------
 
-$datos = $Imaxe->toString(); //Recolles os datos da imaxe nunha variable
+* Crop the image:
 
-$Imaxe->save('nova-imaxe.jpg'); //Garda a imaxe nun novo arquivo
+$Image->crop(200, 300); //Crops the image to 200x300px
+$Image->crop(200, 300, 'left', 'top'); //Crops the image to 200x300px starting from left-top
+$Image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 20px (x) / 50% (y)
+$Image->crop(50%, 50%); //Crops the image to half size
 
-$Imaxe->show(); //Mostra a imaxe no navegador
+----------------------------------
+
+* Resize the image
+
+$Image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
+
+$Image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
+
+$Image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
+
+----------------------------------
+
+* Resize and Crop the image
+
+$Image->resizeCrop(200, 300); //Resizes and crops the image to this size.
+
+----------------------------------
+
+* Convert the image to other formats:
+
+$Image->convert('png');
+
+----------------------------------
+
+* Save the image to a file
+
+$image->save('my-new-image.png');
+
+----------------------------------
+
+* Execute multiple functions (resize, crop, resizeCrop, convert)
+
+$image->transform('resize,200,300|convert,png');
+
+//This is useful to get transformed image dinamically using get variables: image.php?transform=resize,200,300|convert,png
+
+----------------------------------
+
+* Show the image
+
+$image->show();
+
+----------------------------------
+
+* Other functions:
+
+$image->getWidth();
+$image->getHeight();
+$image->getMimeType();
+
+$image->toString(); //Returns the image in a string
+
+$image->get(); //Returns the image resource (GD) or Imagik instance
+$image->set(); //Sets manually a new image resource or Imagik instance
+
+$image->setError('message'); //Sets an error manually
+$image->getError(); //Returns an ImageException object in case of error
+$image->getImageError(); //Returns an Imagecow instance of an image with the error printed
+
+----------------------------------
+
+
+
+RESPONSIVE IMAGES
+
+----------------------------------
+
+* Include the imageCow.js library in the html page and execute the function imageCow.init();
+
+<script src="imageCow.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	imageCow.init();
+</script>
+
+----------------------------------
+
+* This function saves a cookie with the client information (width, height, connection speed).
+You can configurate the cookie. The default values are:
+
+imageCow.cookie_seconds = 3600*24;
+imageCow.cookie_name = 'imageCow_detection';
+imageCow.cookie_path = '/';
+
+----------------------------------
+
+* In the server-side, use the cookie to generate the responsive operations:
+
+$Image = Imagecow\Image::create();
+
+$Image->load($_GET['img']);
+
+$operations = $myImage->getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
+
+$myImage->transform($operations)->show();
+
+----------------------------------
+
+* Now you can transform the image according with the client dimmensions. The available options are:
+
+max-width, min-width, max-height, min-height, width, height
+
+You can use the same syntax than transform, but separate the "media-query" with ";".
+
+img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
+
+Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.

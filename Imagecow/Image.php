@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagecow PHP library (version 0.3)
+ * Imagecow PHP library (version 0.4)
  *
  * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
@@ -11,8 +11,15 @@
 
 namespace Imagecow;
 
+define('IMAGECOW_ERROR_LOADING', 1);
+define('IMAGECOW_ERROR_FUNCTION', 2);
+define('IMAGECOW_ERROR_INPUT', 3);
+
+use Imagecow\ImageException;
+
 abstract class Image {
-	static $operations = array('resize', 'zoomCrop', 'crop', 'convert');
+	static $operations = array('resize', 'resizeCrop', 'crop', 'convert');
+	protected $Error;
 
 	static function create ($library = null) {
 		if (!$library) {
@@ -24,6 +31,28 @@ abstract class Image {
 		if (class_exists($class)) {
 			return new $class;
 		}
+	}
+
+
+
+	/**
+	 * public function getError ()
+	 *
+	 * Returns an ImageException object or null
+	 */
+	public function getError () {
+		return $this->Error;
+	}
+
+
+
+	/**
+	 * public function setError ()
+	 *
+	 * Sets an error
+	 */
+	public function setError ($message = '', $code = null) {
+		$this->Error = new ImageException($message, $code);
 	}
 
 
@@ -64,6 +93,7 @@ abstract class Image {
 			$function = trim(array_shift($params));
 
 			if (!in_array($function, self::$operations)) {
+				$this->setError('The transform function "'.$function.'" is not valid', IMAGECOW_ERROR_INPUT);
 				continue;
 			}
 
@@ -223,15 +253,13 @@ abstract class Image {
 	 * Shows the image and die
 	 */
 	public function show ($header = true) {
+		if ($string = $this->toString()) {
+			if ($header && ($type = $this->getMimeType())) {
+				header('Content-Type: '.$type);
+			}
 
-		//Show header mime-type
-		if ($header && ($type = $this->getMimeType())) {
-			header('Content-Type: '.$type);
+			die($string);
 		}
-
-		echo $this->toString();
-
-		die();
 	}
 
 

@@ -57,13 +57,8 @@ $Image = Imagecow\Image::create();
 			'img.jpg'
 		);
 		$transforms = array(
-			'resize,600,400|crop,100%,300,center,center',
-			/*
-			'crop,200,200|resize,400',
-			'crop,200,200|resize,400,0,0',
-			'crop,200,200|resize,400,400,1',
-			'zoomCrop,800,500',
-			*/
+			//'resize,600,400|crop,100%,300,center,center',
+			'resizeCrop,200,200;max-width=400:resize,100'
 		);
 		?>
 

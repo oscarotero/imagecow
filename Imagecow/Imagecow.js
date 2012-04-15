@@ -10,7 +10,7 @@
 
 window.Imagecow = {
 	cookie_seconds: 3600*24,
-	cookie_name: 'imageCow_detection',
+	cookie_name: 'Imagecow_detection',
 	cookie_path: '/',
 
 	init: function () {

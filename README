@@ -1,10 +1,10 @@
-imageCow PHP library (version 0.4)
+IMAGECOW
 
 It's a php library to manipulate images to web. It's based in the image library of phpCan framework (http://idc.anavallasuiza.com)
 
 - Written in PHP 5.3
 - Use GD2 or Imagick libraries (and can be extended with more)
-- Has optional client-side resources to generate responsive images
+- Has an optional client-side javascript to generate responsive images
 - Very simple and easy to use.
 - Use the PSR-0 autoloader standard
 
@@ -19,7 +19,7 @@ $GDimage = new Imagecow\Libs\Gd();
 
 ----------------------------------
 
-* You can use also the static function Imagecow\Image::create() to returns an instance:
+* You can alse use the static function Imagecow\Image::create() to returns an instance:
 
 use Imagecow\Image;
 
@@ -98,7 +98,7 @@ $image->getImage(); //Returns the image resource (GD) or Imagik instance
 $image->setImage(); //Sets manually a new image resource or Imagik instance
 
 $image->setError('message'); //Sets an error manually
-$image->getError(); //Returns an ImageException object in case of error
+$image->getError(); //Returns an ImageException instance in case of error
 
 ----------------------------------
 
@@ -108,7 +108,7 @@ RESPONSIVE IMAGES
 
 ----------------------------------
 
-* Include the imageCow.js library in the html page and execute the function imageCow.init();
+* Include the Imagecow.js library in the html page and execute the function Imagecow.init();
 
 <script src="Imagecow.js" type="text/javascript" charset="utf-8"></script>
 
@@ -122,7 +122,7 @@ RESPONSIVE IMAGES
 You can configurate the cookie. The default values are:
 
 Imagecow.cookie_seconds = 3600*24;
-Imagecow.cookie_name = 'imageCow_detection';
+Imagecow.cookie_name = 'Imagecow_detection';
 Imagecow.cookie_path = '/';
 
 ----------------------------------
@@ -131,7 +131,7 @@ Imagecow.cookie_path = '/';
 
 use Imagecow\Image;
 
-$operations = Image::getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
+$operations = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 
 $Image = Image::create();
 

@@ -3,10 +3,10 @@
 <html>
 	<head>
 		<title>imageCow tests</title>
-		<script src="imageCow.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../Imagecow/Imagecow.js" type="text/javascript" charset="utf-8"></script>
 
 		<script type="text/javascript">
-			window.imageCow.init();
+			window.Imagecow.init();
 		</script>
 
 		<style type="text/css" media="screen">
@@ -33,8 +33,8 @@
 	<body>
 		<p>speed: <span id="speed"></span> | dimensions: <span id="dimensions"></span></p>
 		<script type="text/javascript">
-			document.getElementById('speed').innerHTML = imageCow.getConnectionSpeed();
-			document.getElementById('dimensions').innerHTML = imageCow.getClientDimensions();
+			document.getElementById('speed').innerHTML = Imagecow.getConnectionSpeed();
+			document.getElementById('dimensions').innerHTML = Imagecow.getClientDimensions();
 		</script>
 
 		<?php
@@ -46,7 +46,7 @@
 			'img.jpg'
 		);
 		$transforms = array(
-			'resize,400,200|convert,jpg',
+			'resize,400,200|format,jpg',
 			//'resize,0,200',
 			//'crop,400,200',
 			//'resize,400,200|crop,500,100',

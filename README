@@ -6,6 +6,7 @@ It's a php library to manipulate images to web. It's based in the image library 
 - Use GD2 or Imagick libraries (and can be extended with more)
 - Has optional client-side resources to generate responsive images
 - Very simple and easy to use.
+- Use the PSR-0 autoloader standard
 
 
 HOW USE IT?
@@ -61,7 +62,7 @@ $Image->resizeCrop(200, 300); //Resizes and crops the image to this size.
 
 * Convert the image to other formats:
 
-$Image->convert('png');
+$Image->format('png');
 
 ----------------------------------
 
@@ -71,11 +72,11 @@ $image->save('my-new-image.png');
 
 ----------------------------------
 
-* Execute multiple functions (resize, crop, resizeCrop, convert)
+* Execute multiple functions (resize, crop, resizeCrop, format)
 
-$image->transform('resize,200,300|convert,png');
+$image->transform('resize,200,300|format,png');
 
-//This is useful to get transformed image dinamically using get variables: image.php?transform=resize,200,300|convert,png
+//This is useful to get transformed image dinamically using get variables: image.php?transform=resize,200,300|format,png
 
 ----------------------------------
 
@@ -91,10 +92,10 @@ $image->getWidth();
 $image->getHeight();
 $image->getMimeType();
 
-$image->toString(); //Returns the image in a string
+$image->getString(); //Returns the image in a string
 
-$image->get(); //Returns the image resource (GD) or Imagik instance
-$image->set(); //Sets manually a new image resource or Imagik instance
+$image->getImage(); //Returns the image resource (GD) or Imagik instance
+$image->setImage(); //Sets manually a new image resource or Imagik instance
 
 $image->setError('message'); //Sets an error manually
 $image->getError(); //Returns an ImageException object in case of error
@@ -109,10 +110,10 @@ RESPONSIVE IMAGES
 
 * Include the imageCow.js library in the html page and execute the function imageCow.init();
 
-<script src="imageCow.js" type="text/javascript" charset="utf-8"></script>
+<script src="Imagecow.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
-	imageCow.init();
+	Imagecow.init();
 </script>
 
 ----------------------------------
@@ -120,9 +121,9 @@ RESPONSIVE IMAGES
 * This function saves a cookie with the client information (width, height, connection speed).
 You can configurate the cookie. The default values are:
 
-imageCow.cookie_seconds = 3600*24;
-imageCow.cookie_name = 'imageCow_detection';
-imageCow.cookie_path = '/';
+Imagecow.cookie_seconds = 3600*24;
+Imagecow.cookie_name = 'imageCow_detection';
+Imagecow.cookie_path = '/';
 
 ----------------------------------
 

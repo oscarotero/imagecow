@@ -1,4 +1,14 @@
-window.imageCow = {
+/**
+ * Imagecow JS/PHP library
+ *
+ * Check the client device properties (width, height, connection) and save a cookie with the data to generate responsive images
+ *
+ * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
+ * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
+ * @version 0.1 (2012)
+ */
+
+window.Imagecow = {
 	cookie_seconds: 3600*24,
 	cookie_name: 'imageCow_detection',
 	cookie_path: '/',

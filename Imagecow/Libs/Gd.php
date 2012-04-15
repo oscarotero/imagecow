@@ -1,12 +1,15 @@
 <?php
 /**
- * GD library for Imagecow (version 0.4)
+ * Imagecow PHP library
  *
- * 2012. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
+ * GD library
  * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
  *
- * Imagecow is released under the GNU Affero GPL version 3.
- * More information at http://www.gnu.org/licenses/agpl-3.0.html
+ * PHP version 5.3
+ *
+ * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
+ * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
+ * @version 0.4 (2012)
  */
 
 namespace Imagecow\Libs;
@@ -18,9 +21,10 @@ class Gd extends Image implements InterfaceLibs {
 	protected $filename;
 
 
-
 	/**
-	 * public function __construct ([string/resource $image])
+	 * Constructor of the class
+	 *
+	 * @param string/resource  $image  The string with the filename to load or the Gd resource.
 	 */
 	public function __construct ($image = null) {
 		if (isset($image)) {
@@ -35,10 +39,11 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function load (string $image)
+	 * Load an image file
 	 *
-	 * Loads an image
-	 * Returns this
+	 * @param string  $image  Name of the file to load
+	 *
+	 * @return $this
 	 */
 	public function load ($image) {
 		$this->image = $this->file = $this->type = null;
@@ -59,10 +64,27 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function setImage (resource $image, [$type])
+	 * Destroy the image loaded
 	 *
+	 * @return $this
+	 */
+	public function unload () {
+		if ($this->image) {
+			imagedestroy($this->image);
+		}
+
+		return $this;
+	}
+
+
+
+	/**
 	 * Sets a new GD resource
-	 * Returns this
+	 *
+	 * @param resource  $image  The GD resource
+	 * @param int       $type   The image type. By default is IMAGETYPE_PNG
+	 *
+	 * @return $this
 	 */
 	public function setImage ($image, $type = null) {
 		if (is_resource($image)) {
@@ -84,26 +106,11 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function unload (void)
+	 * Save the image in a file
 	 *
-	 * Destroys an image
-	 * Return this
-	 */
-	public function unload () {
-		if ($this->image) {
-			imagedestroy($this->image);
-		}
-
-		return $this;
-	}
-
-
-
-	/**
-	 * public function save (string $filename)
+	 * @param string  $filename  Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
 	 *
-	 * Saves the image into a file
-	 * Returns this
+	 * @return $this
 	 */
 	public function save ($filename = '') {
 		if (!$this->image) {
@@ -134,12 +141,11 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function toString (void)
+	 * Gets the image data in a string
 	 *
-	 * Gets the image data
-	 * Returns string
+	 * @return string  The image data
 	 */
-	public function toString () {
+	public function getString () {
 		if (!$this->image) {
 			return '';
 		}
@@ -160,10 +166,9 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function getMimeType (void)
+	 * Gets the mime-type of the image
 	 *
-	 * Gets the image mime type
-	 * Returns string/false
+	 * @return string  The mime-type
 	 */
 	public function getMimeType () {
 		if (!$this->image) {
@@ -175,10 +180,9 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function getWidth (void)
+	 * Gets the width of the image
 	 *
-	 * Gets the image width
-	 * Returns integer/false
+	 * @return integer  The width in pixels
 	 */
 	public function getWidth () {
 		if (!$this->image) {
@@ -190,10 +194,9 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function getHeight (void)
+	 * Gets the height of the image
 	 *
-	 * Gets the image height
-	 * Returns integer/false
+	 * @return integer  The height in pixels
 	 */
 	public function getHeight () {
 		if (!$this->image) {
@@ -206,12 +209,13 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function convert (string $format)
+	 * Converts the image to other format
 	 *
-	 * Converts an image to another format
-	 * Returns this
+	 * @param string  $format  The new format: png, jpg, gif
+	 *
+	 * @return $this
 	 */
-	public function convert ($format) {
+	public function format ($format) {
 		switch (strtolower($format)) {
 			case 'jpg':
 			case 'jpeg':
@@ -236,10 +240,13 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function resize (int $width, [int $height], [bool $enlarge])
+	 * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
 	 *
-	 * Resizes an image
-	 * Returns this
+	 * @param int/string  $width    The max width of the image. It can be a number (pixels) or percentaje
+	 * @param int/string  $height   The max height of the image. It can be a number (pixels) or percentaje
+	 * @param boolean     $enlarge  True if the new image can be bigger (false by default)
+	 *
+	 * @return $this
 	 */
 	public function resize ($width, $height = 0, $enlarge = false) {
 		if (!$this->image) {
@@ -290,10 +297,14 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * public function crop (int $width, int $height, [int $x], [int $y])
+	 * Crops the image
 	 *
-	 * Crops an image
-	 * Returns this
+	 * @param int/string  $width   The new width of the image. It can be a number (pixels) or percentaje
+	 * @param int/string  $height  The new height of the image. It can be a number (pixels) or percentaje
+	 * @param int/string  $x       The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+	 * @param int/string  $y       The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+	 *
+	 * @return $this
 	 */
 	public function crop ($width, $height, $x = 'center', $y = 'middle') {
 		if (!$this->image) {

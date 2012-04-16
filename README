@@ -9,9 +9,9 @@ It's a php library to manipulate images to web. It's based in the image library 
 - Use the PSR-0 autoloader standard
 
 
+======================================================
 HOW USE IT?
-
-----------------------------------
+======================================================
 
 * Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose):
 
@@ -100,13 +100,11 @@ $image->setImage(); //Sets manually a new image resource or Imagik instance
 $image->setError('message'); //Sets an error manually
 $image->getError(); //Returns an ImageException instance in case of error
 
-----------------------------------
 
 
-
+======================================================
 RESPONSIVE IMAGES
-
-----------------------------------
+======================================================
 
 * Include the Imagecow.js library in the html page and execute the function Imagecow.init();
 

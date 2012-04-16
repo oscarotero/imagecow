@@ -22,6 +22,7 @@ use Imagecow\ImageException;
 
 abstract class Image {
 	protected $image;
+	protected $quality = 90;
 	protected $Error;
 
 	
@@ -169,9 +170,35 @@ abstract class Image {
 	 *
 	 * @param string  $message  The message of the error
 	 * @param int     $code     The code of the message. It can be one of the following constants: IMAGECOW_ERROR_LOADING, IMAGECOW_ERROR_FUNCTION, IMAGECOW_ERROR_INPUT
+	 *
+	 * @return $this
 	 */
 	public function setError ($message = '', $code = null) {
 		$this->Error = new ImageException($message, $code);
+
+		return $this;
+	}
+
+
+	/**
+	 * Define the image compression quality for jpg images
+	 *
+	 * @param int  $quality  The quality (from 0 to 100)
+	 *
+	 * @return $this
+	 */
+	public function setCompressionQuality ($quality) {
+		$quality = intval($quality);
+
+		if ($quality < 0) {
+			$this->quality = 0;
+		} else if ($quality > 100) {
+			$this->quality = 100;
+		} else {
+			$this->quality = $quality;
+		}
+
+		return $this;
 	}
 
 

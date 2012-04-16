@@ -160,7 +160,13 @@ class Gd extends Image implements InterfaceLibs {
 		}
 
 		ob_start();
-		$function($this->image);
+
+		if ($extension === 'jpeg') {
+			$function($this->image, null, $this->quality);
+		} else {
+			$function($this->image);
+		}
+
 		return ob_get_clean();
 	}
 

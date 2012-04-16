@@ -108,6 +108,15 @@ class Imagick extends Image implements InterfaceLibs {
 	 * @return string  The image data
 	 */
 	public function getString () {
+		if (!$this->image) {
+			return '';
+		}
+
+		if (strtolower($this->image->getImageFormat()) === 'jpeg') {
+			$this->image->setImageCompression(\Imagick::COMPRESSION_JPEG);
+			$this->image->setImageCompressionQuality($this->quality);
+		}
+
 		return $this->image->getImageBlob();
 	}
 

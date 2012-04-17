@@ -7,7 +7,8 @@ use Imagecow\Image;
 Loader::setLibrariesPath(dirname(__DIR__));
 Loader::register();
 
-$transform = Image::getResponsiveOperations($_COOKIE['imageCow_detection'], $_GET['transform']);
+
+$transform = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 
 $Image = Image::create();
 

@@ -213,7 +213,7 @@ class Imagick extends Image implements InterfaceLibs {
 		$width = $this->getSize($width, $imageWidth);
 		$height = $this->getSize($height, $imageHeight);
 
-		if (!$enlarge && $this->enlarge($width, $height, $imageWidth, $imageHeight)) {
+		if (!$enlarge && $this->enlarge($width, $imageWidth) && $this->enlarge($height, $imageHeight)) {
 			return $this;
 		}
 

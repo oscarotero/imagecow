@@ -362,19 +362,13 @@ abstract class Image {
 	/**
 	 * Check if the image must be enlarged or not (if the new dimmensions are bigger than original)
 	 *
-	 * @param int  $width         The new width of the image
-	 * @param int  $height        The new height of the image
-	 * @param int  $image_width   The original width of the image
-	 * @param int  $image_height  The original height of the image
+	 * @param int  $new_size       The new size of the image
+	 * @param int  $original_size  The original size of the image
 	 *
 	 * @return boolean  True if the image must be enlarged and false if not.
 	 */
-	protected function enlarge ($width, $height, $image_width, $image_height) {
-		if ($width && $width > $image_width) {
-			return true;
-		}
-
-		if ($height && $height > $image_height) {
+	protected function enlarge ($new_size, $original_size) {
+		if ($new_size && $new_size > $original_size) {
 			return true;
 		}
 

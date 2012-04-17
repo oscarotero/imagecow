@@ -1,5 +1,13 @@
 IMAGECOW
 
+Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
+
+GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
+
+======================================================
+WHAT IS IMAGECOW?
+======================================================
+
 It's a php library to manipulate images to web. It's based in the image library of phpCan framework (http://idc.anavallasuiza.com)
 
 - Written in PHP 5.3

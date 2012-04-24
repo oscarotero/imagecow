@@ -187,7 +187,7 @@ class Gd extends Image implements InterfaceLibs {
 	 *
 	 * @return $this
 	 */
-	public function save ($filename = '') {
+	public function save ($filename = null) {
 		if (!$this->image) {
 			return $this;
 		}

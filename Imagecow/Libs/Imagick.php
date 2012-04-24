@@ -142,12 +142,10 @@ class Imagick extends Image implements InterfaceLibs {
 	 *
 	 * @return $this
 	 */
-	public function save ($filename = '') {
-		if (!$filename) {
-			if ($this->image->writeImage() !== true) {
-				$this->setError('The image file cannot be saved', IMAGECOW_ERROR_LOADING);
-			}
-		} else if ($this->image->writeImage($filename) !== true) {
+	public function save ($filename = null) {
+		$filename = $filename ? $filename : $this->image->getImageFilename();
+
+		if ($this->image->writeImage($filename) !== true) {
 			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
 		}
 

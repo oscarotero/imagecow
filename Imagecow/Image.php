@@ -202,6 +202,20 @@ abstract class Image {
 	}
 
 
+
+	/**
+	 * Reads the EXIF data from a JPEG and returns an associative array
+	 *
+	 * @return array The data where the array indexes are the header names and array values the associated values. Returns false on error
+	 */
+	public function getExifData () {
+		$filename = $this->getFilename();
+
+		return isset($filename) ? exif_read_data($filename) : false;
+	}
+
+
+
 	/**
 	 * Transform the image executing various operations of crop, resize, resizeCrop and format
 	 * 

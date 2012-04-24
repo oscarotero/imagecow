@@ -46,13 +46,13 @@ class Gd extends Image implements InterfaceLibs {
 	 * @return $this
 	 */
 	public function load ($image) {
-		$this->image = $this->file = $this->type = null;
+		$this->image = $this->filename = $this->type = null;
 
 		if (is_file($image) && ($data = @getImageSize($image))) {
 			$function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
 
 			if (function_exists($function)) {
-				return $this->setImage($function($image), $data[2]);
+				return $this->setImage($function($image), $image, $data[2]);
 			}
 		}
 		
@@ -79,23 +79,98 @@ class Gd extends Image implements InterfaceLibs {
 
 
 	/**
-	 * Sets a new GD resource
+	 * Returns the filename associated with this image
 	 *
-	 * @param resource  $image  The GD resource
-	 * @param int       $type   The image type. By default is IMAGETYPE_PNG
+	 * @return string The filename. Returns null if no filename is associated (no image loaded or loaded from a string)
+	 */
+	public function getFilename () {
+		return $this->filename;
+	}
+
+
+	/**
+	 * Inverts the image vertically
 	 *
 	 * @return $this
 	 */
-	public function setImage ($image, $type = null) {
+	public function flip () {
+		if (!$this->image) {
+			return $this;
+		}
+
+		$width = $this->getWidth();
+		$height = $this->getHeight();
+
+		$tmp_image = imagecreatetruecolor($width, $height);
+
+		if ($tmp_image === false ||
+			imagesavealpha($tmp_image, true) === false ||
+			imagefill($tmp_image, 0, 0, imagecolorallocatealpha($tmp_image, 0, 0, 0, 127)) === false || 
+			imagecopyresampled($tmp_image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false)
+		{
+			$this->setError('There was an error on flip the image', IMAGECOW_ERROR_FUNCTION);
+
+			return $this;
+		}
+
+		$this->image = $tmp_image;
+
+		return $this;
+	}
+
+
+
+	/**
+	 * Inverts the image horizontally
+	 *
+	 * @return $this
+	 */
+	public function flop () {
+		if (!$this->image) {
+			return $this;
+		}
+
+		$width = $this->getWidth();
+		$height = $this->getHeight();
+
+		$tmp_image = imagecreatetruecolor($width, $height);
+
+		if ($tmp_image === false ||
+			imagesavealpha($tmp_image, true) === false ||
+			imagefill($tmp_image, 0, 0, imagecolorallocatealpha($tmp_image, 0, 0, 0, 127)) === false || 
+			imagecopyresampled($tmp_image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false)
+		{
+			$this->setError('There was an error on flop the image', IMAGECOW_ERROR_FUNCTION);
+
+			return $this;
+		}
+
+		$this->image = $tmp_image;
+
+		return $this;
+	}
+
+
+
+	/**
+	 * Sets a new GD resource
+	 *
+	 * @param resource  $image     The GD resource
+	 * @param string    $filename  The original filename of the resource
+	 * @param int       $type      The image type. By default is IMAGETYPE_PNG
+	 *
+	 * @return $this
+	 */
+	public function setImage ($image, $filename = null, $type = null) {
 		if (is_resource($image)) {
 			$this->image = $image;
-			$this->file = null;
+			$this->filename = $filename;
 			$this->type = isset($type) ? $type : IMAGETYPE_PNG;
 
 			imagealphablending($this->image, true);
 			imagesavealpha($this->image, true);
 		} else {
-			$this->image = $this->file = $this->type = null;
+			$this->image = $this->filename = $this->type = null;
 
 			$this->setError('The image is not a valid resource', IMAGECOW_ERROR_LOADING);
 		}
@@ -122,7 +197,7 @@ class Gd extends Image implements InterfaceLibs {
 		$function = 'image'.$extension;
 
 		if (function_exists($function)) {
-			$filename = $filename ? $filename : $this->file;
+			$filename = $filename ? $filename : $this->filename;
 
 			if (strpos($filename, '.') === false) {
 				$filename .= '.'.$extension;
@@ -337,6 +412,34 @@ class Gd extends Image implements InterfaceLibs {
 			imagefill($tmp_image, 0, 0, $background) === false)
 		{
 			$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
+
+			return $this;
+		}
+
+		$this->image = $tmp_image;
+
+		return $this;
+	}
+
+
+	/**
+	 * Rotates the image
+	 *
+	 * @param int  $angle   Rotation angle in degrees (anticlockwise)
+	 *
+	 * @return $this
+	 */
+	public function rotate ($angle) {
+		$angle = intval($angle);
+
+		if (!$this->image || $angle === 0) {
+			return $this;
+		}
+
+		$background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+
+		if ($background === false || ($tmp_image = imagerotate($this->image, $angle, $background)) === false) {
+			$this->setError('There was an error rotating the image', IMAGECOW_ERROR_FUNCTION);
 
 			return $this;
 		}

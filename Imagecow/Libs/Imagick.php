@@ -68,6 +68,59 @@ class Imagick extends Image implements InterfaceLibs {
 
 
 	/**
+	 * Returns the filename associated with this image
+	 *
+	 * @return string The filename. Returns null if no filename is associated (no image loaded or loaded from a string)
+	 */
+	public function getFilename () {
+		if (!$this->image) {
+			return null;
+		}
+
+		return $this->image->getFilename();
+	}
+
+
+
+	/**
+	 * Inverts the image vertically
+	 *
+	 * @return $this
+	 */
+	public function flip () {
+		if (!$this->image) {
+			return $this;
+		}
+
+		if ($this->image->flipImage() !== true) {
+			$this->setError('There was an error on flip the image', IMAGECOW_ERROR_FUNCTION);
+		}
+
+		return $this;
+	}
+
+
+
+	/**
+	 * Inverts the image horizontally
+	 *
+	 * @return $this
+	 */
+	public function flop () {
+		if (!$this->image) {
+			return $this;
+		}
+
+		if ($this->image->flipImage() !== true) {
+			$this->setError('There was an error on flop the image', IMAGECOW_ERROR_FUNCTION);
+		}
+
+		return $this;
+	}
+
+
+
+	/**
 	 * Sets a new Imagick instance
 	 *
 	 * @param Imagick  $image  The new Imagick instance
@@ -254,6 +307,30 @@ class Imagick extends Image implements InterfaceLibs {
 
 		if ($this->image->cropImage($width, $height, $x, $y) !== true) {
 			$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
+		} else {
+			$this->image->setImagePage(0, 0, 0, 0);
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Rotates the image
+	 *
+	 * @param int  $angle   Rotation angle in degrees (anticlockwise)
+	 *
+	 * @return $this
+	 */
+	public function rotate ($angle) {
+		$angle = intval($angle);
+
+		if (!$this->image || $angle === 0) {
+			return $this;
+		}
+
+		if ($this->image->rotateImage(new ImagickPixel(), $angle) !== true) {
+			$this->setError('There was an error rotating the image', IMAGECOW_ERROR_FUNCTION);
 		} else {
 			$this->image->setImagePage(0, 0, 0, 0);
 		}

@@ -42,11 +42,13 @@ class Imagick extends Image implements InterfaceLibs {
 	 * Returns this
 	 */
 	public function load ($image) {
-		$this->image = new \Imagick();
+		$imagick = new \Imagick();
 
-		if ($this->image->readImage($image) !== true) {
+		if ($imagick->readImage($image) !== true) {
 			$this->setError('The image file "'.$image.'" cannot be loaded', IMAGECOW_ERROR_LOADING);
-			$this->image = $this->file = null;
+			$this->image = null;
+		} else {
+			$this->setImage($imagick);
 		}
 
 		return $this;
@@ -128,7 +130,20 @@ class Imagick extends Image implements InterfaceLibs {
 	 * @return $this
 	 */
 	public function setImage (\Imagick $image) {
-		$this->filename = $image;
+		//Convert to RGB
+		$cs = $image->getImageColorspace();
+
+		if ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK) {
+			$profiles = $image->getImageProfiles('*', false);
+
+			if (array_search('icc', $profiles) === false) {
+				$image->profileImage('icc', file_get_contents(__DIR__.'/icc/us_web_uncoated.icc'));
+			}
+
+			$image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
+		}
+
+		$this->image = $image;
 
 		return $this;
 	}

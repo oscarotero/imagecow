@@ -46,7 +46,7 @@
 			'img.jpg'
 		);
 		$transforms = array(
-			'resize,400,200;max-width=400:resize,200',
+			'resizeCrop,400,200;max-width=400:resize,200',
 			//'resize,0,200',
 			//'crop,400,200',
 			//'resize,400,200|crop,500,100',

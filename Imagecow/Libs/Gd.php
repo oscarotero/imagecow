@@ -9,7 +9,7 @@
  *
  * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
  * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
- * @version 0.4 (2012)
+ * @version 0.4.1 (2012)
  */
 
 namespace Imagecow\Libs;
@@ -406,10 +406,10 @@ class Gd extends Image implements InterfaceLibs {
 
 		if ($tmp_image === false ||
 			$background === false ||
-			imagesavealpha($tmp_image, true) === false ||
 			imagefill($tmp_image, 0, 0, $background) === false ||
-			imagecopyresampled($tmp_image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false ||
-			imagefill($tmp_image, 0, 0, $background) === false)
+			imagealphablending($tmp_image, false) === false || 
+			imagesavealpha($tmp_image, true) === false ||
+			imagecopyresampled($tmp_image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false)
 		{
 			$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
 

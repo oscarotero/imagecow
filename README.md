@@ -26,7 +26,7 @@ Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of t
 $GDimage = new Imagecow\Libs\Gd();
 ```
 
-You can alse use the static function Imagecow\Image::create() to returns an instance:
+Or you can also use the static function Imagecow\Image::create() to returns an instance:
 
 ```php
 use Imagecow\Image;
@@ -55,9 +55,7 @@ $Image->crop(50%, 50%); //Crops the image to half size
 
 ```php
 $Image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
-
 $Image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
-
 $Image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
 ```
 
@@ -81,7 +79,7 @@ $image->save('my-new-image.png');
 
 #### Execute multiple functions (resize, crop, resizeCrop, format)
 
-This is useful to get transformed image dinamically using get variables: image.php?transform=resize,200,300|format,png
+This is useful to get images transformed dinamically using get variables: image.php?transform=resize,200,300|format,png
 
 ```php
 $image->transform('resize,200,300|format,png');
@@ -157,6 +155,6 @@ You can use the same syntax than transform, but separate the "media-query" with 
 
 ```
 img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
-```
+``
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.

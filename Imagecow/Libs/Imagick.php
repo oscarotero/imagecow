@@ -131,9 +131,7 @@ class Imagick extends Image implements InterfaceLibs {
 	 */
 	public function setImage (\Imagick $image) {
 		//Convert to RGB
-		$cs = $image->getImageColorspace();
-
-		if ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK) {
+		if (method_exists($image, 'getImageProfiles') && ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK)) {
 			$profiles = $image->getImageProfiles('*', false);
 
 			if (array_search('icc', $profiles) === false) {

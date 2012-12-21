@@ -126,7 +126,9 @@ class Icon {
 					break;
 			}
 
-			$this->formats[$i]['data_length'] = strlen($this->formats[$i]['data']);
+			if (isset($this->formats[$i]['data'])) {
+				$this->formats[$i]['data_length'] = strlen($this->formats[$i]['data']);
+			}
 		}
 
 		return true;
@@ -293,6 +295,28 @@ class Icon {
 		}
 
 		return $im;
+	}
+
+
+	/**
+	 * Return all icon indexes sorted by quality (best quality first)
+	 *
+	 * @return array The icon indexes
+	 */
+	public function getSortedIndexes () {
+		$indexes = array();
+
+		foreach ($this->formats as $index => $data) {
+			if (empty($data['Width']) || empty($data['BitCount'])) {
+				continue;
+			}
+
+			$indexes[$index] = $data['Width']+$data['BitCount'];
+		}
+
+		arsort($indexes);
+
+		return array_keys($indexes);
 	}
 }
 ?>

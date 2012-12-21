@@ -22,15 +22,12 @@ function autoload ($className) {
 
 spl_autoload_register('autoload');
 
-$Icon = new Icon('http://google.com/favicon.ico');
+$Icon = new Icon('http://open.spotify.com/static/images/favicon.ico');
 
-foreach ($Icon->formats as $index => $data) {
-	if ($data['Width'] >= 16) {
-		$Image = $Icon->get($index);
+$keys = $Icon->getSortedIndexes(); //Get the key of all icons sorted by quality
 
-		header('Content-Type: image/png');
-		imagepng($Image);
-		die();
-	}
-}
+$Image = $Icon->get($keys[0]);
+
+header('Content-Type: image/png');
+imagepng($Image);
 ?>

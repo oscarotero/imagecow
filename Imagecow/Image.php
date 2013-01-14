@@ -9,7 +9,7 @@
  *
  * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
  * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
- * @version 0.4 (2012)
+ * @version 0.4.1 (2012)
  */
 
 namespace Imagecow;
@@ -364,6 +364,10 @@ abstract class Image {
 	 * @return integer  The calculated value
 	 */
 	protected function getSize ($value, $total_size) {
+		if (!$value) {
+			return $total_size;
+		}
+
 		if (substr($value, -1) === '%') {
 			return ($total_size/100) * intval(substr($value, 0, -1));
 		}
@@ -382,7 +386,7 @@ abstract class Image {
 	 * @return boolean  True if the image must be enlarged and false if not.
 	 */
 	protected function enlarge ($new_size, $original_size) {
-		if ($new_size && $new_size > $original_size) {
+		if ($new_size && ($new_size > $original_size)) {
 			return true;
 		}
 

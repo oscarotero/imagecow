@@ -1,5 +1,5 @@
 <?php
-use Imagecow\Utils\Icon;
+use Imagecow\Utils\IconExtractor;
 
 //A simple PSR-0 autoload function
 function autoload ($className) {
@@ -22,7 +22,9 @@ function autoload ($className) {
 
 spl_autoload_register('autoload');
 
-$Icon = new Icon('http://open.spotify.com/static/images/favicon.ico');
+$Icon = new IconExtractor('favicon.ico');
+
+$Icon = new IconExtractor('favicon.ico');
 
 $keys = $Icon->getSortedIndexes(); //Get the key of all icons sorted by quality
 
@@ -30,4 +32,5 @@ $Image = $Icon->get($keys[0]);
 
 header('Content-Type: image/png');
 imagepng($Image);
+
 ?>

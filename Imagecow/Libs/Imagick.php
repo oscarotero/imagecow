@@ -158,9 +158,14 @@ class Imagick extends Image implements InterfaceLibs {
 	public function save ($filename = null) {
 		$filename = $filename ? $filename : $this->image->getImageFilename();
 
-		if ($this->image->writeImage($filename) !== true) {
+		if (!($fp = fopen($filename, 'w'))) {
 			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
+			return $this;
 		}
+
+		$this->image->writeImagesFile($fp);
+
+		fclose($fp);
 
 		return $this;
 	}
@@ -179,6 +184,22 @@ class Imagick extends Image implements InterfaceLibs {
 		if (strtolower($this->image->getImageFormat()) === 'jpeg') {
 			$this->image->setImageCompression(\Imagick::COMPRESSION_JPEG);
 			$this->image->setImageCompressionQuality($this->quality);
+
+			return $this->image->getImageBlob();
+		}
+
+		if (strtolower($this->image->getImageFormat()) === 'gif') {
+			if ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w')) {
+				$this->image->writeImagesFile($fp);
+
+				fclose($fp);
+
+				$string = file_get_contents($file);
+
+				unlink($file);
+
+				return $string;
+			}
 		}
 
 		return $this->image->getImageBlob();
@@ -281,10 +302,20 @@ class Imagick extends Image implements InterfaceLibs {
 			return $this;
 		}
 
-		if ($this->image->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true)) !== true) {
-			$this->setError('There was an error resizing the image', IMAGECOW_ERROR_FUNCTION);
+		if (strtolower($this->image->getImageFormat()) === 'gif') {
+			$this->image = $this->image->coalesceImages();
+
+			foreach ($this->image as $frame) {
+				$frame->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true));
+			}
+
+			$this->image = $this->image->deconstructImages();
 		} else {
-			$this->image->setImagePage(0, 0, 0, 0);
+			if ($this->image->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true)) !== true) {
+				$this->setError('There was an error resizing the image', IMAGECOW_ERROR_FUNCTION);
+			} else {
+				$this->image->setImagePage(0, 0, 0, 0);
+			}
 		}
 
 		return $this;
@@ -316,10 +347,20 @@ class Imagick extends Image implements InterfaceLibs {
 		$x = $this->position($x, $width, $imageWidth);
 		$y = $this->position($y, $height, $imageHeight);
 
-		if ($this->image->cropImage($width, $height, $x, $y) !== true) {
-			$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
+		if (strtolower($this->image->getImageFormat()) === 'gif') {
+			$this->image = $this->image->coalesceImages();
+
+			foreach ($this->image as $frame) {
+				$frame->cropImage($width, $height, $x, $y);
+			}
+
+			$this->image = $this->image->deconstructImages();
 		} else {
-			$this->image->setImagePage(0, 0, 0, 0);
+			if ($this->image->cropImage($width, $height, $x, $y) !== true) {
+				$this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
+			} else {
+				$this->image->setImagePage(0, 0, 0, 0);
+			}
 		}
 
 		return $this;

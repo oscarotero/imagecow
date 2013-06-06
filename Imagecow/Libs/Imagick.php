@@ -181,25 +181,22 @@ class Imagick extends Image implements InterfaceLibs {
 			return '';
 		}
 
+		if ((strtolower($this->image->getImageFormat()) === 'gif')
+		&& ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
+			$this->image->writeImagesFile($fp);
+
+			fclose($fp);
+
+			$string = file_get_contents($file);
+
+			unlink($file);
+
+			return $string;
+		}
+
 		if (strtolower($this->image->getImageFormat()) === 'jpeg') {
 			$this->image->setImageCompression(\Imagick::COMPRESSION_JPEG);
 			$this->image->setImageCompressionQuality($this->quality);
-
-			return $this->image->getImageBlob();
-		}
-
-		if (strtolower($this->image->getImageFormat()) === 'gif') {
-			if ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w')) {
-				$this->image->writeImagesFile($fp);
-
-				fclose($fp);
-
-				$string = file_get_contents($file);
-
-				unlink($file);
-
-				return $string;
-			}
 		}
 
 		return $this->image->getImageBlob();

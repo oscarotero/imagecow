@@ -162,5 +162,5 @@ Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width o
 Maintainers:
 ------------
 
-* @oscarotero (creator)
-* @eusonlito (contributor)
+* oscarotero (creator)
+* eusonlito (contributor)

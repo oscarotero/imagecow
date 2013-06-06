@@ -276,8 +276,8 @@ abstract class Image {
 	 */
 	public function show () {
 		if (($string = $this->getString()) && ($mimetype = $this->getMimeType())) {
-				header('Content-Type: '.$mimetype);
-				die($string);
+			header('Content-Type: '.$mimetype);
+			die($string);
 		}
 	}
 

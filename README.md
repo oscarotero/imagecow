@@ -158,3 +158,9 @@ img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
 ```
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
+
+Maintainers:
+------------
+
+* @oscarotero (creator)
+* @eusonlito (contributor)

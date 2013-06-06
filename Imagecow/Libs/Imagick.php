@@ -9,7 +9,7 @@
  *
  * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
  * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
- * @version 0.4.2 (2012)
+ * @version 0.4.3 (2013)
  */
 
 namespace Imagecow\Libs;
@@ -387,4 +387,3 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 }
-?>

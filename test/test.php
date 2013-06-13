@@ -38,13 +38,12 @@
 		</script>
 
 		<?php
-		$imgs = array(
-			'img-8.png', 
-			'img.png', 
-			'img.gif', 
-			'img-a.gif', 
-			'img.jpg'
-		);
+		$imgs = array();
+
+		foreach (glob(__DIR__.'/pictures/*') as $picture) {
+			$imgs[] = basename($picture);
+		}
+
 		$transforms = array(
 			'resizeCrop,400,200;max-width=400:resize,200',
 			//'resize,0,200',
@@ -60,7 +59,7 @@
 			<?php foreach ($imgs as $img): ?>
 			<li>
 				<?php $src = "img.php?transform=$transform&amp;img=$img"; ?>
-				<p><?php echo '<a href="'.$img.'">'.$img.'</a> /// <a href="'.$src.'">'.$transform.'</a>'; ?></p>
+				<p><?php echo '<a href="pictures/'.$img.'">'.$img.'</a> /// <a href="'.$src.'">'.$transform.'</a>'; ?></p>
 				<img src="<?php echo $src; ?>">
 			</li>
 			<?php endforeach; ?>

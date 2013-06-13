@@ -22,20 +22,14 @@ function autoload ($className) {
 
 spl_autoload_register('autoload');
 
-$Image = Image::create('Imagick');
-$Image->load('conversion.png');
-$Image->format('jpg')->resize(420)->save('conversion2.jpg');
-exit;
-
 $transform = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 
 $Image = Image::create();
 
-$Image->load($_GET['img'])->transform($transform);
+$Image->load(__DIR__.'/pictures/'.$_GET['img'])->transform($transform);
 
 if ($Error = $Image->getError()) {
 	$Error->getImage()->show();
 } else {
 	$Image->show();
 }
-?>

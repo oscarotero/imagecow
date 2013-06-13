@@ -17,6 +17,7 @@ namespace Imagecow\Libs;
 use Imagecow\Image;
 
 class Imagick extends Image implements InterfaceLibs {
+	private $animated = null;
 
 
 	/**
@@ -49,6 +50,7 @@ class Imagick extends Image implements InterfaceLibs {
 			$this->image = null;
 		} else {
 			$this->setImage($imagick);
+			$this->animated = $this->isAnimated();
 		}
 
 		return $this;
@@ -158,14 +160,17 @@ class Imagick extends Image implements InterfaceLibs {
 	public function save ($filename = null) {
 		$filename = $filename ? $filename : $this->image->getImageFilename();
 
-		if (!($fp = fopen($filename, 'w'))) {
-			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
+		$image = $this->getCompressed();
+
+		if ($this->isAnimated() && ($fp = fopen($filename, 'w'))) {
+			$image->writeImagesFile($fp);
+
+			fclose($fp);
+
 			return $this;
 		}
 
-		$this->image->writeImagesFile($fp);
-
-		fclose($fp);
+		$image->writeImage($filename);
 
 		return $this;
 	}
@@ -181,9 +186,10 @@ class Imagick extends Image implements InterfaceLibs {
 			return '';
 		}
 
-		if ((strtolower($this->image->getImageFormat()) === 'gif')
-		&& ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
-			$this->image->writeImagesFile($fp);
+		$image = $this->getCompressed();
+
+		if ($this->isAnimated() && ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
+			$image->writeImagesFile($fp);
 
 			fclose($fp);
 
@@ -194,12 +200,7 @@ class Imagick extends Image implements InterfaceLibs {
 			return $string;
 		}
 
-		if (strtolower($this->image->getImageFormat()) === 'jpeg') {
-			$this->image->setImageCompression(\Imagick::COMPRESSION_JPEG);
-			$this->image->setImageCompressionQuality($this->quality);
-		}
-
-		return $this->image->getImageBlob();
+		return $image->getImageBlob();
 	}
 
 
@@ -299,7 +300,7 @@ class Imagick extends Image implements InterfaceLibs {
 			return $this;
 		}
 
-		if (strtolower($this->image->getImageFormat()) === 'gif') {
+		if ($this->isAnimated()) {
 			$this->image = $this->image->coalesceImages();
 
 			foreach ($this->image as $frame) {
@@ -344,11 +345,12 @@ class Imagick extends Image implements InterfaceLibs {
 		$x = $this->position($x, $width, $imageWidth);
 		$y = $this->position($y, $height, $imageHeight);
 
-		if (strtolower($this->image->getImageFormat()) === 'gif') {
+		if ($this->isAnimated()) {
 			$this->image = $this->image->coalesceImages();
 
 			foreach ($this->image as $frame) {
 				$frame->cropImage($width, $height, $x, $y);
+				$frame->setImagePage(0, 0, 0, 0);
 			}
 
 			$this->image = $this->image->deconstructImages();
@@ -386,5 +388,53 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this;
 	}
+
+	public function isAnimated ()
+	{
+		if (is_bool($this->animated)) {
+			return $this->animated;
+		}
+
+		return ($this->image->getImageIterations() > 0);
+	}
+
+	public function getCompressed ()
+	{
+		$image = $this->image;
+
+		if ($this->isAnimated()) {
+			$image = $image->coalesceImages();
+
+			foreach ($image as $frame) {
+				$frame->stripImage();
+				$frame->setImageUnits(1);
+				$frame->setImageCompressionQuality($this->quality);
+			}
+
+			$image = $image->deconstructImages();
+		} else {
+			$format = strtolower($image->getImageFormat());
+
+			$image->stripImage();
+			$image->setImageUnits(1);
+			$image->setImageCompressionQuality($this->quality);
+
+			switch ($format) {
+				case 'jpeg':
+					$image->setInterlaceScheme(\Imagick::INTERLACE_JPEG);
+					$image->setImageCompression(\Imagick::COMPRESSION_JPEG);
+					break;
+
+				case 'gif':
+					$image->setInterlaceScheme(\Imagick::INTERLACE_GIF);
+					break;
+
+				case 'png':
+					$image->setInterlaceScheme(\Imagick::INTERLACE_PNG);
+					break;
+			}
+		}
+
+		return $image;
+	}
 }
-?>

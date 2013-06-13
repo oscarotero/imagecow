@@ -22,7 +22,7 @@ use Imagecow\ImageException;
 
 abstract class Image {
 	protected $image;
-	protected $quality = 90;
+	protected $quality = 86;
 	protected $Error;
 
 	

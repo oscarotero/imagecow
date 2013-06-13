@@ -22,6 +22,10 @@ function autoload ($className) {
 
 spl_autoload_register('autoload');
 
+$Image = Image::create('Imagick');
+$Image->load('conversion.png');
+$Image->format('jpg')->resize(420)->save('conversion2.jpg');
+exit;
 
 $transform = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 

@@ -162,15 +162,23 @@ class Imagick extends Image implements InterfaceLibs {
 
 		$image = $this->getCompressed();
 
-		if ($this->isAnimated() && ($fp = fopen($filename, 'w'))) {
+		if ($this->isAnimated()) {
+			if (!($fp = fopen($filename, 'w'))) {
+				$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
+
+				return $this;
+			}
+			
 			$image->writeImagesFile($fp);
 
 			fclose($fp);
 
 			return $this;
 		}
-
-		$image->writeImage($filename);
+		
+		if (!$image->writeImage($filename)) {
+			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
+		}
 
 		return $this;
 	}
@@ -188,7 +196,11 @@ class Imagick extends Image implements InterfaceLibs {
 
 		$image = $this->getCompressed();
 
-		if ($this->isAnimated() && ($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
+		if ($this->isAnimated()) {
+			if (!($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
+				$this->setError('Cannot create a temp file to generate the string data image', IMAGECOW_ERROR_LOADING);
+			}
+
 			$image->writeImagesFile($fp);
 
 			fclose($fp);

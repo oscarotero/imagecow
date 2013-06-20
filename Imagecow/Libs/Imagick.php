@@ -19,7 +19,6 @@ use Imagecow\Image;
 class Imagick extends Image implements InterfaceLibs {
 	private $animated = null;
 
-
 	/**
 	 * Constructor of the class
 	 *
@@ -35,7 +34,6 @@ class Imagick extends Image implements InterfaceLibs {
 		}
 	}
 
-
 	/**
 	 * public function load (string $image)
 	 *
@@ -50,13 +48,10 @@ class Imagick extends Image implements InterfaceLibs {
 			$this->image = null;
 		} else {
 			$this->setImage($imagick);
-			$this->animated = $this->isAnimated();
 		}
 
 		return $this;
 	}
-
-
 
 	/**
 	 * Destroy the image loaded
@@ -68,8 +63,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this;
 	}
-
-
 
 	/**
 	 * Returns the filename associated with this image
@@ -83,8 +76,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this->image->getImageFilename();
 	}
-
-
 
 	/**
 	 * Inverts the image vertically
@@ -103,8 +94,6 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 
-
-
 	/**
 	 * Inverts the image horizontally
 	 *
@@ -121,8 +110,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this;
 	}
-
-
 
 	/**
 	 * Sets a new Imagick instance
@@ -148,8 +135,6 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 
-
-
 	/**
 	 * Save the image in a file
 	 *
@@ -159,7 +144,6 @@ class Imagick extends Image implements InterfaceLibs {
 	 */
 	public function save ($filename = null) {
 		$filename = $filename ? $filename : $this->image->getImageFilename();
-
 		$image = $this->getCompressed();
 
 		if ($this->isAnimated()) {
@@ -168,21 +152,20 @@ class Imagick extends Image implements InterfaceLibs {
 
 				return $this;
 			}
-			
+
 			$image->writeImagesFile($fp);
 
 			fclose($fp);
 
 			return $this;
 		}
-		
+
 		if (!$image->writeImage($filename)) {
 			$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
 		}
 
 		return $this;
 	}
-
 
 	/**
 	 * Gets the image data in a string
@@ -215,8 +198,6 @@ class Imagick extends Image implements InterfaceLibs {
 		return $image->getImageBlob();
 	}
 
-
-
 	/**
 	 * Gets the mime-type of the image
 	 *
@@ -238,8 +219,6 @@ class Imagick extends Image implements InterfaceLibs {
 		}
 	}
 
-
-
 	/**
 	 * Gets the width of the image
 	 *
@@ -252,8 +231,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this->image->getImageWidth();
 	}
-
-
 
 	/**
 	 * Gets the height of the image
@@ -268,8 +245,6 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this->image->getImageHeight();
 	}
 
-
-
 	/**
 	 * Converts the image to other format
 	 *
@@ -278,15 +253,23 @@ class Imagick extends Image implements InterfaceLibs {
 	 * @return $this
 	 */
 	public function format ($format) {
-		if (!$this->image || $this->image->setImageFormat($format) !== true) {
+		if (!$this->image) {
+			$this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
+			return $this;
+		}
+
+		if (preg_match('/jpe?g/i', $format)) {
+			$this->image->setImageBackgroundColor($this->background);
+			$this->image = $this->image->flattenImages();
+		}
+
+		if ($this->image->setImageFormat($format) !== true) {
 			$this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
 			return $this;
 		}
 
 		return $this;
 	}
-
-
 
 	/**
 	 * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
@@ -330,8 +313,6 @@ class Imagick extends Image implements InterfaceLibs {
 
 		return $this;
 	}
-
-
 
 	/**
 	 * Crops the image
@@ -377,7 +358,6 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 
-
 	/**
 	 * Rotates the image
 	 *
@@ -407,7 +387,7 @@ class Imagick extends Image implements InterfaceLibs {
 			return $this->animated;
 		}
 
-		return ($this->image->getImageIterations() > 0);
+		return $this->animated = ($this->image->getIteratorIndex() > 0) ? true : false;
 	}
 
 	public function getCompressed ()

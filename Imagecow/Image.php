@@ -21,8 +21,10 @@ define('IMAGECOW_ERROR_INPUT', 3);
 use Imagecow\ImageException;
 
 abstract class Image {
+	public $quality = 86;
+	public $background = 'black';
+
 	protected $image;
-	protected $quality = 86;
 	protected $Error;
 
 	
@@ -202,6 +204,13 @@ abstract class Image {
 	}
 
 
+	public function setQuality ($quality) {
+		$this->quality = (integer)$quality;
+	}
+
+	public function setBackground ($background) {
+		$this->background = $background;
+	}
 
 	/**
 	 * Reads the EXIF data from a JPEG and returns an associative array

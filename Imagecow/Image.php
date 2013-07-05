@@ -341,6 +341,10 @@ abstract class Image {
 	 * @return $this
 	 */
 	public function resizeCrop ($width, $height, $x = 'center', $y = 'middle') {
+		if (!$this->getWidth() || !$this->getHeight()) {
+			return false;
+		}
+
 		$width = $this->getSize($width, $this->getWidth());
 		$height = $this->getSize($height, $this->getHeight());
 

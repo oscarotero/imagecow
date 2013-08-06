@@ -259,7 +259,9 @@ class Imagick extends Image implements InterfaceLibs {
 		}
 
 		if (preg_match('/jpe?g/i', $format)) {
-			$this->image->setImageBackgroundColor($this->background);
+			list($r, $g, $b) = $this->background;
+
+			$this->image->setImageBackgroundColor("rgb($r,$g,$b)");
 			$this->image = $this->image->flattenImages();
 		}
 

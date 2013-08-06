@@ -300,6 +300,16 @@ class Gd extends Image implements InterfaceLibs {
 		switch (strtolower($format)) {
 			case 'jpg':
 			case 'jpeg':
+				$width = $this->getWidth();
+				$height = $this->getHeight();
+
+				$tmp_image = imagecreatetruecolor($width, $height);
+				$background = imagecolorallocate($tmp_image, $this->background[0], $this->background[1], $this->background[2]);
+
+				imagefill($tmp_image, 0, 0, $background);
+				imagecopy($tmp_image, $this->image, 0, 0, 0, 0, $width, $height);
+
+				$this->image = $tmp_image;
 				$this->type = IMAGETYPE_JPEG;
 				break;
 
@@ -402,12 +412,17 @@ class Gd extends Image implements InterfaceLibs {
 		$y = $this->position($y, $height, $imageHeight);
 
 		$tmp_image = imagecreatetruecolor($width, $height);
-		$background = imagecolorallocatealpha($tmp_image, 0, 0, 0, 127);
+
+		if ($this->type === IMAGETYPE_JPEG) {
+			$background = imagecolorallocatealpha($tmp_image, $this->background[0], $this->background[1], $this->background[2], 0);
+		} else {
+			$background = imagecolorallocatealpha($tmp_image, 0, 0, 0, 127);
+		}
 
 		if ($tmp_image === false ||
 			$background === false ||
 			imagefill($tmp_image, 0, 0, $background) === false ||
-			imagealphablending($tmp_image, false) === false || 
+			imagealphablending($tmp_image, false) === false ||
 			imagesavealpha($tmp_image, true) === false ||
 			imagecopyresampled($tmp_image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false)
 		{

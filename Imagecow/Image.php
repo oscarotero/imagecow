@@ -22,7 +22,7 @@ use Imagecow\ImageException;
 
 abstract class Image {
 	public $quality = 86;
-	public $background = 'black';
+	public $background = array(255,255,255);
 
 	protected $image;
 	protected $Error;
@@ -208,7 +208,13 @@ abstract class Image {
 		$this->quality = (integer)$quality;
 	}
 
-	public function setBackground ($background) {
+
+	/**
+	 * Set a default background color used to fill in some transformation functions
+	 * 
+	 * @param array $background The color in rgb, for example: array(0,127,34)
+	 */
+	public function setBackground (array $background) {
 		$this->background = $background;
 	}
 

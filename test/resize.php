@@ -13,6 +13,8 @@ foreach (glob(__DIR__.'/pictures/*') as $picture) {
 
 	$Image = Image::create('Imagick');
 
+	$Image->setBackground('white');
+
 	$Image->load($picture);
 	$Image->resize(250)->save(preg_replace('/\.([a-z]{2,4})$/', '-resize-imagick.$1', $picture));
 
@@ -22,7 +24,12 @@ foreach (glob(__DIR__.'/pictures/*') as $picture) {
 	$Image->load($picture);
 	$Image->resizeCrop(250, 200)->save(preg_replace('/\.([a-z]{2,4})$/', '-resize-crop-imagick.$1', $picture));
 
+	$Image->load($picture);
+	$Image->format('jpeg')->save(preg_replace('/\.([a-z]{2,4})$/', '-jpeg-imagick.jpg', $picture));
+
 	$Image = Image::create('Gd');
+
+	$Image->setBackground('white');
 
 	$Image->load($picture);
 	$Image->resize(250)->save(preg_replace('/\.([a-z]{2,4})$/', '-resize-gd.$1', $picture));
@@ -32,4 +39,7 @@ foreach (glob(__DIR__.'/pictures/*') as $picture) {
 
 	$Image->load($picture);
 	$Image->resizeCrop(250, 200)->save(preg_replace('/\.([a-z]{2,4})$/', '-resize-crop-gd.$1', $picture));
+
+	$Image->load($picture);
+	$Image->format('jpeg')->save(preg_replace('/\.([a-z]{2,4})$/', '-jpeg-gd.jpg', $picture));
 }

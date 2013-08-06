@@ -401,8 +401,13 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 
-	public function isAnimated ()
-	{
+
+	/**
+	 * Check if the image is animated (GIF) or not.
+	 * 
+	 * @return boolean
+	 */
+	public function isAnimated () {
 		if (is_bool($this->animated)) {
 			return $this->animated;
 		}
@@ -410,8 +415,13 @@ class Imagick extends Image implements InterfaceLibs {
 		return ($this->image->getImageIterations() > 0);
 	}
 
-	public function getCompressed ()
-	{
+
+	/**
+	 * Returns a copy of the image compressed and ready to save or print
+	 * 
+	 * @return Imagick The instance of the image
+	 */
+	public function getCompressed () {
 		$image = $this->image;
 
 		if ($this->isAnimated()) {

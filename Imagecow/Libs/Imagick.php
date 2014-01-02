@@ -258,7 +258,9 @@ class Imagick extends Image implements InterfaceLibs {
 		}
 
 		if (preg_match('/jpe?g/i', $format)) {
-			$this->image->setImageBackgroundColor($this->background);
+			list($r, $g, $b) = $this->background;
+
+			$this->image->setImageBackgroundColor("rgb($r,$g,$b)");
 			$this->image = $this->image->flattenImages();
 		}
 
@@ -381,8 +383,12 @@ class Imagick extends Image implements InterfaceLibs {
 	}
 
 
-	public function getCompressed ()
-	{
+	/**
+	 * Returns a copy of the image compressed and ready to save or print
+	 * 
+	 * @return Imagick The instance of the image
+	 */
+	public function getCompressed () {
 		$image = $this->image;
 
 		if ($this->isAnimatedGif()) {

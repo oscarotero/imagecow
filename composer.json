@@ -2,7 +2,6 @@
 	"name": "imagecow/imagecow",
 	"type": "library",
 	"description": "PHP library to manipulate and generate responsive images",
-	"version": "0.4.0",
 	"keywords": ["image"],
 	"homepage": "https://github.com/oscarotero/imageCow/",
 	"license": "AGPL-3.0",

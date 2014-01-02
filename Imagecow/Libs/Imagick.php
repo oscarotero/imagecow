@@ -17,7 +17,6 @@ namespace Imagecow\Libs;
 use Imagecow\Image;
 
 class Imagick extends Image implements InterfaceLibs {
-	private $animated = null;
 
 	/**
 	 * Constructor of the class
@@ -146,7 +145,7 @@ class Imagick extends Image implements InterfaceLibs {
 		$filename = $filename ? $filename : $this->image->getImageFilename();
 		$image = $this->getCompressed();
 
-		if ($this->isAnimated()) {
+		if ($this->isAnimatedGif()) {
 			if (!($fp = fopen($filename, 'w'))) {
 				$this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
 
@@ -179,7 +178,7 @@ class Imagick extends Image implements InterfaceLibs {
 
 		$image = $this->getCompressed();
 
-		if ($this->isAnimated()) {
+		if ($this->isAnimatedGif()) {
 			if (!($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
 				$this->setError('Cannot create a temp file to generate the string data image', IMAGECOW_ERROR_LOADING);
 			}
@@ -295,7 +294,7 @@ class Imagick extends Image implements InterfaceLibs {
 			return $this;
 		}
 
-		if ($this->isAnimated()) {
+		if ($this->isAnimatedGif()) {
 			$this->image = $this->image->coalesceImages();
 
 			foreach ($this->image as $frame) {
@@ -338,7 +337,7 @@ class Imagick extends Image implements InterfaceLibs {
 		$x = $this->position($x, $width, $imageWidth);
 		$y = $this->position($y, $height, $imageHeight);
 
-		if ($this->isAnimated()) {
+		if ($this->isAnimatedGif()) {
 			$this->image = $this->image->coalesceImages();
 
 			foreach ($this->image as $frame) {
@@ -381,20 +380,12 @@ class Imagick extends Image implements InterfaceLibs {
 		return $this;
 	}
 
-	public function isAnimated ()
-	{
-		if (is_bool($this->animated)) {
-			return $this->animated;
-		}
-
-		return $this->animated = ($this->image->getIteratorIndex() > 0) ? true : false;
-	}
 
 	public function getCompressed ()
 	{
 		$image = $this->image;
 
-		if ($this->isAnimated()) {
+		if ($this->isAnimatedGif()) {
 			$image = $image->coalesceImages();
 
 			foreach ($image as $frame) {

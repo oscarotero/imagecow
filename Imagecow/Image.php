@@ -25,6 +25,7 @@ abstract class Image {
 	public $background = 'black';
 
 	protected $image;
+	protected $animatedGif;
 	protected $Error;
 
 	
@@ -244,6 +245,42 @@ abstract class Image {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Check if the image is an animated gif
+	 *
+	 * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
+	 *
+	 * @return bool
+	 */
+	public function isAnimatedGif () {
+		if (is_bool($this->animatedGif)) {
+			return $this->animatedGif;
+		}
+
+		if ($this->getMimeType() !== 'image/gif') {
+			return $this->animatedGif = false;
+		}
+
+		$filename = $this->getFilename();
+
+		if (!($fh = @fopen($filename, 'rb'))) {
+			return false;
+		}
+
+		$count = 0;
+
+		while (!feof($fh) && $count < 2) {
+			$chunk = fread($fh, 1024 * 100); //read 100kb at a time
+			$count += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
+		}
+
+		fclose($fh);
+
+		$this->animatedGif = ($count > 1);
+
+		return $this->animatedGif;
 	}
 
 

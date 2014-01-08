@@ -48,6 +48,14 @@ class Gd extends Image implements InterfaceLibs {
 	public function load ($image) {
 		$this->image = $this->filename = $this->type = null;
 
+		if (is_resource($image)) {
+			return $this->setImage($image);
+		} else if ( ! ctype_print($image)) { // check if it's a binary string
+			$image = @imagecreatefromstring($image);
+
+			return $this->setImage($image);
+		}
+
 		if (is_file($image) && ($data = @getImageSize($image))) {
 			$function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
 

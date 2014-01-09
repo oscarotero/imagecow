@@ -3,17 +3,15 @@ Imagecow
 
 Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
-GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
-
 What is Imagecow?
 -----------------
 
-It's a php library to manipulate images to web. It's based in the image library of phpCan framework (http://idc.anavallasuiza.com)
+It's a php library to manipulate images to web.
 
 * Written in PHP 5.3
 * Use GD2 or Imagick libraries (and can be extended with more)
 * Has an optional client-side javascript to generate responsive images
-* Very simple and easy to use.
+* Very simple and easy to use. There is not a lot of features, just only the basics: crop, resize, resizeCrop, etc.
 * Use the PSR-0 autoloader standard
 
 
@@ -105,6 +103,10 @@ $image->setImage(); //Sets manually a new image resource or Imagik instance
 
 $image->setError('message'); //Sets an error manually
 $image->getError(); //Returns an ImageException instance in case of error
+
+$image->setBackground(array(255, 255, 255)); //Set a default background used in some transformations (for example, convert a transparent png to jpg)
+$image->getExifData();
+$image->setCompressionQuality(80); //Define the image compression quality for jpg images
 ```
 
 

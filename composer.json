@@ -4,7 +4,7 @@
 	"description": "PHP library to manipulate and generate responsive images",
 	"keywords": ["image"],
 	"homepage": "https://github.com/oscarotero/imageCow/",
-	"license": "AGPL-3.0",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Oscar Otero",

@@ -205,11 +205,6 @@ abstract class Image {
 	}
 
 
-	public function setQuality ($quality) {
-		$this->quality = (integer)$quality;
-	}
-
-
 	/**
 	 * Set a default background color used to fill in some transformation functions
 	 * 

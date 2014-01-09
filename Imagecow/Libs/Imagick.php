@@ -43,7 +43,7 @@ class Imagick extends Image implements InterfaceLibs {
 		$imagick = new \Imagick();
 
 		if ( ! ctype_print($image)) { // check if it's a binary string
-			$imagick->readImageBlob($image)
+			$imagick->readImageBlob($image);
 		}
 		elseif ($imagick->readImage($image) !== true) {
 			$this->setError('The image file "'.$image.'" cannot be loaded', IMAGECOW_ERROR_LOADING);

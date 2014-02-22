@@ -367,9 +367,9 @@ class Gd extends Image implements InterfaceLibs {
 		}
 
 		if ($width != 0 && ($height === 0 || ($imageWidth/$width) > ($imageHeight/$height))) {
-			$height = floor(($width/$imageWidth) * $imageHeight);
+			$height = ceil(($width/$imageWidth) * $imageHeight);
 		} else {
-			$width = floor(($height/$imageHeight) * $imageWidth);
+			$width = ceil(($height/$imageHeight) * $imageWidth);
 		}
 
 		if ($imageWidth === $width && $imageHeight === $height) {

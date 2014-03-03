@@ -217,12 +217,18 @@ abstract class Image {
 	/**
 	 * Reads the EXIF data from a JPEG and returns an associative array
 	 *
-	 * @return array The data where the array indexes are the header names and array values the associated values. Returns false on error
+	 * @return array The data where the array indexes are the header names and array values the associated values.
 	 */
-	public function getExifData () {
+	public function getExifData ($key = null) {
 		$filename = $this->getFilename();
 
-		return isset($filename) ? exif_read_data($filename) : false;
+		$exif = isset($filename) ? exif_read_data($filename) : null;
+
+		if ($key !== null) {
+			return isset($exif[$key]) ? $exif[$key] : null;
+		}
+
+		return $exif;
 	}
 
 
@@ -400,6 +406,56 @@ abstract class Image {
 		}
 
 		$this->crop($width, $height, $x, $y);
+
+		return $this;
+	}
+
+
+	/**
+	 * Auto-rotate the image according with its exif data
+	 * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964
+	 *
+	 * @return $this
+	 */
+	public function autoRotate () {
+		$orientation = $this->getExifData('Orientation');
+
+		if (!$orientation) {
+			return $this;
+		}
+
+		switch ($orientation) {
+			case 1:
+				break;
+
+			case 2:
+				$this->flop();
+				break;
+
+			case 3:
+				$this->rotate(180);
+				break;
+
+			case 4:
+				$this->flip();
+				break;
+
+			case 5:
+				$this->flip()->rotate(-90);
+				break;
+
+			case 6:
+				$this->rotate(-90);
+				break;
+
+			case 7:
+				$this->flop()->rotate(-90);
+				break;
+
+			case 8:
+				$this->rotateImage($public, 90);
+				break;
+		}
 
 		return $this;
 	}

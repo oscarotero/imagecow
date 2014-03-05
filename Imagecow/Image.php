@@ -222,13 +222,20 @@ abstract class Image {
 	public function getExifData ($key = null) {
 		$filename = $this->getFilename();
 
-		$exif = isset($filename) ? exif_read_data($filename) : null;
+		if (function_exists('exif_read_data') and $this->getMimeType() == 'image/jpeg')
+		{
+			$exif = isset($filename) ? exif_read_data($filename) : null;
 
-		if ($key !== null) {
-			return isset($exif[$key]) ? $exif[$key] : null;
+			if ($key !== null) {
+				return isset($exif[$key]) ? $exif[$key] : null;
+			}
+
+			return $exif;
 		}
-
-		return $exif;
+		else
+		{
+			return null;
+		}
 	}
 
 

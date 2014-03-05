@@ -378,7 +378,7 @@ class Imagick extends Image implements InterfaceLibs {
 			return $this;
 		}
 
-		if ($this->image->rotateImage(new ImagickPixel(), $angle) !== true) {
+		if ($this->image->rotateImage(new \ImagickPixel, $angle) !== true) {
 			$this->setError('There was an error rotating the image', IMAGECOW_ERROR_FUNCTION);
 		} else {
 			$this->image->setImagePage(0, 0, 0, 0);

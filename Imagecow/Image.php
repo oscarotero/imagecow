@@ -427,7 +427,7 @@ abstract class Image {
 	public function autoRotate () {
 		$orientation = $this->getExifData('Orientation');
 
-		if (!$orientation) {
+		if ( ! $orientation) {
 			return $this;
 		}
 
@@ -452,7 +452,7 @@ abstract class Image {
 				break;
 
 			case 6:
-				$this->rotate(-90);
+				$this->rotate(90);
 				break;
 
 			case 7:

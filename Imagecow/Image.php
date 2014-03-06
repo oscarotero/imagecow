@@ -22,6 +22,7 @@ abstract class Image
     protected $animatedGif;
     protected $Error;
 
+
     /**
      * Static function to create a new Imagecow instance
      *
@@ -45,7 +46,6 @@ abstract class Image
 
         throw new \Exception('The image library is not valid');
     }
-
 
 
     /**
@@ -152,7 +152,6 @@ abstract class Image
     }
 
 
-
     /**
      * Gets the error in a ImageException instance
      *
@@ -162,7 +161,6 @@ abstract class Image
     {
         return $this->Error;
     }
-
 
 
     /**
@@ -218,6 +216,7 @@ abstract class Image
         return $this;
     }
 
+
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
      *
@@ -241,7 +240,6 @@ abstract class Image
     }
 
 
-
     /**
      * Transform the image executing various operations of crop, resize, resizeCrop and format
      *
@@ -263,6 +261,7 @@ abstract class Image
 
         return $this;
     }
+
 
     /**
      * Check if the image is an animated gif
@@ -302,7 +301,6 @@ abstract class Image
     }
 
 
-
     /**
      * Converts a string with operations in an array
      *
@@ -335,7 +333,6 @@ abstract class Image
     }
 
 
-
     /**
      * Send the HTTP header with the content-type, output the image data and die.
      */
@@ -346,7 +343,6 @@ abstract class Image
             die($string);
         }
     }
-
 
 
     /**
@@ -477,7 +473,6 @@ abstract class Image
     }
 
 
-
     /**
      * Get the size of the image.
      *
@@ -498,6 +493,7 @@ abstract class Image
 
         return intval($value);
     }
+
 
     /**
      * Check if the image must be enlarged or not (if the new dimmensions are bigger than original)

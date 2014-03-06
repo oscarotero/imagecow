@@ -29,6 +29,7 @@ class IconExtractor
 {
     public $images = array();
 
+
     /**
      * The constructor loads an ICO file and save all images in $this->images property
      *
@@ -48,6 +49,7 @@ class IconExtractor
             fclose($filePointer);
         }
     }
+
 
     /**
      * Return all icon indexes sorted by quality (best quality first)
@@ -74,6 +76,7 @@ class IconExtractor
         return array_keys($indexes);
     }
 
+
     /**
      * Return an image resource with the icon stored on the $index position of the ICO file
      *
@@ -87,6 +90,7 @@ class IconExtractor
     }
 }
 
+
 /**
  * Class to manage each icon image
  */
@@ -96,6 +100,7 @@ class IconImage
     private $header = '';
     private $headerIconFormat = '';
     private $imageIconFormat = '';
+
 
     /**
      * Read a image from an ico file
@@ -145,6 +150,7 @@ class IconImage
         }
     }
 
+
     /**
      * Returns the headers of the icon image
      *
@@ -155,6 +161,7 @@ class IconImage
         return $this->header;
     }
 
+
     /**
      * Returns the entries of the icon image
      *
@@ -164,6 +171,7 @@ class IconImage
     {
         return $this->entry;
     }
+
 
     /**
      * Return an image resource with the icon image

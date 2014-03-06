@@ -14,6 +14,7 @@ class Gd extends Image implements InterfaceLibs
     protected $type;
     protected $filename;
 
+
     /**
      * Constructor of the class
      *
@@ -29,6 +30,7 @@ class Gd extends Image implements InterfaceLibs
             }
         }
     }
+
 
     /**
      * Load an image file
@@ -63,7 +65,6 @@ class Gd extends Image implements InterfaceLibs
     }
 
 
-
     /**
      * Destroy the image loaded
      *
@@ -77,7 +78,6 @@ class Gd extends Image implements InterfaceLibs
 
         return $this;
     }
-
 
 
     /**
@@ -123,7 +123,6 @@ class Gd extends Image implements InterfaceLibs
     }
 
 
-
     /**
      * Inverts the image horizontally
      *
@@ -156,7 +155,6 @@ class Gd extends Image implements InterfaceLibs
     }
 
 
-
     /**
      * Sets a new GD resource
      *
@@ -183,7 +181,6 @@ class Gd extends Image implements InterfaceLibs
 
         return $this;
     }
-
 
 
     /**
@@ -220,6 +217,7 @@ class Gd extends Image implements InterfaceLibs
         return $this;
     }
 
+
     /**
      * Gets the image data in a string
      *
@@ -252,6 +250,7 @@ class Gd extends Image implements InterfaceLibs
         return ob_get_clean();
     }
 
+
     /**
      * Gets the mime-type of the image
      *
@@ -265,6 +264,7 @@ class Gd extends Image implements InterfaceLibs
 
         return image_type_to_mime_type($this->type);
     }
+
 
     /**
      * Gets the width of the image
@@ -280,6 +280,7 @@ class Gd extends Image implements InterfaceLibs
         return imagesx($this->image);
     }
 
+
     /**
      * Gets the height of the image
      *
@@ -293,6 +294,7 @@ class Gd extends Image implements InterfaceLibs
 
         return imagesy($this->image);
     }
+
 
     /**
      * Converts the image to other format
@@ -333,6 +335,7 @@ class Gd extends Image implements InterfaceLibs
 
         return $this;
     }
+
 
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
@@ -390,6 +393,7 @@ class Gd extends Image implements InterfaceLibs
         return $this;
     }
 
+
     /**
      * Crops the image
      *
@@ -439,6 +443,7 @@ class Gd extends Image implements InterfaceLibs
 
         return $this;
     }
+
 
     /**
      * Rotates the image

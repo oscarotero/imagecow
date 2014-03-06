@@ -11,6 +11,7 @@ namespace Imagecow\Libs;
 
 interface InterfaceLibs
 {
+
     /**
      * Load an image file
      *
@@ -20,12 +21,14 @@ interface InterfaceLibs
      */
     public function load ($image);
 
+
     /**
      * Destroy the image loaded
      *
      * @return $this
      */
     public function unload ();
+
 
     /**
      * Save the image in a file

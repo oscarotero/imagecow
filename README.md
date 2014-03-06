@@ -63,6 +63,13 @@ $Image->resize(800); //Resizes the image to 800px width and calculates the heigh
 $Image->resizeCrop(200, 300); //Resizes and crops the image to this size.
 ```
 
+#### Rotate
+
+```php
+$Image->rotate(90); //Rotates the image 90 degrees
+$Image->autoRotate(); //Rotates the image according its EXIF data.
+```
+
 #### Convert the image to other formats:
 
 ```php

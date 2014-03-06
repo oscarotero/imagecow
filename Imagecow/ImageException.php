@@ -5,9 +5,6 @@
  * Exception class to manage the image errors
  *
  * PHP version 5.3
- *
- * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
- * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace Imagecow;

@@ -2,22 +2,23 @@
 use Imagecow\Utils\IconExtractor;
 
 //A simple PSR-0 autoload function
-function autoload ($className) {
-	$className = ltrim($className, '\\');
-	$fileName = dirname(__DIR__).'/';
-	$namespace = '';
-	
-	if ($lastNsPos = strripos($className, '\\')) {
-		$namespace = substr($className, 0, $lastNsPos);
-		$className = substr($className, $lastNsPos + 1);
-		$fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-	}
+function autoload($className)
+{
+    $className = ltrim($className, '\\');
+    $fileName = dirname(__DIR__).'/';
+    $namespace = '';
 
-	$fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+    if ($lastNsPos = strripos($className, '\\')) {
+        $namespace = substr($className, 0, $lastNsPos);
+        $className = substr($className, $lastNsPos + 1);
+        $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+    }
 
-	if (is_file($fileName)) {
-		require $fileName;
-	}
+    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+    if (is_file($fileName)) {
+        require $fileName;
+    }
 }
 
 spl_autoload_register('autoload');
@@ -32,5 +33,3 @@ $Image = $Icon->get($keys[0]);
 
 header('Content-Type: image/png');
 imagepng($Image);
-
-?>

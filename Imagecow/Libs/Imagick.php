@@ -2,14 +2,10 @@
 /**
  * Imagecow PHP library
  *
- * Imagick library
- * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
- *
  * PHP version 5.3
  *
  * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
  * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
- * @version 0.4.3 (2013)
  */
 
 namespace Imagecow\Libs;

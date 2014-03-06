@@ -3,13 +3,11 @@
  * Imagecow PHP library
  *
  * Abstract core class extended by one of the available libraries (GD, Imagick)
- * Original code from phpCan Image class (http://idc.anavallasuiza.com/)
  *
  * PHP version 5.3
  *
  * @author Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
  * @license GNU Affero GPL version 3. http://www.gnu.org/licenses/agpl-3.0.html
- * @version 0.4.2 (2013)
  */
 
 namespace Imagecow;
@@ -209,9 +207,13 @@ abstract class Image {
 	 * Set a default background color used to fill in some transformation functions
 	 * 
 	 * @param array $background The color in rgb, for example: array(0,127,34)
+	 *
+	 * @return $this
 	 */
 	public function setBackground (array $background) {
 		$this->background = $background;
+
+		return $this;
 	}
 
 	/**

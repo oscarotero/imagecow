@@ -21,7 +21,7 @@ How use it?
 Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose):
 
 ```php
-$GDimage = new Imagecow\Libs\Gd();
+$image = new Imagecow\Libs\Gd();
 ```
 
 Or you can also use the static function Imagecow\Image::create() to returns an instance:
@@ -29,51 +29,57 @@ Or you can also use the static function Imagecow\Image::create() to returns an i
 ```php
 use Imagecow\Image;
 
-$MyImagickImage = Image::create('Imagick'); //Returns an instance using the Imagick library
+$image = Image::create('Imagick'); //Returns an instance using the Imagick library
 
-$MyImage = Image::create(); //Detects automatically the library to use (in order of preference: Imagick, GD2)
+$image = Image::create(); //Detects automatically the library to use (in order of preference: Imagick, Gd)
 ```
 
 #### Load an image file:
 
 ```php
-$MyImage->load('picture.jpg');
+$image->load('picture.jpg');
 ```
 
 #### Crop the image
 
 ```php
-$Image->crop(200, 300); //Crops the image to 200x300px
-$Image->crop(200, 300, 'left', 'top'); //Crops the image to 200x300px starting from left-top
-$Image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 20px (x) / 50% (y)
-$Image->crop(50%, 50%); //Crops the image to half size
+//Arguments: ($width, $height, $x = 'center', $y = 'middle');
+
+$image->crop(200, 300); //Crops the image to 200x300px
+$image->crop(200, 300, 'left', 'top'); //Crops the image to 200x300px starting from left-top
+$image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 20px (x) / 50% (y)
+$image->crop('50%', '50%'); //Crops the image to half size
 ```
 
 #### Resize the image
 
 ```php
-$Image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
-$Image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
-$Image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
+//Arguments: ($width, $height = 0, $enlarge = false)
+
+$image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
+$image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
+$image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
 ```
 
 #### Resize and Crop the image
 
 ```php
-$Image->resizeCrop(200, 300); //Resizes and crops the image to this size.
+//Arguments: ($width, $height, $x = 'center', $y = 'middle')
+
+$image->resizeCrop(200, 300); //Resizes and crops the image to this size.
 ```
 
 #### Rotate
 
 ```php
-$Image->rotate(90); //Rotates the image 90 degrees
-$Image->autoRotate(); //Rotates the image according its EXIF data.
+$image->rotate(90); //Rotates the image 90 degrees
+$image->autoRotate(); //Rotates the image according its EXIF data.
 ```
 
 #### Convert the image to other formats:
 
 ```php
-$Image->format('png');
+$image->format('png');
 ```
 
 #### Save the image to a file
@@ -146,9 +152,9 @@ use Imagecow\Image;
 
 $operations = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 
-$Image = Image::create();
+$image = Image::create();
 
-$Image->load($_GET['img'])->transform($operations)->show();
+$image->load($_GET['img'])->transform($operations)->show();
 ```
 
 Now you can transform the image according with the client dimmensions. The available options are:

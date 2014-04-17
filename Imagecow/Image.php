@@ -348,7 +348,7 @@ abstract class Image
     /**
      * Calculates the point position according with the image dimmensions.
      *
-     * @param string/int $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
+     * @param string|int $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
      * @param number     $size     The size of the new cropped/resized image.
      * @param number     $canvas   The size of the old image
      *
@@ -387,10 +387,10 @@ abstract class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param int/string $width  The new width in number (pixels) or percentaje
-     * @param int/string $height The new height in number (pixels) or percentaje
-     * @param int/string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int/string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param int|string $width  The new width in number (pixels) or percentaje
+     * @param int|string $height The new height in number (pixels) or percentaje
+     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return $this
      */
@@ -476,7 +476,7 @@ abstract class Image
     /**
      * Get the size of the image.
      *
-     * @param string/int $value      The size in numbers (pixels) or percentaje.
+     * @param string|int $value      The size in numbers (pixels) or percentaje.
      * @param int        $total_size The total size of the image (used to calculate the percentaje)
      *
      * @return integer The calculated value

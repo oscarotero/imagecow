@@ -18,7 +18,7 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Constructor of the class
      *
-     * @param string/resource $image The string with the filename to load or the Gd resource.
+     * @param string|resource $image The string with the filename to load or the Gd resource.
      */
     public function __construct($image = null)
     {
@@ -340,8 +340,8 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
      *
-     * @param int/string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param int/string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
      * @param boolean    $enlarge True if the new image can be bigger (false by default)
      *
      * @return $this
@@ -397,10 +397,10 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Crops the image
      *
-     * @param int/string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param int/string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param int/string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int/string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return $this
      */

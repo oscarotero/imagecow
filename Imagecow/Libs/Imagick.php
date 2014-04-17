@@ -15,7 +15,7 @@ class Imagick extends Image implements InterfaceLibs
     /**
      * Constructor of the class
      *
-     * @param string/Imagick $image The string with the filename to load or the Imagick instance
+     * @param string|\Imagick $image The string with the filename to load or the Imagick instance
      */
     public function __construct($image = null)
     {
@@ -123,7 +123,7 @@ class Imagick extends Image implements InterfaceLibs
     /**
      * Sets a new Imagick instance
      *
-     * @param Imagick $image The new Imagick instance
+     * @param \Imagick $image The new Imagick instance
      *
      * @return $this
      */
@@ -301,8 +301,8 @@ class Imagick extends Image implements InterfaceLibs
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
      *
-     * @param int/string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param int/string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
      * @param boolean    $enlarge True if the new image can be bigger (false by default)
      *
      * @return $this
@@ -346,10 +346,10 @@ class Imagick extends Image implements InterfaceLibs
     /**
      * Crops the image
      *
-     * @param int/string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param int/string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param int/string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int/string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return $this
      */
@@ -417,7 +417,7 @@ class Imagick extends Image implements InterfaceLibs
     /**
      * Returns a copy of the image compressed and ready to save or print
      *
-     * @return Imagick The instance of the image
+     * @return \Imagick The instance of the image
      */
     public function getCompressed()
     {

@@ -83,7 +83,7 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Returns the filename associated with this image
      *
-     * @return string The filename. Returns null if no filename is associated (no image loaded or loaded from a string)
+     * @return null|string The filename. Returns null if no filename is associated (no image loaded or loaded from a string)
      */
     public function getFilename()
     {
@@ -98,12 +98,9 @@ class Gd extends Image implements InterfaceLibs
      */
     public function flip()
     {
-        if (!$this->image) {
+        if (!($width = $this->getWidth()) || !($height = $this->getHeight())) {
             return $this;
         }
-
-        $width = $this->getWidth();
-        $height = $this->getHeight();
 
         $tmp_image = imagecreatetruecolor($width, $height);
 
@@ -130,12 +127,9 @@ class Gd extends Image implements InterfaceLibs
      */
     public function flop()
     {
-        if (!$this->image) {
+        if (!($width = $this->getWidth()) || !($height = $this->getHeight())) {
             return $this;
         }
-
-        $width = $this->getWidth();
-        $height = $this->getHeight();
 
         $tmp_image = imagecreatetruecolor($width, $height);
 
@@ -158,9 +152,9 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Sets a new GD resource
      *
-     * @param resource $image    The GD resource
-     * @param string   $filename The original filename of the resource
-     * @param int      $type     The image type. By default is IMAGETYPE_PNG
+     * @param resource     $image    The GD resource
+     * @param null|string  $filename The original filename of the resource
+     * @param null|integer $type     The image type. By default is IMAGETYPE_PNG
      *
      * @return $this
      */
@@ -186,7 +180,7 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Save the image in a file
      *
-     * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
+     * @param null|string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
      *
      * @return $this
      */
@@ -254,7 +248,7 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Gets the mime-type of the image
      *
-     * @return string The mime-type
+     * @return false|string The mime-type
      */
     public function getMimeType()
     {
@@ -274,7 +268,7 @@ class Gd extends Image implements InterfaceLibs
     public function getWidth()
     {
         if (!$this->image) {
-            return false;
+            return 0;
         }
 
         return imagesx($this->image);
@@ -289,7 +283,7 @@ class Gd extends Image implements InterfaceLibs
     public function getHeight()
     {
         if (!$this->image) {
-            return false;
+            return 0;
         }
 
         return imagesy($this->image);
@@ -305,6 +299,10 @@ class Gd extends Image implements InterfaceLibs
      */
     public function format($format)
     {
+        if (!$this->image) {
+            return $this;
+        }
+
         switch (strtolower($format)) {
             case 'jpg':
             case 'jpeg':
@@ -406,12 +404,9 @@ class Gd extends Image implements InterfaceLibs
      */
     public function crop($width, $height, $x = 'center', $y = 'middle')
     {
-        if (!$this->image) {
+        if (!($imageWidth = $this->getWidth()) && !($imageHeight = $this->getHeight()))
             return $this;
         }
-
-        $imageWidth = $this->getWidth();
-        $imageHeight = $this->getHeight();
 
         $width = $this->getSize($width, $imageWidth);
         $height = $this->getSize($height, $imageHeight);
@@ -448,7 +443,7 @@ class Gd extends Image implements InterfaceLibs
     /**
      * Rotates the image
      *
-     * @param int $angle Rotation angle in degrees (anticlockwise)
+     * @param integer $angle Rotation angle in degrees (anticlockwise)
      *
      * @return $this
      */

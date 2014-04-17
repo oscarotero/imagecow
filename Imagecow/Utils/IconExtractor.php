@@ -195,10 +195,9 @@ class IconImage
             imagealphablending($newImage, false);
             $readPosition = 0;
             $palette = array();
+            $ignoreAlpha = false;
 
             if ($this->header['BitCount'] < 24) {
-                $colorsInPalette = $this->header['ColorsUsed']?$this->header['ColorsUsed']:$this->entry['ColorCount'];
-
                 for ($t = 0; $t < pow(2, $this->header['BitCount']); $t++) {
                     $blue = ord($this->imageIconFormat[$readPosition++]);
                     $green = ord($this->imageIconFormat[$readPosition++]);
@@ -308,7 +307,6 @@ class IconImage
 
                         if (is_null($color)) {
                             $byte = ord($this->imageIconFormat[$readPosition++]);
-                            $tmp_color = 0;
 
                             for ($t = 7; $t >= 0; $t--) {
                                 $bit_value = pow(2, $t);

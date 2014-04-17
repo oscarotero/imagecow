@@ -465,7 +465,7 @@ abstract class Image
                 break;
 
             case 8:
-                $this->rotateImage($public, 90);
+                $this->rotate(90);
                 break;
         }
 

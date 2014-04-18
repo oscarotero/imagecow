@@ -28,6 +28,6 @@ class ImageException extends \Exception
             imagestring($image, 5, 10, (($line + 1) * 18), $text, $textColor);
         }
 
-        return new Image($image);
+        return new Image(new Libs\Gd($image));
     }
 }

@@ -9,15 +9,10 @@
 
 namespace Imagecow;
 
-define('IMAGECOW_ERROR_LOADING', 1);
-define('IMAGECOW_ERROR_FUNCTION', 2);
-define('IMAGECOW_ERROR_INPUT', 3);
-
 class Image
 {
     protected $image;
     protected $filename;
-    protected $error;
 
 
     /**
@@ -51,87 +46,87 @@ class Image
      *
      * @return string The operations that matches with the client properties.
      */
-    public static function getResponsiveOperations($client_properties, $operations = '')
+    public static function getResponsiveOperations($client_properties, $operations)
     {
-        if (!$operations) {
-            return '';
-        }
+        list($width, $height, $speed) = explode(',', $client_properties);
 
-        $client = array();
-
-        foreach (explode('|', str_replace(' ', '', $client_properties)) as $client_properties) {
-            $client_properties = explode(',', $client_properties);
-            $client[array_shift($client_properties)] = $client_properties;
-        }
-
-        $width = isset($client['dimensions'][0]) ? intval($client['dimensions'][0]) : null;
-        $height = isset($client['dimensions'][1]) ? intval($client['dimensions'][1]) : null;
-
+        $width = intval($width);
+        $height = intval($height);
         $transform = array();
 
         foreach (explode(';', str_replace(' ', '', $operations)) as $operation) {
-            if (empty($operation)) {
-                continue;
-            }
-
-            if (strpos($operation, ':') === false) {
-                $transform[] = $operation;
-                continue;
-            }
-
-            if (!isset($width) || !isset($height)) {
-                continue;
-            }
-
-            list($rules, $operation) = explode(':', $operation, 2);
-
-            foreach (explode(',', $rules) as $rule) {
-                $rule = explode('=', $rule, 2);
-                $value = intval($rule[1]);
-
-                switch ($rule[0]) {
-                    case 'max-width':
-                        if ($width > $value) {
-                            continue 2;
-                        }
-                        break;
-
-                    case 'min-width':
-                        if ($width < $value) {
-                            continue 2;
-                        }
-                        break;
-
-                    case 'width':
-                        if ($width != $value) {
-                            continue 2;
-                        }
-                        break;
-
-                    case 'max-height':
-                        if ($height > $value) {
-                            continue 2;
-                        }
-                        break;
-
-                    case 'min-height':
-                        if ($height < $value) {
-                            continue 2;
-                        }
-                        break;
-
-                    case 'height':
-                        if ($height != $value) {
-                            continue 2;
-                        }
-                        break;
+            if (!preg_match('/^(.+):(.+)$/', $operation, $matches)) {
+                if (!empty($operation)) {
+                    $transform[] = $operation;
                 }
+                continue;
+            }
 
-                $transform[] = $operation;
+            if (self::clientMatch($matches[1], $width, $height, $speed)) {
+                $transform[] = $matches[2];
             }
         }
 
         return implode('|', $transform);
+    }
+
+
+    /**
+     * Check whether the client match with a selector
+     *
+     * @param string  $selector The operations selector
+     * @param integer $width    The client width
+     * @param integer $height   The client height
+     * @param string  $speed    The client speed
+     *
+     * @return boolean
+     */
+    private static function clientMatch($selector, $width, $height, $speed)
+    {
+        foreach (explode(',', $selector) as $rule) {
+            $rule = explode('=', $rule, 2);
+            $value = intval($rule[1]);
+
+            switch ($rule[0]) {
+                case 'max-width':
+                    if ($width > $value) {
+                        return false;
+                    }
+                    break;
+
+                case 'min-width':
+                    if ($width < $value) {
+                        return false;
+                    }
+                    break;
+
+                case 'width':
+                    if ($width != $value) {
+                        return false;
+                    }
+                    break;
+
+                case 'max-height':
+                    if ($height > $value) {
+                        return false;
+                    }
+                    break;
+
+                case 'min-height':
+                    if ($height < $value) {
+                        return false;
+                    }
+                    break;
+
+                case 'height':
+                    if ($height != $value) {
+                        return false;
+                    }
+                    break;
+            }
+        }
+
+        return true;
     }
 
 
@@ -159,11 +154,7 @@ class Image
      */
     public function flip()
     {
-        try {
-            $this->image->flip();
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->flip();
 
         return $this;
     }
@@ -176,11 +167,7 @@ class Image
      */
     public function flop()
     {
-        try {
-            $this->image->flop();
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->flop();
 
         return $this;
     }
@@ -195,13 +182,7 @@ class Image
      */
     public function save($filename = null)
     {
-        $filename = $filename ?: $this->filename;
-
-        try {
-            $this->image->save($filename);
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->save($filename ?: $this->filename);
 
         return $this;
     }
@@ -214,13 +195,7 @@ class Image
      */
     public function getString()
     {
-        try {
-            return $this->image->getString();
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
-
-        return '';
+        return $this->image->getString();
     }
 
 
@@ -231,13 +206,7 @@ class Image
      */
     public function getMimeType()
     {
-        try {
-            return $this->image->getMimeType();
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
-
-        return '';
+        return $this->image->getMimeType();
     }
 
 
@@ -272,11 +241,7 @@ class Image
      */
     public function format($format)
     {
-        try {
-            $this->image->format($format);
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->format($format);
 
         return $this;
     }
@@ -303,11 +268,7 @@ class Image
             return $this;
         }
 
-        try {
-            $this->image->resize($width, $height);
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->resize($width, $height);
 
         return $this;
     }
@@ -334,11 +295,7 @@ class Image
         $x = self::position($x, $width, $imageWidth);
         $y = self::position($y, $height, $imageHeight);
 
-        try {
-            $this->image->crop($width, $height, $x, $y);
-        } catch (\Exception $exception) {
-            $this->error = $exception;
-        }
+        $this->image->crop($width, $height, $x, $y);
 
         return $this;
     }
@@ -390,14 +347,8 @@ class Image
      */
     public function rotate($angle)
     {
-        if (($angle = intval($angle)) === 0) {
-            return $this;
-        }
-
-        try {
+        if (($angle = intval($angle)) !== 0) {
             $this->image->rotate($angle);
-        } catch (\Exception $exception) {
-            $this->error = $exception;
         }
 
         return $this;

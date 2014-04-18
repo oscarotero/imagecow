@@ -255,8 +255,8 @@ class IconImage
                     $alphas = array();
                     $retry = false;
 
-                    for ($y = 0; $y < $this->entry['Height'] and !$retry; $y++) {
-                        for ($x = 0; $x < $this->entry['Width'] and !$retry; $x++) {
+                    for ($y = 0; $y < $this->entry['Height'] && !$retry; $y++) {
+                        for ($x = 0; $x < $this->entry['Width'] && !$retry; $x++) {
                             $blue = ord($this->imageIconFormat[$readPosition++]);
                             $green = ord($this->imageIconFormat[$readPosition++]);
                             $red = ord($this->imageIconFormat[$readPosition++]);
@@ -292,7 +292,6 @@ class IconImage
                         $ignoreAlpha = true;
                     }
                 }
-
             }
 
             if ($this->header['BitCount'] < 32 || $ignoreAlpha) {

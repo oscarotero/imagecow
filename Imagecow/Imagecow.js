@@ -12,7 +12,7 @@ window.Imagecow = {
 	init: function () {
 		var dimensions = this.getClientDimensions();
 		var speed = this.getConnectionSpeed();
-		var value = 'dimensions,' + dimensions + '|speed,' + speed;
+		var value = dimensions + ',' + speed;
 
 		if (value != this.getCookie()) {
 			this.setCookie(value);

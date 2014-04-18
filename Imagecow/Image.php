@@ -21,7 +21,7 @@ class Image
      * @param string $image   The name of the image file or binary string
      * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
      *
-     * @return object The Imagecow instance
+     * @return Image The Imagecow instance
      *
      */
     public static function create($image, $library = null)
@@ -133,8 +133,8 @@ class Image
     /**
      * Constructor.
      *
-     * @param Libs\LibsInterface $image
-     * @param string             $filename Original filename (used to overwrite)
+     * @param Libs\LibInterface $image
+     * @param string            $filename Original filename (used to overwrite)
      */
     public function __construct(Libs\LibInterface $image, $filename = null)
     {
@@ -250,9 +250,9 @@ class Image
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
      *
-     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
-     * @param boolean    $enlarge True if the new image can be bigger (false by default)
+     * @param integer|string $width   The max width of the image. It can be a number (pixels) or percentaje
+     * @param integer|string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param boolean        $enlarge True if the new image can be bigger (false by default)
      *
      * @return $this
      */
@@ -277,10 +277,10 @@ class Image
     /**
      * Crops the image
      *
-     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param integer|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param integer|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param integer|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return $this
      */
@@ -304,10 +304,10 @@ class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param int|string $width  The new width in number (pixels) or percentaje
-     * @param int|string $height The new height in number (pixels) or percentaje
-     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string $width  The new width in number (pixels) or percentaje
+     * @param integer|string $height The new height in number (pixels) or percentaje
+     * @param integer|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param integer|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return $this
      */
@@ -358,7 +358,7 @@ class Image
     /**
      * Define the image compression quality for jpg images
      *
-     * @param int $quality The quality (from 0 to 100)
+     * @param integer $quality The quality (from 0 to 100)
      *
      * @return $this
      */
@@ -395,6 +395,8 @@ class Image
 
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
+     *
+     * @param null|string $key
      *
      * @return null|array The data where the array indexes are the header names and array values the associated values.
      */

@@ -193,8 +193,6 @@ class Imagick extends BaseLib implements LibInterface
         if ($this->image->setImageFormat($format) !== true) {
             throw new ImageException("The image format '{$format}' is not valid");
         }
-
-        return $this;
     }
 
 

@@ -17,7 +17,7 @@ class ImageException extends \Exception
      * @param int $width  Width of the image. By default 400px
      * @param int $height Height of the image. By default 400px
      *
-     * @return Libs\Gd The Imagecow instance with the image
+     * @return Image The Imagecow instance with the image
      */
     public function getImage($width = 400, $height = 400)
     {

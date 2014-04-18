@@ -3,6 +3,7 @@ Imagecow
 
 Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
+
 What is Imagecow?
 -----------------
 
@@ -15,29 +16,33 @@ It's a php library to manipulate images to web.
 * Use the PSR-0 autoloader standard
 
 
+Notes on 1.x version
+--------------------
+
+I'm working in the 1.x version, refactoring some parts to remove duplicated code, bugs, etc. The API will change a little bit (not much). The following documentation is about the 1.x API.
+
+
 How use it?
 -----------
 
-Create an instance of Imagecow\Libs\Gd or Imagecow\Libs\Imagick (it depends of the library you choose):
+Use the static function Imagecow\Image::create() to load an image and returns an imageCow instance. This function has two arguments:
 
-```php
-$image = new Imagecow\Libs\Gd();
-```
-
-Or you can also use the static function Imagecow\Image::create() to returns an instance:
+* image: The image file path or a binary string with the image data
+* library: The library used (Gd or Imagick). If it's not provided, it's detected automatically (in order of preference: Imagick, Gd)
 
 ```php
 use Imagecow\Image;
 
-$image = Image::create('Imagick'); //Returns an instance using the Imagick library
+//Create an Imagick instance of "my-image.jpg" file:
+$image = Image::create('my-image.jpg', 'Imagick');
 
-$image = Image::create(); //Detects automatically the library to use (in order of preference: Imagick, Gd)
-```
+//Create an instance detecting the library automatically
+$image = Image::create('my-image.jpg');
 
-#### Load an image file:
+//Create an instance from a binary file
+$data = file_get_contents('my-image.jpg');
 
-```php
-$image->load('picture.jpg');
+$image = Image::create($data);
 ```
 
 #### Crop the image
@@ -86,6 +91,9 @@ $image->format('png');
 
 ```php
 $image->save('my-new-image.png');
+
+//Overwrite the image (only if has been loaded from a file)
+$image->save();
 ```
 
 #### Execute multiple functions (resize, crop, resizeCrop, format)
@@ -110,12 +118,6 @@ $image->getHeight();
 $image->getMimeType();
 
 $image->getString(); //Returns the image in a string
-
-$image->getImage(); //Returns the image resource (GD) or Imagik instance
-$image->setImage(); //Sets manually a new image resource or Imagik instance
-
-$image->setError('message'); //Sets an error manually
-$image->getError(); //Returns an ImageException instance in case of error
 
 $image->setBackground(array(255, 255, 255)); //Set a default background used in some transformations (for example, convert a transparent png to jpg)
 $image->getExifData();

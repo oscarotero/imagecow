@@ -2,235 +2,164 @@
 /**
  * Imagecow PHP library
  *
+ * GD library
+ *
  * PHP version 5.3
  */
 
 namespace Imagecow\Libs;
 
-use Imagecow\Image;
-
-class Gd extends Image implements InterfaceLibs
+class Gd extends BaseLib implements LibInterface
 {
+    protected $image;
     protected $type;
-    protected $filename;
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function createFromFile ($filename)
+    {
+        if (is_file($filename) && ($data = @getImageSize($filename))) {
+            $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
+
+            if (function_exists($function)) {
+                return new static($function($filename), $data[2]);
+            }
+        }
+
+        throw new \Exception("The image file '{$filename}' cannot be loaded");
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function createFromString ($string)
+    {
+        if (($image = @imagecreatefromstring($string))) {
+            return new static($image);
+        }
+
+        throw new \Exception('Error creating the image from string');
+    }
 
 
     /**
      * Constructor of the class
      *
-     * @param string|resource $image The string with the filename to load or the Gd resource.
+     * @param resource $image The Gd resource.
      */
-    public function __construct($image = null)
+    public function __construct($image, $type = null)
     {
-        if (isset($image)) {
-            if (is_resource($image)) {
-                $this->setImage($image);
-            } elseif (is_string($image)) {
-                $this->load($image);
-            }
-        }
+        $this->image = $image;
+        $this->type = isset($type) ? $type : IMAGETYPE_PNG;
+
+        imagealphablending($this->image, true);
+        imagesavealpha($this->image, true);
     }
 
 
     /**
-     * Load an image file
-     *
-     * @param string $image Name of the file to load
-     *
-     * @return $this
+     * Destroy the image
      */
-    public function load($image)
+    public function __destruct()
     {
-        $this->image = $this->filename = $this->type = null;
-
-        if (is_resource($image)) {
-            return $this->setImage($image);
-        } elseif ( ! ctype_print($image)) { // check if it's a binary string
-            $image = @imagecreatefromstring($image);
-
-            return $this->setImage($image);
-        }
-
-        if (is_file($image) && ($data = @getImageSize($image))) {
-            $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
-
-            if (function_exists($function)) {
-                return $this->setImage($function($image), $image, $data[2]);
-            }
-        }
-
-        $this->setError('The image file "'.$image.'" cannot be loaded', IMAGECOW_ERROR_LOADING);
-
-        return $this;
+        imagedestroy($this->image);
     }
 
 
     /**
-     * Destroy the image loaded
-     *
-     * @return $this
-     */
-    public function unload()
-    {
-        if ($this->image) {
-            imagedestroy($this->image);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * Returns the filename associated with this image
-     *
-     * @return null|string The filename. Returns null if no filename is associated (no image loaded or loaded from a string)
-     */
-    public function getFilename()
-    {
-        return $this->filename;
-    }
-
-
-    /**
-     * Inverts the image vertically
-     *
-     * @return $this
+     * {@inheritDoc}
      */
     public function flip()
     {
-        if (!($width = $this->getWidth()) || !($height = $this->getHeight())) {
-            return $this;
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
+            throw new \Exception('Error flipping the image');
         }
 
-        $tmp_image = imagecreatetruecolor($width, $height);
-
-        if ($tmp_image === false ||
-            imagesavealpha($tmp_image, true) === false ||
-            imagefill($tmp_image, 0, 0, imagecolorallocatealpha($tmp_image, 0, 0, 0, 127)) === false ||
-            imagecopyresampled($tmp_image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false)
-        {
-            $this->setError('There was an error on flip the image', IMAGECOW_ERROR_FUNCTION);
-
-            return $this;
-        }
-
-        $this->image = $tmp_image;
-
-        return $this;
+        $this->image = $image;
     }
 
 
     /**
-     * Inverts the image horizontally
-     *
-     * @return $this
+     * {@inheritDoc}
      */
     public function flop()
     {
-        if (!($width = $this->getWidth()) || !($height = $this->getHeight())) {
-            return $this;
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+
+        if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
+            throw new \Exception('Error flopping the image');
         }
 
-        $tmp_image = imagecreatetruecolor($width, $height);
-
-        if ($tmp_image === false ||
-            imagesavealpha($tmp_image, true) === false ||
-            imagefill($tmp_image, 0, 0, imagecolorallocatealpha($tmp_image, 0, 0, 0, 127)) === false ||
-            imagecopyresampled($tmp_image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false)
-        {
-            $this->setError('There was an error on flop the image', IMAGECOW_ERROR_FUNCTION);
-
-            return $this;
-        }
-
-        $this->image = $tmp_image;
-
-        return $this;
+        $this->image = $image;
     }
 
 
     /**
-     * Sets a new GD resource
+     * Creates a new truecolor image
      *
-     * @param resource     $image    The GD resource
-     * @param null|string  $filename The original filename of the resource
-     * @param null|integer $type     The image type. By default is IMAGETYPE_PNG
+     * @param integer $width
+     * @param integer $height
+     * @param array   $background
      *
-     * @return $this
+     * @return resource
      */
-    public function setImage($image, $filename = null, $type = null)
+    private function createImage ($width, $height, array $background = array(0, 0, 0))
     {
-        if (is_resource($image)) {
-            $this->image = $image;
-            $this->filename = $filename;
-            $this->type = isset($type) ? $type : IMAGETYPE_PNG;
+        if (($image = imagecreatetruecolor($width, $height)) === false) {
+            throw new \Exception('Error creating a image');
+        }
 
-            imagealphablending($this->image, true);
-            imagesavealpha($this->image, true);
+        if (imagesavealpha($image, true) === false) {
+            throw new \Exception('Error saving the alpha chanel of the image');
+        }
+
+        if (isset($background[3])) {
+            $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
         } else {
-            $this->image = $this->filename = $this->type = null;
-
-            $this->setError('The image is not a valid resource', IMAGECOW_ERROR_LOADING);
+            $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
         }
 
-        return $this;
+        if (imagefill($image, 0, 0, $background) === false) {
+            throw new \Exception('Error filling the image');
+        }
+
+        return $image;
     }
 
 
     /**
-     * Save the image in a file
-     *
-     * @param null|string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
-     *
-     * @return $this
+     * {@inheritDoc}
      */
-    public function save($filename = null)
+    public function save($filename)
     {
-        if (!$this->image) {
-            return $this;
-        }
-
         $extension = image_type_to_extension($this->type, false);
-
         $function = 'image'.$extension;
 
-        if (function_exists($function)) {
-            $filename = $filename ? $filename : $this->filename;
-
-            if (strpos($filename, '.') === false) {
-                $filename .= '.'.$extension;
-            }
-
-            if ($function($this->image, $filename) === false) {
-                $this->setError('The image file "'.$filename.'" cannot be saved', IMAGECOW_ERROR_LOADING);
-            }
-        } else {
-            $this->setError('The image format "'.$extension.'" cannot be exported', IMAGECOW_ERROR_LOADING);
+        if (!function_exists($function) || ($function($this->image, $filename) === false)) {
+            throw new \Exception("The image format '{$extension}' cannot be saved to '{$filename}'");
         }
-
-        return $this;
     }
 
 
     /**
-     * Gets the image data in a string
-     *
-     * @return string The image data
+     * {@inheritDoc}
      */
     public function getString()
     {
-        if (!$this->image) {
-            return '';
-        }
-
         $extension = image_type_to_extension($this->type, false);
-
         $function = 'image'.$extension;
 
         if (!function_exists($function)) {
-            $this->setError('The image format "'.$extension.'" cannot be exported', IMAGECOW_ERROR_FUNCTION);
-
-            return '';
+            throw new \Exception("The image format '{$extension}' cannot be exported");
         }
 
         ob_start();
@@ -246,76 +175,47 @@ class Gd extends Image implements InterfaceLibs
 
 
     /**
-     * Gets the mime-type of the image
-     *
-     * @return false|string The mime-type
+     * {@inheritDoc}
      */
     public function getMimeType()
     {
-        if (!$this->image) {
-            return false;
-        }
-
         return image_type_to_mime_type($this->type);
     }
 
 
     /**
-     * Gets the width of the image
-     *
-     * @return integer The width in pixels
+     * {@inheritDoc}
      */
     public function getWidth()
     {
-        if (!$this->image) {
-            return 0;
-        }
-
         return imagesx($this->image);
     }
 
 
     /**
-     * Gets the height of the image
-     *
-     * @return integer The height in pixels
+     * {@inheritDoc}
      */
     public function getHeight()
     {
-        if (!$this->image) {
-            return 0;
-        }
-
         return imagesy($this->image);
     }
 
 
     /**
-     * Converts the image to other format
-     *
-     * @param string $format The new format: png, jpg, gif
-     *
-     * @return $this
+     * {@inheritDoc}
      */
     public function format($format)
     {
-        if (!$this->image) {
-            return $this;
-        }
-
         switch (strtolower($format)) {
             case 'jpg':
             case 'jpeg':
                 $width = $this->getWidth();
                 $height = $this->getHeight();
+                $image = $this->createImage($width, $height, $this->background);
 
-                $tmp_image = imagecreatetruecolor($width, $height);
-                $background = imagecolorallocate($tmp_image, $this->background[0], $this->background[1], $this->background[2]);
+                imagecopy($image, $this->image, 0, 0, 0, 0, $width, $height);
 
-                imagefill($tmp_image, 0, 0, $background);
-                imagecopy($tmp_image, $this->image, 0, 0, 0, 0, $width, $height);
-
-                $this->image = $tmp_image;
+                $this->image = $image;
                 $this->type = IMAGETYPE_JPEG;
                 break;
 
@@ -330,39 +230,16 @@ class Gd extends Image implements InterfaceLibs
             default:
                 $this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
         }
-
-        return $this;
     }
 
 
     /**
-     * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
-     *
-     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
-     * @param boolean    $enlarge True if the new image can be bigger (false by default)
-     *
-     * @return $this
+     * {@inheritDoc}
      */
-    public function resize($width, $height = 0, $enlarge = false)
+    public function resize($width, $height)
     {
-        if (!$this->image) {
-            return $this;
-        }
-
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
-
-        $width = $this->getSize($width, $imageWidth);
-        $height = $this->getSize($height, $imageHeight);
-
-        if (!$enlarge && $this->enlarge($width, $imageWidth) && $this->enlarge($height, $imageHeight)) {
-            return $this;
-        }
-
-        if (!$width && !$height) {
-            return $this;
-        }
 
         if ($width != 0 && ($height === 0 || ($imageWidth/$width) > ($imageHeight/$height))) {
             $height = ceil(($width/$imageWidth) * $imageHeight);
@@ -370,101 +247,46 @@ class Gd extends Image implements InterfaceLibs
             $width = ceil(($height/$imageHeight) * $imageWidth);
         }
 
-        if ($imageWidth === $width && $imageHeight === $height) {
+        if (($imageWidth === $width) && ($imageHeight === $height)) {
             return $this;
         }
 
-        $tmp_image = imagecreatetruecolor($width, $height);
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
-        if ($tmp_image === false ||
-            imagesavealpha($tmp_image, true) === false ||
-            imagefill($tmp_image, 0, 0, imagecolorallocatealpha($tmp_image, 0, 0, 0, 127)) === false ||
-            imagecopyresampled($tmp_image, $this->image, 0, 0, 0, 0, $width, $height, $imageWidth, $imageHeight) === false)
-        {
-            $this->setError('There was an error resizing the image', IMAGECOW_ERROR_FUNCTION);
-
-            return $this;
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $imageWidth, $imageHeight) === false) {
+            throw new \Exception('There was an error resizing the image');
         }
 
-        $this->image = $tmp_image;
-
-        return $this;
+        $this->image = $image;
     }
 
 
     /**
-     * Crops the image
-     *
-     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
-     *
-     * @return $this
+     * {@inheritDoc}
      */
-    public function crop($width, $height, $x = 'center', $y = 'middle')
+    public function crop($width, $height, $x, $y)
     {
-        if (!($imageWidth = $this->getWidth()) && !($imageHeight = $this->getHeight()))
-            return $this;
+        $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : array(0, 0, 0, 127));
+
+        if (imagecopyresampled($image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false) {
+            throw new \Exception('There was an error cropping the image');
         }
 
-        $width = $this->getSize($width, $imageWidth);
-        $height = $this->getSize($height, $imageHeight);
-
-        $x = $this->position($x, $width, $imageWidth);
-        $y = $this->position($y, $height, $imageHeight);
-
-        $tmp_image = imagecreatetruecolor($width, $height);
-
-        if ($this->type === IMAGETYPE_JPEG) {
-            $background = imagecolorallocatealpha($tmp_image, $this->background[0], $this->background[1], $this->background[2], 0);
-        } else {
-            $background = imagecolorallocatealpha($tmp_image, 0, 0, 0, 127);
-        }
-
-        if ($tmp_image === false ||
-            $background === false ||
-            imagefill($tmp_image, 0, 0, $background) === false ||
-            imagealphablending($tmp_image, false) === false ||
-            imagesavealpha($tmp_image, true) === false ||
-            imagecopyresampled($tmp_image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false)
-        {
-            $this->setError('There was an error cropping the image', IMAGECOW_ERROR_FUNCTION);
-
-            return $this;
-        }
-
-        $this->image = $tmp_image;
-
-        return $this;
+        $this->image = $image;
     }
 
 
     /**
-     * Rotates the image
-     *
-     * @param integer $angle Rotation angle in degrees (anticlockwise)
-     *
-     * @return $this
+     * {@inheritDoc}
      */
     public function rotate($angle)
     {
-        $angle = intval($angle);
-
-        if (!$this->image || $angle === 0) {
-            return $this;
-        }
-
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
-        if ($background === false || ($tmp_image = imagerotate($this->image, $angle, $background)) === false) {
-            $this->setError('There was an error rotating the image', IMAGECOW_ERROR_FUNCTION);
-
-            return $this;
+        if ($background === false || ($image = imagerotate($this->image, $angle, $background)) === false) {
+            throw new \Exception('There was an error rotating the image');
         }
 
-        $this->image = $tmp_image;
-
-        return $this;
+        $this->image = $image;
     }
 }

@@ -13,38 +13,32 @@ define('IMAGECOW_ERROR_LOADING', 1);
 define('IMAGECOW_ERROR_FUNCTION', 2);
 define('IMAGECOW_ERROR_INPUT', 3);
 
-abstract class Image
+class Image
 {
-    public $quality = 86;
-    public $background = array(255,255,255);
-
     protected $image;
-    protected $animatedGif;
-    protected $Error;
+    protected $filename;
+    protected $error;
 
 
     /**
-     * Static function to create a new Imagecow instance
+     * Static function to create a new Imagecow instance from an image file
      *
+     * @param string $image   The name of the image file or binary string
      * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
      *
      * @return object The Imagecow instance
      *
-     * @throws Exception if the image library does not exists.
      */
-    public static function create($library = null)
+    public static function create($image, $library = null)
     {
-        if (!$library) {
-            $library = extension_loaded('imagick') ? 'Imagick' : 'Gd';
+        $class = self::getLibraryClass($library);
+
+        //check if it's a binary string
+        if (!ctype_print($image)) {
+            return new static($class::createFromString($image));
         }
 
-        $class = 'Imagecow\\Libs\\'.$library;
-
-        if (class_exists($class)) {
-            return new $class;
-        }
-
-        throw new \Exception('The image library is not valid');
+        return new static($class::createFromFile($image), $image);
     }
 
 
@@ -142,38 +136,269 @@ abstract class Image
 
 
     /**
-     * Gets the original image
+     * Constructor.
      *
-     * @return mixed Depending of the library used: the Imagick instance, GD resource or null if no image has been loaded
+     * @param Libs\LibsInterface $image
+     * @param string             $filename Original filename (used to overwrite)
      */
-    public function getImage()
+    public function __construct(Libs\LibInterface $image, $filename = null)
     {
-        return $this->image;
+        $this->image = $image;
+        $this->filename = $filename;
+
+        if ($this->isAnimatedGif()) {
+            $this->image->setAnimated(true);
+        }
     }
 
 
     /**
-     * Gets the error in a ImageException instance
-     *
-     * @return ImageException object  The error exception or null if there is not errors
-     */
-    public function getError()
-    {
-        return $this->Error;
-    }
-
-
-    /**
-     * Sets a new error for the image
-     *
-     * @param string $message The message of the error
-     * @param int    $code    The code of the message. It can be one of the following constants: IMAGECOW_ERROR_LOADING, IMAGECOW_ERROR_FUNCTION, IMAGECOW_ERROR_INPUT
+     * Inverts the image vertically
      *
      * @return $this
      */
-    public function setError($message = '', $code = null)
+    public function flip()
     {
-        $this->Error = new ImageException($message, $code);
+        try {
+            $this->image->flip();
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Inverts the image horizontally
+     *
+     * @return $this
+     */
+    public function flop()
+    {
+        try {
+            $this->image->flop();
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Saves the image in a file
+     *
+     * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
+     *
+     * @return $this
+     */
+    public function save($filename = null)
+    {
+        $filename = $filename ?: $this->filename;
+
+        try {
+            $this->image->save($filename);
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Gets the image data in a string
+     *
+     * @return string The image data
+     */
+    public function getString()
+    {
+        try {
+            return $this->image->getString();
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return '';
+    }
+
+
+    /**
+     * Gets the mime type of the image
+     *
+     * @return string The mime type
+     */
+    public function getMimeType()
+    {
+        try {
+            return $this->image->getMimeType();
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return '';
+    }
+
+
+    /**
+     * Gets the width of the image
+     *
+     * @return integer The width in pixels
+     */
+    public function getWidth()
+    {
+        return $this->image->getWidth();
+    }
+
+
+    /**
+     * Gets the height of the image
+     *
+     * @return integer The height in pixels
+     */
+    public function getHeight()
+    {
+        return $this->image->getHeight();
+    }
+
+
+    /**
+     * Converts the image to other format
+     *
+     * @param string $format The new format: png, jpg, gif
+     *
+     * @return $this
+     */
+    public function format($format)
+    {
+        try {
+            $this->image->format($format);
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
+     *
+     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param boolean    $enlarge True if the new image can be bigger (false by default)
+     *
+     * @return $this
+     */
+    public function resize($width, $height = 0, $enlarge = false)
+    {
+        $imageWidth = $this->getWidth();
+        $imageHeight = $this->getHeight();
+
+        $width = self::getSize($width, $imageWidth);
+        $height = self::getSize($height, $imageHeight);
+
+        if (!$enlarge && self::enlarge($width, $imageWidth) && self::enlarge($height, $imageHeight)) {
+            return $this;
+        }
+
+        try {
+            $this->image->resize($width, $height);
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Crops the image
+     *
+     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     *
+     * @return $this
+     */
+    public function crop($width, $height, $x = 'center', $y = 'middle')
+    {
+        $imageWidth = $this->getWidth();
+        $imageHeight = $this->getHeight();
+
+        $width = self::getSize($width, $imageWidth);
+        $height = self::getSize($height, $imageHeight);
+
+        $x = self::position($x, $width, $imageWidth);
+        $y = self::position($y, $height, $imageHeight);
+
+        try {
+            $this->image->crop($width, $height, $x, $y);
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
+     *
+     * @param int|string $width  The new width in number (pixels) or percentaje
+     * @param int|string $height The new height in number (pixels) or percentaje
+     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     *
+     * @return $this
+     */
+    public function resizeCrop($width, $height, $x = 'center', $y = 'middle')
+    {
+        $imageWidth = $this->getWidth();
+        $imageHeight = $this->getHeight();
+
+        $width = self::getSize($width, $imageWidth);
+        $height = self::getSize($height, $imageHeight);
+
+        if (($width === 0) || ($height === 0)) {
+            return false;
+        }
+
+        $width_resize = ($width / $imageWidth) * 100;
+        $height_resize = ($height / $imageHeight) * 100;
+
+        if ($width_resize < $height_resize) {
+            $this->resize(0, $height);
+        } else {
+            $this->resize($width, 0);
+        }
+
+        $this->crop($width, $height, $x, $y);
+
+        return $this;
+    }
+
+
+    /**
+     * Rotates the image
+     *
+     * @param integer $angle Rotation angle in degrees (anticlockwise)
+     *
+     * @return $this
+     */
+    public function rotate($angle)
+    {
+        if (($angle = intval($angle)) === 0) {
+            return $this;
+        }
+
+        try {
+            $this->image->rotate($angle);
+        } catch (\Exception $exception) {
+            $this->error = $exception;
+        }
 
         return $this;
     }
@@ -191,12 +416,12 @@ abstract class Image
         $quality = intval($quality);
 
         if ($quality < 0) {
-            $this->quality = 0;
+            $quality = 0;
         } elseif ($quality > 100) {
-            $this->quality = 100;
-        } else {
-            $this->quality = $quality;
+            $quality = 100;
         }
+
+        $this->image->setCompressionQuality($quality);
 
         return $this;
     }
@@ -211,7 +436,7 @@ abstract class Image
      */
     public function setBackground(array $background)
     {
-        $this->background = $background;
+        $this->image->setBackground($background);
 
         return $this;
     }
@@ -220,13 +445,15 @@ abstract class Image
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
      *
-     * @return array The data where the array indexes are the header names and array values the associated values.
+     * @return null|array The data where the array indexes are the header names and array values the associated values.
      */
     public function getExifData($key = null)
     {
-        $filename = $this->getFilename();
+        if (!($filename = $this->filename)) {
+            return null;
+        }
 
-        if (function_exists('exif_read_data') and $this->getMimeType() == 'image/jpeg') {
+        if (function_exists('exif_read_data') && $this->getMimeType() == 'image/jpeg') {
             $exif = isset($filename) ? exif_read_data($filename) : null;
 
             if ($key !== null) {
@@ -234,8 +461,6 @@ abstract class Image
             }
 
             return $exif;
-        } else {
-            return null;
         }
     }
 
@@ -253,83 +478,13 @@ abstract class Image
             return $this;
         }
 
-        $operations = $this->getOperations($operations);
+        $operations = self::parseOperations($operations);
 
         foreach ($operations as $operation) {
             call_user_func_array(array($this, $operation['function']), $operation['params']);
         }
 
         return $this;
-    }
-
-
-    /**
-     * Check if the image is an animated gif
-     *
-     * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
-     *
-     * @return bool
-     */
-    public function isAnimatedGif()
-    {
-        if (is_bool($this->animatedGif)) {
-            return $this->animatedGif;
-        }
-
-        if ($this->getMimeType() !== 'image/gif') {
-            return $this->animatedGif = false;
-        }
-
-        $filename = $this->getFilename();
-
-        if (!($fh = @fopen($filename, 'rb'))) {
-            return false;
-        }
-
-        $count = 0;
-
-        while (!feof($fh) && $count < 2) {
-            $chunk = fread($fh, 1024 * 100); //read 100kb at a time
-            $count += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
-        }
-
-        fclose($fh);
-
-        $this->animatedGif = ($count > 1);
-
-        return $this->animatedGif;
-    }
-
-
-    /**
-     * Converts a string with operations in an array
-     *
-     * @param string $operations The operations string
-     *
-     * @return array The operation width the function name and the parameters
-     */
-    private function getOperations($operations)
-    {
-        $valid_operations = array('resize', 'resizeCrop', 'crop', 'format');
-        $operations = explode('|', str_replace(' ', '', $operations));
-        $return = array();
-
-        foreach ($operations as $operations) {
-            $params = explode(',', $operations);
-            $function = trim(array_shift($params));
-
-            if (!in_array($function, $valid_operations)) {
-                $this->setError('The transform function "'.$function.'" is not valid', IMAGECOW_ERROR_INPUT);
-                continue;
-            }
-
-            $return[] = array(
-                'function' => $function,
-                'params' => $params
-            );
-        }
-
-        return $return;
     }
 
 
@@ -346,83 +501,6 @@ abstract class Image
 
 
     /**
-     * Calculates the point position according with the image dimmensions.
-     *
-     * @param string|int $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
-     * @param number     $size     The size of the new cropped/resized image.
-     * @param number     $canvas   The size of the old image
-     *
-     * @return integer The position of the point in pixeles.
-     */
-    protected function position($position, $size, $canvas)
-    {
-        if (is_int($position)) {
-            return $position;
-        }
-
-        switch ($position) {
-            case 'top':
-            case 'left':
-                $position = 0;
-                break;
-
-            case 'middle':
-            case 'center':
-                $position = ($canvas/2) - ($size/2);
-                break;
-
-            case 'right':
-            case 'bottom':
-                $position = $canvas - $size;
-                break;
-
-            default:
-                $position = $this->getSize($position, $canvas);
-        }
-
-        return $position;
-    }
-
-
-    /**
-     * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
-     *
-     * @param int|string $width  The new width in number (pixels) or percentaje
-     * @param int|string $height The new height in number (pixels) or percentaje
-     * @param int|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param int|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
-     *
-     * @return $this
-     */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle')
-    {
-        if (!$this->getWidth() || !$this->getHeight()) {
-            return false;
-        }
-
-        $width = $this->getSize($width, $this->getWidth());
-        $height = $this->getSize($height, $this->getHeight());
-
-        if (($width === 0) || ($height === 0)) {
-            return false;
-        }
-
-        $width_resize = ($width / $this->getWidth()) * 100;
-        $height_resize = ($height / $this->getHeight()) * 100;
-
-        if ($width_resize < $height_resize) {
-            $this->resize(0, $height);
-        } else {
-            $this->resize($width, 0);
-        }
-
-        $this->crop($width, $height, $x, $y);
-
-        return $this;
-    }
-
-
-    /**
      * Auto-rotate the image according with its exif data
      * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964
      *
@@ -432,7 +510,7 @@ abstract class Image
     {
         $orientation = $this->getExifData('Orientation');
 
-        if (! $orientation) {
+        if (!$orientation) {
             return $this;
         }
 
@@ -474,14 +552,117 @@ abstract class Image
 
 
     /**
+     * Check whether the image is an animated gif
+     *
+     * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
+     *
+     * @return boolean
+     */
+    protected function isAnimatedGif()
+    {
+        if ($this->getMimeType() !== 'image/gif') {
+            return false;
+        }
+
+        $filename = $this->filename;
+
+        if (!($fh = @fopen($filename, 'rb'))) {
+            return false;
+        }
+
+        $count = 0;
+
+        while (!feof($fh) && $count < 2) {
+            $chunk = fread($fh, 1024 * 100); //read 100kb at a time
+            $count += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
+        }
+
+        fclose($fh);
+
+        return ($count > 1);
+    }
+
+
+    /**
+     * Converts a string with operations in an array
+     *
+     * @param string $operations The operations string
+     *
+     * @return array The operation width the function name and the parameters
+     */
+    private static function parseOperations($operations)
+    {
+        $valid_operations = array('resize', 'resizeCrop', 'crop', 'format');
+        $operations = explode('|', str_replace(' ', '', $operations));
+        $return = array();
+
+        foreach ($operations as $operations) {
+            $params = explode(',', $operations);
+            $function = trim(array_shift($params));
+
+            if (!in_array($function, $valid_operations)) {
+                $this->setError('The transform function "'.$function.'" is not valid', IMAGECOW_ERROR_INPUT);
+                continue;
+            }
+
+            $return[] = array(
+                'function' => $function,
+                'params' => $params
+            );
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Calculates the point position according with the image dimmensions.
+     *
+     * @param string|integer $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
+     * @param integer        $size     The size of the new cropped/resized image.
+     * @param integer        $canvas   The size of the old image
+     *
+     * @return integer The position of the point in pixeles.
+     */
+    protected static function position($position, $size, $canvas)
+    {
+        if (is_int($position)) {
+            return $position;
+        }
+
+        switch ($position) {
+            case 'top':
+            case 'left':
+                $position = 0;
+                break;
+
+            case 'middle':
+            case 'center':
+                $position = ($canvas/2) - ($size/2);
+                break;
+
+            case 'right':
+            case 'bottom':
+                $position = $canvas - $size;
+                break;
+
+            default:
+                $position = self::getSize($position, $canvas);
+        }
+
+        return $position;
+    }
+
+
+    /**
      * Get the size of the image.
      *
-     * @param string|int $value      The size in numbers (pixels) or percentaje.
-     * @param int        $total_size The total size of the image (used to calculate the percentaje)
+     * @param string|integer $value      The size in numbers (pixels) or percentaje.
+     * @param integer        $total_size The total size of the image (used to calculate the percentaje)
      *
      * @return integer The calculated value
      */
-    protected function getSize($value, $total_size)
+    protected static function getSize($value, $total_size)
     {
         if (!$value) {
             return $total_size;
@@ -498,17 +679,42 @@ abstract class Image
     /**
      * Check if the image must be enlarged or not (if the new dimmensions are bigger than original)
      *
-     * @param int $new_size      The new size of the image
-     * @param int $original_size The original size of the image
+     * @param integer $new_size      The new size of the image
+     * @param integer $original_size The original size of the image
      *
      * @return boolean True if the image must be enlarged and false if not.
      */
-    protected function enlarge($new_size, $original_size)
+    protected static function enlarge($new_size, $original_size)
     {
         if ($new_size && ($new_size > $original_size)) {
             return true;
         }
 
         return false;
+    }
+
+
+    /**
+     * Checks the library to use and returns its class
+     *
+     * @param string $library The library name (Gd, Imagick)
+     *
+     * @return string The library class
+     *
+     * @throws Exception if the image library does not exists.
+     */
+    public static function getLibraryClass($library)
+    {
+        if (!$library) {
+            $library = extension_loaded('imagick') ? 'Imagick' : 'Gd';
+        }
+
+        $class = 'Imagecow\\Libs\\'.$library;
+
+        if (!class_exists($class)) {
+            throw new \Exception('The image library is not valid');
+        }
+
+        return $class;
     }
 }

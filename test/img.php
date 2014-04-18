@@ -3,14 +3,8 @@ use Imagecow\Image;
 
 include '../Imagecow/autoloader.php';
 
-$transform = isset($_COOKIE['Imagecow_detection']) ? Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']) : $_GET['transform'];
+$image = Image::create(__DIR__.'/pictures/05.jpg');
 
-$Image = Image::create();
+$image->resize(300)->crop(150, 150);
 
-$Image->load(__DIR__.'/pictures/'.$_GET['img'])->autoRotate()->transform($transform);
-
-if ($Error = $Image->getError()) {
-    $Error->getImage()->show();
-} else {
-    $Image->show();
-}
+$image->show();

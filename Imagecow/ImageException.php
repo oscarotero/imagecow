@@ -21,13 +21,13 @@ class ImageException extends \Exception
      */
     public function getImage($width = 400, $height = 400)
     {
-        $imageError = imagecreate($width, $height);
-        $textColor = imagecolorallocate($imageError, 255, 255, 255);
+        $image = imagecreate($width, $height);
+        $textColor = imagecolorallocate($image, 255, 255, 255);
 
         foreach (str_split($this->getMessage(), intval($width/10)) as $line => $text) {
-            imagestring($imageError, 5, 10, (($line + 1) * 18), $text, $textColor);
+            imagestring($image, 5, 10, (($line + 1) * 18), $text, $textColor);
         }
 
-        return new Libs\Gd($imageError);
+        return new Image($image);
     }
 }

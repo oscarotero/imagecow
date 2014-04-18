@@ -454,7 +454,7 @@ class Image
         }
 
         if (function_exists('exif_read_data') && $this->getMimeType() == 'image/jpeg') {
-            $exif = isset($filename) ? exif_read_data($filename) : null;
+            $exif = exif_read_data($filename);
 
             if ($key !== null) {
                 return isset($exif[$key]) ? $exif[$key] : null;
@@ -508,16 +508,7 @@ class Image
      */
     public function autoRotate()
     {
-        $orientation = $this->getExifData('Orientation');
-
-        if (!$orientation) {
-            return $this;
-        }
-
-        switch ($orientation) {
-            case 1:
-                break;
-
+        switch ($this->getExifData('Orientation')) {
             case 2:
                 $this->flop();
                 break;
@@ -560,11 +551,9 @@ class Image
      */
     protected function isAnimatedGif()
     {
-        if ($this->getMimeType() !== 'image/gif') {
+        if (($this->getMimeType() !== 'image/gif') || !($filename = $this->filename)) {
             return false;
         }
-
-        $filename = $this->filename;
 
         if (!($fh = @fopen($filename, 'rb'))) {
             return false;
@@ -601,8 +590,7 @@ class Image
             $function = trim(array_shift($params));
 
             if (!in_array($function, $valid_operations)) {
-                $this->setError('The transform function "'.$function.'" is not valid', IMAGECOW_ERROR_INPUT);
-                continue;
+                throw new Exception("The transform function '{$function}' is not valid");
             }
 
             $return[] = array(
@@ -633,24 +621,18 @@ class Image
         switch ($position) {
             case 'top':
             case 'left':
-                $position = 0;
-                break;
+                return 0;
 
             case 'middle':
             case 'center':
-                $position = ($canvas/2) - ($size/2);
-                break;
+                return ($canvas/2) - ($size/2);
 
             case 'right':
             case 'bottom':
-                $position = $canvas - $size;
-                break;
-
-            default:
-                $position = self::getSize($position, $canvas);
+                return $canvas - $size;
         }
 
-        return $position;
+        return self::getSize($position, $canvas);
     }
 
 

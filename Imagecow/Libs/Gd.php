@@ -9,6 +9,8 @@
 
 namespace Imagecow\Libs;
 
+use Imagecow\ImageException;
+
 class Gd extends BaseLib implements LibInterface
 {
     protected $image;
@@ -28,7 +30,7 @@ class Gd extends BaseLib implements LibInterface
             }
         }
 
-        throw new \Exception("The image file '{$filename}' cannot be loaded");
+        throw new ImageException("The image file '{$filename}' cannot be loaded");
     }
 
 
@@ -41,7 +43,7 @@ class Gd extends BaseLib implements LibInterface
             return new static($image);
         }
 
-        throw new \Exception('Error creating the image from string');
+        throw new ImageException('Error creating the image from string');
     }
 
 
@@ -79,7 +81,7 @@ class Gd extends BaseLib implements LibInterface
         $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
         if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
-            throw new \Exception('Error flipping the image');
+            throw new ImageException('Error flipping the image');
         }
 
         $this->image = $image;
@@ -96,7 +98,7 @@ class Gd extends BaseLib implements LibInterface
         $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
         if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
-            throw new \Exception('Error flopping the image');
+            throw new ImageException('Error flopping the image');
         }
 
         $this->image = $image;
@@ -115,11 +117,11 @@ class Gd extends BaseLib implements LibInterface
     private function createImage ($width, $height, array $background = array(0, 0, 0))
     {
         if (($image = imagecreatetruecolor($width, $height)) === false) {
-            throw new \Exception('Error creating a image');
+            throw new ImageException('Error creating a image');
         }
 
         if (imagesavealpha($image, true) === false) {
-            throw new \Exception('Error saving the alpha chanel of the image');
+            throw new ImageException('Error saving the alpha chanel of the image');
         }
 
         if (isset($background[3])) {
@@ -129,7 +131,7 @@ class Gd extends BaseLib implements LibInterface
         }
 
         if (imagefill($image, 0, 0, $background) === false) {
-            throw new \Exception('Error filling the image');
+            throw new ImageException('Error filling the image');
         }
 
         return $image;
@@ -145,7 +147,7 @@ class Gd extends BaseLib implements LibInterface
         $function = 'image'.$extension;
 
         if (!function_exists($function) || ($function($this->image, $filename) === false)) {
-            throw new \Exception("The image format '{$extension}' cannot be saved to '{$filename}'");
+            throw new ImageException("The image format '{$extension}' cannot be saved to '{$filename}'");
         }
     }
 
@@ -159,7 +161,7 @@ class Gd extends BaseLib implements LibInterface
         $function = 'image'.$extension;
 
         if (!function_exists($function)) {
-            throw new \Exception("The image format '{$extension}' cannot be exported");
+            throw new ImageException("The image format '{$extension}' cannot be exported");
         }
 
         ob_start();
@@ -228,7 +230,7 @@ class Gd extends BaseLib implements LibInterface
                 break;
 
             default:
-                $this->setError('The image format "'.$format.'" is not valid', IMAGECOW_ERROR_FUNCTION);
+                throw new ImageException("The image format '{$format}' is not valid");
         }
     }
 
@@ -254,7 +256,7 @@ class Gd extends BaseLib implements LibInterface
         $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
         if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $imageWidth, $imageHeight) === false) {
-            throw new \Exception('There was an error resizing the image');
+            throw new ImageException('There was an error resizing the image');
         }
 
         $this->image = $image;
@@ -269,7 +271,7 @@ class Gd extends BaseLib implements LibInterface
         $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : array(0, 0, 0, 127));
 
         if (imagecopyresampled($image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false) {
-            throw new \Exception('There was an error cropping the image');
+            throw new ImageException('There was an error cropping the image');
         }
 
         $this->image = $image;
@@ -284,7 +286,7 @@ class Gd extends BaseLib implements LibInterface
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
         if ($background === false || ($image = imagerotate($this->image, $angle, $background)) === false) {
-            throw new \Exception('There was an error rotating the image');
+            throw new ImageException('There was an error rotating the image');
         }
 
         $this->image = $image;

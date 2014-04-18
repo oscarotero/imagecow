@@ -9,6 +9,8 @@
 
 namespace Imagecow\Libs;
 
+use Imagecow\ImageException;
+
 class Imagick extends BaseLib implements LibInterface
 {
     protected $image;
@@ -22,7 +24,7 @@ class Imagick extends BaseLib implements LibInterface
         $imagick = new \Imagick();
 
         if ($imagick->readImage($filename) !== true) {
-            throw new \Exception("The image file '{$filename}' cannot be loaded");
+            throw new ImageException("The image file '{$filename}' cannot be loaded");
         }
 
         return new static($imagick);
@@ -79,7 +81,7 @@ class Imagick extends BaseLib implements LibInterface
     public function flip()
     {
         if ($this->image->flipImage() !== true) {
-            throw new Exception('There was an error on flip the image');
+            throw new ImageException('There was an error on flip the image');
         }
     }
 
@@ -90,7 +92,7 @@ class Imagick extends BaseLib implements LibInterface
     public function flop()
     {
         if ($this->image->flopImage() !== true) {
-            throw new Exception('There was an error on flop the image');
+            throw new ImageException('There was an error on flop the image');
         }
     }
 
@@ -104,7 +106,7 @@ class Imagick extends BaseLib implements LibInterface
 
         if ($this->animated) {
             if (!($fp = fopen($filename, 'w'))) {
-                throw new Exception("The image file '{$filename}' cannot be saved");
+                throw new ImageException("The image file '{$filename}' cannot be saved");
             }
 
             $image->writeImagesFile($fp);
@@ -112,7 +114,7 @@ class Imagick extends BaseLib implements LibInterface
             fclose($fp);
         } else {
             if (!$image->writeImage($filename)) {
-                throw new Exception("The image file '{$filename}' cannot be saved");
+                throw new ImageException("The image file '{$filename}' cannot be saved");
             }
         }
     }
@@ -127,7 +129,7 @@ class Imagick extends BaseLib implements LibInterface
 
         if ($this->animated) {
             if (!($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
-                throw new Exception('Cannot create a temp file to generate the string data image');
+                throw new ImageException('Cannot create a temp file to generate the string data image');
             }
 
             $image->writeImagesFile($fp);
@@ -189,7 +191,7 @@ class Imagick extends BaseLib implements LibInterface
         }
 
         if ($this->image->setImageFormat($format) !== true) {
-            throw new Exception("The image format '{$format}' is not valid");
+            throw new ImageException("The image format '{$format}' is not valid");
         }
 
         return $this;
@@ -211,7 +213,7 @@ class Imagick extends BaseLib implements LibInterface
             $this->image = $this->image->deconstructImages();
         } else {
             if ($this->image->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true)) !== true) {
-                throw new Exception('There was an error resizing the image');
+                throw new ImageException('There was an error resizing the image');
             }
 
             $this->image->setImagePage(0, 0, 0, 0);
@@ -235,7 +237,7 @@ class Imagick extends BaseLib implements LibInterface
             $this->image = $this->image->deconstructImages();
         } else {
             if ($this->image->cropImage($width, $height, $x, $y) !== true) {
-                throw new Exception('There was an error cropping the image');
+                throw new ImageException('There was an error cropping the image');
             }
 
             $this->image->setImagePage(0, 0, 0, 0);
@@ -249,7 +251,7 @@ class Imagick extends BaseLib implements LibInterface
     public function rotate($angle)
     {
         if ($this->image->rotateImage(new \ImagickPixel, $angle) !== true) {
-            throw new Exception('There was an error rotating the image');
+            throw new ImageException('There was an error rotating the image');
         }
 
         $this->image->setImagePage(0, 0, 0, 0);

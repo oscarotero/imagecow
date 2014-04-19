@@ -1,6 +1,9 @@
 Imagecow
 ========
 
+[![Build Status](https://travis-ci.org/oscarotero/imageCow.svg?branch=master)](https://travis-ci.org/oscarotero/imageCow)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/oscarotero/imageCow/badges/quality-score.png?s=968f74e091c90ce0100cbfdce2ad925eb0b2ab20)](https://scrutinizer-ci.com/g/oscarotero/imageCow/)
+
 Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
 

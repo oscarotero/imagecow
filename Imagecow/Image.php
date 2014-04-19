@@ -9,6 +9,8 @@
 
 namespace Imagecow;
 
+use Imagecow\ImageException;
+
 class Image
 {
     protected $image;
@@ -54,7 +56,7 @@ class Image
         $height = intval($height);
         $transform = array();
 
-        foreach (explode(';', str_replace(' ', '', $operations)) as $operation) {
+        foreach (explode(';', $operations) as $operation) {
             if (!preg_match('/^(.+):(.+)$/', $operation, $matches)) {
                 if (!empty($operation)) {
                     $transform[] = $operation;
@@ -395,6 +397,7 @@ class Image
 
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
+     * (requires the exif PHP extension enabled)
      *
      * @param null|string $key
      *
@@ -402,12 +405,8 @@ class Image
      */
     public function getExifData($key = null)
     {
-        if (!($filename = $this->filename)) {
-            return null;
-        }
-
-        if (function_exists('exif_read_data') && $this->getMimeType() == 'image/jpeg') {
-            $exif = exif_read_data($filename);
+        if ($this->filename && ($this->getMimeType() === 'image/jpeg')) {
+            $exif = exif_read_data($this->filename);
 
             if ($key !== null) {
                 return isset($exif[$key]) ? $exif[$key] : null;
@@ -504,11 +503,7 @@ class Image
      */
     protected function isAnimatedGif()
     {
-        if (($this->getMimeType() !== 'image/gif') || !($filename = $this->filename)) {
-            return false;
-        }
-
-        if (!($fh = @fopen($filename, 'rb'))) {
+        if (($this->getMimeType() !== 'image/gif') || !$this->filename || !($fh = @fopen($this->filename, 'rb'))) {
             return false;
         }
 
@@ -543,7 +538,7 @@ class Image
             $function = trim(array_shift($params));
 
             if (!in_array($function, $valid_operations)) {
-                throw new Exception("The transform function '{$function}' is not valid");
+                throw new ImageException("The transform function '{$function}' is not valid");
             }
 
             $return[] = array(
@@ -636,7 +631,7 @@ class Image
      *
      * @return string The library class
      *
-     * @throws Exception if the image library does not exists.
+     * @throws ImageException if the image library does not exists.
      */
     public static function getLibraryClass($library)
     {
@@ -647,7 +642,7 @@ class Image
         $class = 'Imagecow\\Libs\\'.$library;
 
         if (!class_exists($class)) {
-            throw new \Exception('The image library is not valid');
+            throw new ImageException('The image library is not valid');
         }
 
         return $class;

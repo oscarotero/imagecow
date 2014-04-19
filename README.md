@@ -176,6 +176,25 @@ img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
 
+
+Other utils
+-----------
+
+IconExtractor. Class to extract the images from an .ico file and convert to png. Only for Imagick:
+
+```php
+use Imagecow\Utils\IconExtractor;
+
+$icon = new IconExtractor('favicon.ico');
+
+//Gets the better image from the icon (quality = color_depth + (width * height))
+$image = $icon->getBetterQuality();
+
+//Do imagecow stuff
+$image->resize(100)->save('my-image.png');
+```
+
+
 Maintainers:
 ------------
 

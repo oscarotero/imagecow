@@ -76,7 +76,15 @@ class Gd extends BaseLib implements LibInterface
      */
     public function flip()
     {
-        $this->flipFlop(true);
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
+            throw new ImageException('Error flipping the image');
+        }
+
+        $this->image = $image;
     }
 
 
@@ -85,29 +93,12 @@ class Gd extends BaseLib implements LibInterface
      */
     public function flop()
     {
-        $this->flipFlop(false);
-    }
-
-
-    /**
-     * Flips or flops the image
-     *
-     * @param boolean $flip true to flip, false to flop
-     */
-    private function flipFlop($flip)
-    {
         $width = $this->getWidth();
         $height = $this->getHeight();
         $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
-        if ($flip) {
-            if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
-                throw new ImageException('Error flipping the image');
-            }
-        } else {
-            if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
-                throw new ImageException('Error flopping the image');
-            }
+        if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
+            throw new ImageException('Error flopping the image');
         }
 
         $this->image = $image;

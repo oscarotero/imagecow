@@ -19,7 +19,7 @@ It's a php library to manipulate images to web.
 Notes on 1.x version
 --------------------
 
-I'm working in the 1.x version, refactoring some parts to remove duplicated code, bugs, etc. The API will change a little bit (not much). The following documentation is about the 1.x API.
+The API in 1.x version changes a little bit (not much, only on create the instances).
 
 
 How use it?

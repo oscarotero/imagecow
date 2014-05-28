@@ -1,5 +1,5 @@
 {
-	"name": "kevbaldwyn/imagecow",
+	"name": "imagecow/imagecow",
 	"type": "library",
 	"description": "PHP library to manipulate and generate responsive images",
 	"keywords": ["image"],

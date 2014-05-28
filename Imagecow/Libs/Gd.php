@@ -22,7 +22,8 @@ class Gd extends BaseLib implements LibInterface
      */
     public static function createFromFile ($filename)
     {
-        if (is_file($filename) && ($data = @getImageSize($filename))) {
+        $data = @getImageSize($filename);
+        if ($data && is_array($data)) {
             $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
 
             if (function_exists($function)) {

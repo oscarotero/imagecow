@@ -18,8 +18,7 @@ interface LibInterface
      *
      * @return $this
      */
-    public static function createFromFile ($filename);
-
+    public static function createFromFile($filename);
 
     /**
      * Create an instance from an image string
@@ -28,8 +27,7 @@ interface LibInterface
      *
      * @return $this
      */
-    public static function createFromString ($string);
-
+    public static function createFromString($string);
 
     /**
      * Saves the image in a file
@@ -38,40 +36,35 @@ interface LibInterface
      *
      * @return void
      */
-    public function save ($filename);
-
+    public function save($filename);
 
     /**
      * Gets the image data in a string
      *
      * @return string The image data
      */
-    public function getString ();
-
+    public function getString();
 
     /**
      * Gets the mime type of the image
      *
      * @return string The mime type
      */
-    public function getMimeType ();
-
+    public function getMimeType();
 
     /**
      * Gets the width of the image
      *
      * @return integer The width in pixels
      */
-    public function getWidth ();
-
+    public function getWidth();
 
     /**
      * Gets the height of the image
      *
      * @return integer The height in pixels
      */
-    public function getHeight ();
-
+    public function getHeight();
 
     /**
      * Converts the image to other format
@@ -80,19 +73,17 @@ interface LibInterface
      *
      * @return void
      */
-    public function format ($format);
-
+    public function format($format);
 
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
      *
-     * @param integer $width   The max width of the image
-     * @param integer $height  The max height of the image
+     * @param integer $width  The max width of the image
+     * @param integer $height The max height of the image
      *
      * @return void
      */
-    public function resize ($width, $height);
-
+    public function resize($width, $height);
 
     /**
      * Crops the image
@@ -104,8 +95,7 @@ interface LibInterface
      *
      * @return void
      */
-    public function crop ($width, $height, $x, $y);
-
+    public function crop($width, $height, $x, $y);
 
     /**
      * Rotates the image
@@ -116,7 +106,6 @@ interface LibInterface
      */
     public function rotate($angle);
 
-
     /**
      * Inverts the image vertically
      *
@@ -124,14 +113,12 @@ interface LibInterface
      */
     public function flip();
 
-
     /**
      * Inverts the image horizontally
      *
      * @return void
      */
     public function flop();
-
 
     /**
      * Define the image compression quality for jpg images
@@ -142,7 +129,6 @@ interface LibInterface
      */
     public function setCompressionQuality($quality);
 
-
     /**
      * Set a default background color used to fill in some transformation functions
      *
@@ -151,7 +137,6 @@ interface LibInterface
      * @return void
      */
     public function setBackground(array $background);
-
 
     /**
      * Defines the image as an animated image

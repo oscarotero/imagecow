@@ -5,7 +5,6 @@ class IconExtractor
 {
     protected $image;
 
-
     /**
      * Contructor
      *
@@ -22,7 +21,6 @@ class IconExtractor
 
         $this->image = $image;
     }
-
 
     /**
      * Get the better quality image found in the icon

@@ -11,19 +11,17 @@ namespace Imagecow\Libs;
 
 abstract class BaseLib
 {
-	protected $quality = 86;
-	protected $background = array(255, 255, 255);
-	protected $animated = false;
+    protected $quality = 86;
+    protected $background = array(255, 255, 255);
+    protected $animated = false;
 
-
-	/**
+    /**
      * {@inheritDoc}
      */
     public function setCompressionQuality($quality)
     {
         $this->quality = $quality;
     }
-
 
     /**
      * {@inheritDoc}
@@ -32,7 +30,6 @@ abstract class BaseLib
     {
         $this->background = $background;
     }
-
 
     /**
      * {@inheritDoc}

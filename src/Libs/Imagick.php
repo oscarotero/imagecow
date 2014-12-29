@@ -15,13 +15,12 @@ class Imagick extends BaseLib implements LibInterface
 {
     protected $image;
 
-
     /**
      * {@inheritDoc}
      *
      * @return \Imagick
      */
-    public static function createFromFile ($filename)
+    public static function createFromFile($filename)
     {
         $imagick = new \Imagick();
 
@@ -32,13 +31,12 @@ class Imagick extends BaseLib implements LibInterface
         return new static($imagick);
     }
 
-
     /**
      * {@inheritDoc}
      *
      * @return \Imagick
      */
-    public static function createFromString ($string)
+    public static function createFromString($string)
     {
         $imagick = new \Imagick();
 
@@ -46,7 +44,6 @@ class Imagick extends BaseLib implements LibInterface
 
         return new static($imagick);
     }
-
 
     /**
      * Constructor of the class
@@ -69,7 +66,6 @@ class Imagick extends BaseLib implements LibInterface
         $this->image = $image;
     }
 
-
     /**
      * Destroy the image
      */
@@ -77,7 +73,6 @@ class Imagick extends BaseLib implements LibInterface
     {
         $this->image->destroy();
     }
-
 
     /**
      * {@inheritDoc}
@@ -89,7 +84,6 @@ class Imagick extends BaseLib implements LibInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -99,7 +93,6 @@ class Imagick extends BaseLib implements LibInterface
             throw new ImageException('There was an error on flop the image');
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -122,7 +115,6 @@ class Imagick extends BaseLib implements LibInterface
             }
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -150,7 +142,6 @@ class Imagick extends BaseLib implements LibInterface
         return $image->getImageBlob();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -163,7 +154,6 @@ class Imagick extends BaseLib implements LibInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -172,7 +162,6 @@ class Imagick extends BaseLib implements LibInterface
         return $this->image->getImageWidth();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -180,7 +169,6 @@ class Imagick extends BaseLib implements LibInterface
     {
         return $this->image->getImageHeight();
     }
-
 
     /**
      * {@inheritDoc}
@@ -198,7 +186,6 @@ class Imagick extends BaseLib implements LibInterface
             throw new ImageException("The image format '{$format}' is not valid");
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -221,7 +208,6 @@ class Imagick extends BaseLib implements LibInterface
             $this->image->setImagePage(0, 0, 0, 0);
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -246,19 +232,17 @@ class Imagick extends BaseLib implements LibInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
     public function rotate($angle)
     {
-        if ($this->image->rotateImage(new \ImagickPixel, $angle) !== true) {
+        if ($this->image->rotateImage(new \ImagickPixel(), $angle) !== true) {
             throw new ImageException('There was an error rotating the image');
         }
 
         $this->image->setImagePage(0, 0, 0, 0);
     }
-
 
     /**
      * Returns a copy of the image compressed and ready to save or print

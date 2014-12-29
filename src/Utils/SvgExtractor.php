@@ -5,7 +5,6 @@ class SvgExtractor
 {
     protected $image;
 
-
     /**
      * Contructor
      *
@@ -28,7 +27,6 @@ class SvgExtractor
 
         $this->image = $image;
     }
-
 
     /**
      * Get the svg as an image

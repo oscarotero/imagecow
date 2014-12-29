@@ -16,11 +16,10 @@ class Gd extends BaseLib implements LibInterface
     protected $image;
     protected $type;
 
-
     /**
      * {@inheritDoc}
      */
-    public static function createFromFile ($filename)
+    public static function createFromFile($filename)
     {
         $data = @getImageSize($filename);
         if ($data && is_array($data)) {
@@ -34,11 +33,10 @@ class Gd extends BaseLib implements LibInterface
         throw new ImageException("The image file '{$filename}' cannot be loaded");
     }
 
-
     /**
      * {@inheritDoc}
      */
-    public static function createFromString ($string)
+    public static function createFromString($string)
     {
         if (($image = @imagecreatefromstring($string))) {
             return new static($image);
@@ -46,7 +44,6 @@ class Gd extends BaseLib implements LibInterface
 
         throw new ImageException('Error creating the image from string');
     }
-
 
     /**
      * Constructor of the class
@@ -62,7 +59,6 @@ class Gd extends BaseLib implements LibInterface
         imagesavealpha($this->image, true);
     }
 
-
     /**
      * Destroy the image
      */
@@ -70,7 +66,6 @@ class Gd extends BaseLib implements LibInterface
     {
         imagedestroy($this->image);
     }
-
 
     /**
      * {@inheritDoc}
@@ -88,7 +83,6 @@ class Gd extends BaseLib implements LibInterface
         $this->image = $image;
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -105,7 +99,6 @@ class Gd extends BaseLib implements LibInterface
         $this->image = $image;
     }
 
-
     /**
      * Creates a new truecolor image
      *
@@ -115,7 +108,7 @@ class Gd extends BaseLib implements LibInterface
      *
      * @return resource
      */
-    private function createImage ($width, $height, array $background = array(0, 0, 0))
+    private function createImage($width, $height, array $background = array(0, 0, 0))
     {
         if (($image = imagecreatetruecolor($width, $height)) === false) {
             throw new ImageException('Error creating a image');
@@ -138,7 +131,6 @@ class Gd extends BaseLib implements LibInterface
         return $image;
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -151,7 +143,6 @@ class Gd extends BaseLib implements LibInterface
             throw new ImageException("The image format '{$extension}' cannot be saved to '{$filename}'");
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -176,7 +167,6 @@ class Gd extends BaseLib implements LibInterface
         return ob_get_clean();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -184,7 +174,6 @@ class Gd extends BaseLib implements LibInterface
     {
         return image_type_to_mime_type($this->type);
     }
-
 
     /**
      * {@inheritDoc}
@@ -194,7 +183,6 @@ class Gd extends BaseLib implements LibInterface
         return imagesx($this->image);
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -202,7 +190,6 @@ class Gd extends BaseLib implements LibInterface
     {
         return imagesy($this->image);
     }
-
 
     /**
      * {@inheritDoc}
@@ -235,7 +222,6 @@ class Gd extends BaseLib implements LibInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -261,7 +247,6 @@ class Gd extends BaseLib implements LibInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -275,7 +260,6 @@ class Gd extends BaseLib implements LibInterface
 
         $this->image = $image;
     }
-
 
     /**
      * {@inheritDoc}

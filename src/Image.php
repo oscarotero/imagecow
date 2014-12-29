@@ -9,13 +9,11 @@
 
 namespace Imagecow;
 
-use Imagecow\ImageException;
 
 class Image
 {
     protected $image;
     protected $filename;
-
 
     /**
      * Static function to create a new Imagecow instance from an image file
@@ -37,7 +35,6 @@ class Image
 
         return new static($class::createFromFile($image), $image);
     }
-
 
     /**
      * Static function to filter the transform operations according to client properties
@@ -71,7 +68,6 @@ class Image
 
         return implode('|', $transform);
     }
-
 
     /**
      * Check whether the client match with a selector
@@ -131,7 +127,6 @@ class Image
         return true;
     }
 
-
     /**
      * Constructor.
      *
@@ -148,7 +143,6 @@ class Image
         }
     }
 
-
     /**
      * Inverts the image vertically
      *
@@ -161,7 +155,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Inverts the image horizontally
      *
@@ -173,7 +166,6 @@ class Image
 
         return $this;
     }
-
 
     /**
      * Saves the image in a file
@@ -189,7 +181,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Gets the image data in a string
      *
@@ -199,7 +190,6 @@ class Image
     {
         return $this->image->getString();
     }
-
 
     /**
      * Gets the mime type of the image
@@ -211,7 +201,6 @@ class Image
         return $this->image->getMimeType();
     }
 
-
     /**
      * Gets the width of the image
      *
@@ -222,7 +211,6 @@ class Image
         return $this->image->getWidth();
     }
 
-
     /**
      * Gets the height of the image
      *
@@ -232,7 +220,6 @@ class Image
     {
         return $this->image->getHeight();
     }
-
 
     /**
      * Converts the image to other format
@@ -247,7 +234,6 @@ class Image
 
         return $this;
     }
-
 
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
@@ -275,7 +261,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Crops the image
      *
@@ -302,7 +287,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
@@ -322,7 +306,7 @@ class Image
         $height = self::getSize($height, $imageHeight);
 
         if (($width === 0) || ($height === 0)) {
-            return false;
+            return $this;
         }
 
         $width_resize = ($width / $imageWidth) * 100;
@@ -339,7 +323,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Rotates the image
      *
@@ -355,7 +338,6 @@ class Image
 
         return $this;
     }
-
 
     /**
      * Define the image compression quality for jpg images
@@ -379,7 +361,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Set a default background color used to fill in some transformation functions
      *
@@ -393,7 +374,6 @@ class Image
 
         return $this;
     }
-
 
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
@@ -415,7 +395,6 @@ class Image
             return $exif;
         }
     }
-
 
     /**
      * Transform the image executing various operations of crop, resize, resizeCrop and format
@@ -439,7 +418,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Send the HTTP header with the content-type, output the image data and die.
      */
@@ -450,7 +428,6 @@ class Image
             die($string);
         }
     }
-
 
     /**
      * Auto-rotate the image according with its exif data
@@ -493,7 +470,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Check whether the image is an animated gif
      *
@@ -519,7 +495,6 @@ class Image
         return ($count > 1);
     }
 
-
     /**
      * Converts a string with operations in an array
      *
@@ -543,13 +518,12 @@ class Image
 
             $return[] = array(
                 'function' => $function,
-                'params' => $params
+                'params' => $params,
             );
         }
 
         return $return;
     }
-
 
     /**
      * Calculates the point position according with the image dimmensions.
@@ -583,7 +557,6 @@ class Image
         return self::getSize($position, $canvas);
     }
 
-
     /**
      * Get the size of the image.
      *
@@ -605,7 +578,6 @@ class Image
         return intval($value);
     }
 
-
     /**
      * Check if the image must be enlarged or not (if the new dimmensions are bigger than original)
      *
@@ -622,7 +594,6 @@ class Image
 
         return false;
     }
-
 
     /**
      * Checks the library to use and returns its class

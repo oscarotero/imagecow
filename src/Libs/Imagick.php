@@ -18,7 +18,7 @@ class Imagick extends BaseLib implements LibInterface
     /**
      * {@inheritDoc}
      *
-     * @return \Imagick
+     * @return Imagick
      */
     public static function createFromFile($filename)
     {
@@ -34,7 +34,7 @@ class Imagick extends BaseLib implements LibInterface
     /**
      * {@inheritDoc}
      *
-     * @return \Imagick
+     * @return Imagick
      */
     public static function createFromString($string)
     {

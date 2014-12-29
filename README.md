@@ -16,7 +16,7 @@ It's a php library to manipulate images to web.
 * Use GD2 or Imagick libraries (and can be extended with more)
 * Has an optional client-side javascript to generate responsive images
 * Very simple and easy to use. There is not a lot of features, just only the basics: crop, resize, resizeCrop, etc.
-* Use the PSR-0 autoloader standard
+* Use the PSR-4 autoloader standard
 
 
 Notes on 1.x version
@@ -200,6 +200,20 @@ $image = $icon->getBetterQuality();
 
 //Do imagecow stuff
 $image->resize(100)->save('my-image.png');
+```
+
+SvgExtractor. This class allows generate images from a svg file (usefull for browsers that don't support svg format):
+
+```php
+use Imagecow\Utils\SvgExtractor;
+
+$svg = new SvgExtractor('image.svg');
+
+//Gets the image
+$image = $svg->get();
+
+//Now you can execute the imagecow methods:
+$image->resize(200)->format('jpg')->save('image.jpg');
 ```
 
 

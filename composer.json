@@ -3,7 +3,7 @@
 	"type": "library",
 	"description": "PHP library to manipulate and generate responsive images",
 	"keywords": ["image"],
-	"homepage": "https://github.com/oscarotero/imageCow/",
+	"homepage": "https://github.com/oscarotero/imagecow/",
 	"license": "MIT",
 	"authors": [
 		{
@@ -15,14 +15,14 @@
 	],
 	"support": {
 		"email": "oom@oscarotero.com",
-		"issues": "https://github.com/oscarotero/imageCow/issues"
+		"issues": "https://github.com/oscarotero/imagecow/issues"
 	},
 	"require": {
 		"php": ">=5.3.0"
 	},
 	"autoload": {
-		"psr-0": {
-			"Imagecow": ""
+		"psr-4": {
+			"Imagecow\\": "src"
 		}
 	}
 }

@@ -16,24 +16,51 @@ class Image
     protected $filename;
 
     /**
-     * Static function to create a new Imagecow instance from an image file
+     * Static function to create a new Imagecow instance from an image file or string
      *
      * @param string $image   The name of the image file or binary string
      * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
      *
      * @return Image The Imagecow instance
-     *
      */
     public static function create($image, $library = null)
     {
-        $class = self::getLibraryClass($library);
-
         //check if it's a binary string
         if (!ctype_print($image)) {
-            return new static($class::createFromString($image));
+            return static::createFromString($image, $library);
         }
 
+        return static::createFromFile($image, $library);
+    }
+
+    /**
+     * Static function to create a new Imagecow instance from an image file
+     *
+     * @param string $image   The path of the file
+     * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
+     *
+     * @return Image
+     */
+    public static function createFromFile($image, $library = null)
+    {
+        $class = self::getLibraryClass($library);
+
         return new static($class::createFromFile($image), $image);
+    }
+
+    /**
+     * Static function to create a new Imagecow instance from a binary string
+     *
+     * @param string $string  The string of the image
+     * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
+     *
+     * @return Image
+     */
+    public static function createFromString($string, $library = null)
+    {
+        $class = self::getLibraryClass($library);
+
+        return new static($class::createFromString($string));
     }
 
     /**

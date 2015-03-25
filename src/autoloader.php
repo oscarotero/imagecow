@@ -1,24 +1,12 @@
 <?php
-function ImagecowLoader($className)
-{
-    if (strpos($className, 'Imagecow') !== 0) {
+spl_autoload_register(function ($class) {
+    if (strpos($class, 'Imagecow\\') !== 0) {
         return;
     }
 
-    $className = substr($className, 9);
-    $fileName = __DIR__.'/';
+    $file = __DIR__.str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen('Imagecow'))).'.php';
 
-    if ($lastNsPos = strripos($className, '\\')) {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
-        $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
+    if (is_file($file)) {
+        require_once $file;
     }
-
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className).'.php';
-
-    if (is_file($fileName)) {
-        require $fileName;
-    }
-}
-
-spl_autoload_register('ImagecowLoader');
+});

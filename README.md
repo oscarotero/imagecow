@@ -1,8 +1,8 @@
 Imagecow
 ========
 
-[![Build Status](https://travis-ci.org/oscarotero/imageCow.svg?branch=master)](https://travis-ci.org/oscarotero/imageCow)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/oscarotero/imageCow/badges/quality-score.png?s=968f74e091c90ce0100cbfdce2ad925eb0b2ab20)](https://scrutinizer-ci.com/g/oscarotero/imageCow/)
+[![Build Status](https://travis-ci.org/oscarotero/imagecow.svg?branch=master)](https://travis-ci.org/oscarotero/imagecow)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/oscarotero/imagecow/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/oscarotero/imagecow/?branch=master)
 
 Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
@@ -46,6 +46,10 @@ $image = Image::create('my-image.jpg');
 $data = file_get_contents('my-image.jpg');
 
 $image = Image::create($data);
+
+//You can use also the direct functions:
+$image = Image::createFromString($data);
+$image = Image::createFromFile($file);
 ```
 
 #### Crop the image

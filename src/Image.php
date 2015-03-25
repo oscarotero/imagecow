@@ -9,7 +9,6 @@
 
 namespace Imagecow;
 
-
 class Image
 {
     protected $image;

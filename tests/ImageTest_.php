@@ -12,7 +12,8 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testJpg () {
+    public function testJpg()
+    {
         $file = __DIR__.'/images/image.jpg';
         $tmpFile = __DIR__.'/images/tmp.'.static::$library.'.image.jpg';
 
@@ -51,8 +52,8 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         $this->assertSame(400, $image->getHeight());
     }
 
-
-    public function testPng () {
+    public function testPng()
+    {
         $file = __DIR__.'/images/image.png';
         $tmpFile = __DIR__.'/images/tmp.'.static::$library.'.image.png';
 

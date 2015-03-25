@@ -12,32 +12,32 @@ class StylecowTest extends PHPUnit_Framework_TestCase
         $operations = array(
             array(
                 'resize,500,300;max-width=400:resize,400',
-                'resize,500,300|resize,400'
+                'resize,500,300|resize,400',
             ),
             array(
                 'resize,500,300;min-width=400:resize,400',
-                'resize,500,300|resize,400'
+                'resize,500,300|resize,400',
             ),
             array(
                 'resize,500,300;max-width=399:resize,400',
-                'resize,500,300'
+                'resize,500,300',
             ),
             array(
                 'resize,500,300;min-width=401:resize,400',
-                'resize,500,300'
+                'resize,500,300',
             ),
             array(
                 'resize,500,300;min-width=399,max-width=401:resize,400',
-                'resize,500,300|resize,400'
+                'resize,500,300|resize,400',
             ),
             array(
                 'resize,500,300;min-width=398,max-width=399:resize,400',
-                'resize,500,300'
+                'resize,500,300',
             ),
             array(
                 'resize,500,300;min-width=398,max-width=400:resize,400',
-                'resize,500,300|resize,400'
-            )
+                'resize,500,300|resize,400',
+            ),
         );
 
         foreach ($operations as $test) {

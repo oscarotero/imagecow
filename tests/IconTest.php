@@ -6,19 +6,19 @@ use Imagecow\Utils\IconExtractor;
 
 class IconTest extends PHPUnit_Framework_TestCase
 {
-    public function testIcon ()
+    public function testIcon()
     {
-    	$file = __DIR__.'/images/favicon.ico';
+        $file = __DIR__.'/images/favicon.ico';
         $tmpFile = __DIR__.'/images/tmp.favicon.png';
 
-    	$icon = new IconExtractor($file);
+        $icon = new IconExtractor($file);
 
-		$image = $icon->getBetterQuality();
+        $image = $icon->getBetterQuality();
 
-		$this->assertSame(256, $image->getWidth());
-		$this->assertSame(256, $image->getHeight());
+        $this->assertSame(256, $image->getWidth());
+        $this->assertSame(256, $image->getHeight());
 
-		//Save
+        //Save
         $image->save($tmpFile);
 
         $this->assertTrue(is_file($tmpFile));

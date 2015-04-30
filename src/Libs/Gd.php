@@ -17,11 +17,20 @@ class Gd extends BaseLib implements LibInterface
     protected $type;
 
     /**
+     * {@inheritdoc}
+     */
+    public static function checkCompatibility()
+    {
+        return extension_loaded('gd');
+    }
+
+    /**
      * {@inheritDoc}
      */
     public static function createFromFile($filename)
     {
         $data = @getImageSize($filename);
+
         if ($data && is_array($data)) {
             $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
 

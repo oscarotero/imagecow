@@ -12,6 +12,13 @@ namespace Imagecow\Libs;
 interface LibInterface
 {
     /**
+     * Check if the library is installed
+     *
+     * @return boolean
+     */
+    public static function checkCompatibility();
+
+    /**
      * Create an instance from an image file
      *
      * @param string $filename Name of the file to load

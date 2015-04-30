@@ -633,13 +633,17 @@ class Image
     public static function getLibraryClass($library)
     {
         if (!$library) {
-            $library = extension_loaded('imagick') ? 'Imagick' : 'Gd';
+            $library = Libs\Imagick::checkCompatibility() ? 'Imagick' : 'Gd';
         }
 
         $class = 'Imagecow\\Libs\\'.$library;
 
         if (!class_exists($class)) {
             throw new ImageException('The image library is not valid');
+        }
+
+        if (!$class::checkCompatibility()) {
+            throw new ImageException("The image library '$library' is not installed in this computer");
         }
 
         return $class;

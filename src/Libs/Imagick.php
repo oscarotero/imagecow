@@ -16,6 +16,14 @@ class Imagick extends BaseLib implements LibInterface
     protected $image;
 
     /**
+     * {@inheritdoc}
+     */
+    public static function checkCompatibility()
+    {
+        return extension_loaded('imagick');
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @return Imagick

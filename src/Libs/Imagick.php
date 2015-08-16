@@ -1,16 +1,11 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * Imagick library
- *
- * PHP version 5.3
- */
-
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
 
+/**
+ * Imagick library
+ */
 class Imagick extends BaseLib implements LibInterface
 {
     protected $image;

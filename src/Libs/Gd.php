@@ -1,16 +1,11 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * GD library
- *
- * PHP version 5.3
- */
-
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
 
+/**
+ * GD library
+ */
 class Gd extends BaseLib implements LibInterface
 {
     protected $image;

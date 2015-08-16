@@ -1,6 +1,14 @@
 <?php
 namespace Imagecow\Utils;
 
+use Imagick;
+use Imagecow\Libs\Imagick as ImagickLib;
+use Imagecow\Image;
+
+/**
+ * Simple class to extracts all images from .ico files
+ * Requires Imagick
+ */
 class IconExtractor
 {
     protected $image;
@@ -16,7 +24,7 @@ class IconExtractor
             throw new \Exception('IconExtractor needs imagick extension');
         }
 
-        $image = new \Imagick();
+        $image = new Imagick();
         $image->readImage($filename);
 
         $this->image = $image;
@@ -25,7 +33,7 @@ class IconExtractor
     /**
      * Get the better quality image found in the icon
      *
-     * @return \Imagecow\Image
+     * @return Image
      */
     public function getBetterQuality()
     {
@@ -43,7 +51,7 @@ class IconExtractor
 
         $this->image->setIteratorIndex($better);
 
-        $better = new \Imagecow\Image(new \Imagecow\Libs\Imagick($this->image));
+        $better = new Image(new ImagickLib($this->image));
         $better->format('png');
 
         return $better;

@@ -1,14 +1,9 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * Abstract core class extended by one of the available libraries (GD, Imagick)
- *
- * PHP version 5.3
- */
-
 namespace Imagecow;
 
+/**
+ * Abstract core class extended by the available libraries (GD, Imagick)
+ */
 class Image
 {
     protected $image;
@@ -275,8 +270,8 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = self::getSize($width, $imageWidth);
-        $height = self::getSize($height, $imageHeight);
+        $width = self::getResizeSize($width, $imageWidth);
+        $height = self::getResizeSize($height, $imageHeight);
 
         if (!$enlarge && self::enlarge($width, $imageWidth) && self::enlarge($height, $imageHeight)) {
             return $this;
@@ -302,11 +297,11 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = self::getSize($width, $imageWidth);
-        $height = self::getSize($height, $imageHeight);
+        $width = self::getResizeSize($width, $imageWidth);
+        $height = self::getResizeSize($height, $imageHeight);
 
-        $x = self::position($x, $width, $imageWidth);
-        $y = self::position($y, $height, $imageHeight);
+        $x = self::getCropPosition($x, $width, $imageWidth);
+        $y = self::getCropPosition($y, $height, $imageHeight);
 
         $this->image->crop($width, $height, $x, $y);
 
@@ -328,8 +323,8 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = self::getSize($width, $imageWidth);
-        $height = self::getSize($height, $imageHeight);
+        $width = self::getResizeSize($width, $imageWidth);
+        $height = self::getResizeSize($height, $imageHeight);
 
         if (($width === 0) || ($height === 0)) {
             return $this;
@@ -552,7 +547,7 @@ class Image
     }
 
     /**
-     * Calculates the point position according with the image dimmensions.
+     * Calculates the x,y position
      *
      * @param string|integer $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
      * @param integer        $size     The size of the new cropped/resized image.
@@ -560,7 +555,7 @@ class Image
      *
      * @return integer The position of the point in pixeles.
      */
-    protected static function position($position, $size, $canvas)
+    protected static function getCropPosition($position, $size, $canvas)
     {
         if (is_int($position)) {
             return $position;
@@ -580,20 +575,26 @@ class Image
                 return $canvas - $size;
         }
 
-        return self::getSize($position, $canvas);
+        if (substr($position, -1) === '%') {
+            $percentage = intval(substr($value, 0, -1));
+
+            return ($center_canvas = ($canvas/100) * $percentage) - (($size/100) * $percentage);
+        }
+
+        return intval($value);
     }
 
     /**
      * Get the size of the image.
      *
-     * @param string|integer $value      The size in numbers (pixels) or percentaje.
+     * @param string|integer $value      The size in numbers (pixels) or percentage.
      * @param integer        $total_size The total size of the image (used to calculate the percentaje)
      *
      * @return integer The calculated value
      */
-    protected static function getSize($value, $total_size)
+    protected static function getResizeSize($value, $total_size)
     {
-        if (!$value) {
+        if (empty($value)) {
             return $total_size;
         }
 

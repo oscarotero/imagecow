@@ -1,23 +1,18 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * Exception class to manage the image errors
- *
- * PHP version 5.3
- */
-
 namespace Imagecow;
 
+/**
+ * Exception class to manage the image errors
+ */
 class ImageException extends \Exception
 {
     /**
-     * Generate an image with the message printed. Use alwais the Gd library.
+     * Generate an image with the message printed. Use always the Gd library.
      *
-     * @param int $width  Width of the image. By default 400px
-     * @param int $height Height of the image. By default 400px
+     * @param int $width  Width of the image
+     * @param int $height Height of the image
      *
-     * @return Image The Imagecow instance with the image
+     * @return Image
      */
     public function getImage($width = 400, $height = 400)
     {

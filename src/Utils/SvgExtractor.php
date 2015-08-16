@@ -1,6 +1,14 @@
 <?php
 namespace Imagecow\Utils;
 
+use Imagick;
+use Imagecow\Libs\Imagick as ImagickLib;
+use Imagecow\Image;
+
+/**
+ * Simple class to convert a svg file to png
+ * Requires Imagick
+ */
 class SvgExtractor
 {
     protected $image;

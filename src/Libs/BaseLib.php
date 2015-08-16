@@ -1,14 +1,9 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * Base class library with common methods and properties
- *
- * PHP version 5.3
- */
-
 namespace Imagecow\Libs;
 
+/**
+ * Base class extended by other libraries with common methods and properties
+ */
 abstract class BaseLib
 {
     protected $quality = 86;

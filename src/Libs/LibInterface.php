@@ -1,14 +1,9 @@
 <?php
-/**
- * Imagecow PHP library
- *
- * Interface for the available libraries
- *
- * PHP version 5.3
- */
-
 namespace Imagecow\Libs;
 
+/**
+ * Interface implemented by all libraries
+ */
 interface LibInterface
 {
     /**

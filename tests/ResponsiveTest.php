@@ -3,7 +3,7 @@ include_once dirname(__DIR__).'/src/autoloader.php';
 
 use Imagecow\Image;
 
-class StylecowTest extends PHPUnit_Framework_TestCase
+class ResponsiveTest extends PHPUnit_Framework_TestCase
 {
     public function testResponsiveOperations()
     {

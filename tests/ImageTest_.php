@@ -50,6 +50,8 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
 
         $this->assertSame(500, $image->getWidth());
         $this->assertSame(400, $image->getHeight());
+
+        unlink($tmpFile);
     }
 
     public function testPng()
@@ -90,5 +92,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
 
         $this->assertSame(200, $image->getWidth());
         $this->assertSame(150, $image->getHeight());
+
+        unlink($tmpFile);
     }
 }

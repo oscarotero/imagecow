@@ -27,5 +27,7 @@ class IconTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(256, $image->getWidth());
         $this->assertSame(256, $image->getHeight());
+
+        unlink($tmpFile);
     }
 }

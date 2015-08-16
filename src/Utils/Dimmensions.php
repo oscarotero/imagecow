@@ -25,7 +25,7 @@ class Dimmensions
      * @param integer $newWidth
      * @param integer $newHeight
      * @param boolean $cover
-     * 
+     *
      * @return array [width, height]
      */
     public static function getResizeDimmensions($oldWidth, $oldHeight, $newWidth, $newHeight, $cover = false)
@@ -76,7 +76,7 @@ class Dimmensions
      * @param integer|string $value
      * @param integer        $relatedValue
      * @param boolean        $position
-     * 
+     *
      * @return integer
      */
     public static function getIntegerValue($value, $relatedValue, $position = false)
@@ -98,7 +98,7 @@ class Dimmensions
      * @param integer|string $value
      * @param integer        $relatedValue
      * @param boolean        $position
-     * 
+     *
      * @return string
      */
     public static function getPercentageValue($value, $relatedValue, $position = false)

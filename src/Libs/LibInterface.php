@@ -18,7 +18,7 @@ interface LibInterface
      *
      * @param string $filename Name of the file to load
      *
-     * @return $this
+     * @return self
      */
     public static function createFromFile($filename);
 
@@ -27,7 +27,7 @@ interface LibInterface
      *
      * @param string $string The image content
      *
-     * @return $this
+     * @return self
      */
     public static function createFromString($string);
 
@@ -35,8 +35,6 @@ interface LibInterface
      * Saves the image in a file
      *
      * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
-     *
-     * @return void
      */
     public function save($filename);
 
@@ -72,8 +70,6 @@ interface LibInterface
      * Converts the image to other format
      *
      * @param string $format The new format: png, jpg, gif
-     *
-     * @return void
      */
     public function format($format);
 
@@ -82,8 +78,6 @@ interface LibInterface
      *
      * @param integer $width  The max width of the image
      * @param integer $height The max height of the image
-     *
-     * @return void
      */
     public function resize($width, $height);
 
@@ -94,8 +88,6 @@ interface LibInterface
      * @param integer $height The new height of the image
      * @param integer $x      The "x" position where start to crop
      * @param integer $y      The "y" position where start to crop
-     *
-     * @return void
      */
     public function crop($width, $height, $x, $y);
 
@@ -103,22 +95,16 @@ interface LibInterface
      * Rotates the image
      *
      * @param integer $angle Rotation angle in degrees (anticlockwise)
-     *
-     * @return void
      */
     public function rotate($angle);
 
     /**
      * Inverts the image vertically
-     *
-     * @return void
      */
     public function flip();
 
     /**
      * Inverts the image horizontally
-     *
-     * @return void
      */
     public function flop();
 
@@ -126,8 +112,6 @@ interface LibInterface
      * Define the image compression quality for jpg images
      *
      * @param integer $quality The quality (from 0 to 100)
-     *
-     * @return void
      */
     public function setCompressionQuality($quality);
 
@@ -135,8 +119,6 @@ interface LibInterface
      * Set a default background color used to fill in some transformation functions
      *
      * @param array $background The color in rgb, for example: array(0, 127, 34)
-     *
-     * @return void
      */
     public function setBackground(array $background);
 
@@ -144,8 +126,6 @@ interface LibInterface
      * Defines the image as an animated image
      *
      * @param boolean $animated
-     *
-     * @return void
      */
     public function setAnimated($animated);
 }

@@ -6,8 +6,16 @@ namespace Imagecow;
  */
 class Image
 {
+    const LIB_GD = 'Gd';
+    const LIB_IMAGICK = 'Imagick';
+
     protected $image;
     protected $filename;
+    protected $defaults = array(
+        'enlarge' => false,
+        'x' => 'center',
+        'y' => 'middle',
+    );
 
     /**
      * Static function to create a new Imagecow instance from an image file or string
@@ -165,9 +173,40 @@ class Image
     }
 
     /**
+     * Defined the center point of the image
+     * used by default by the resize method
+     *
+     * @param string $x
+     * @param string $y
+     *
+     * @return self
+     */
+    public function centerPoint($x, $y)
+    {
+        $this->defaults['x'] = self::getPositionInPercentage($x);
+        $this->defaults['y'] = self::getPositionInPercentage($y);
+
+        return $this;
+    }
+
+    /**
+     * Configure whether the image can be enlarged or not
+     *
+     * @param boolean $enlarge
+     *
+     * @return self
+     */
+    public function enlarge($enlarge = true)
+    {
+        $this->defaults['enlarge'] = $enlarge;
+
+        return $this;
+    }
+
+    /**
      * Inverts the image vertically
      *
-     * @return $this
+     * @return self
      */
     public function flip()
     {
@@ -179,7 +218,7 @@ class Image
     /**
      * Inverts the image horizontally
      *
-     * @return $this
+     * @return self
      */
     public function flop()
     {
@@ -193,7 +232,7 @@ class Image
      *
      * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
      *
-     * @return $this
+     * @return self
      */
     public function save($filename = null)
     {
@@ -247,7 +286,7 @@ class Image
      *
      * @param string $format The new format: png, jpg, gif
      *
-     * @return $this
+     * @return self
      */
     public function format($format)
     {
@@ -261,11 +300,11 @@ class Image
      *
      * @param integer|string $width   The max width of the image. It can be a number (pixels) or percentaje
      * @param integer|string $height  The max height of the image. It can be a number (pixels) or percentaje
-     * @param boolean        $enlarge True if the new image can be bigger (false by default)
+     * @param boolean|null   $enlarge
      *
-     * @return $this
+     * @return self
      */
-    public function resize($width, $height = 0, $enlarge = false)
+    public function resize($width, $height = 0, $enlarge = null)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -273,7 +312,11 @@ class Image
         $width = self::getResizeSize($width, $imageWidth);
         $height = self::getResizeSize($height, $imageHeight);
 
-        if (!$enlarge && self::enlarge($width, $imageWidth) && self::enlarge($height, $imageHeight)) {
+        if ($enlarge === null) {
+            $enlarge = $this->defaults['enlarge'];
+        }
+
+        if (!$enlarge && self::getEnlarge($width, $imageWidth) && self::getEnlarge($height, $imageHeight)) {
             return $this;
         }
 
@@ -285,14 +328,14 @@ class Image
     /**
      * Crops the image
      *
-     * @param integer|string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param integer|string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param integer|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param integer|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string      $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param integer|string      $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param integer|string|null $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param integer|string|null $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
-     * @return $this
+     * @return self
      */
-    public function crop($width, $height, $x = 'center', $y = 'middle')
+    public function crop($width, $height, $x = null, $y = null)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -300,8 +343,8 @@ class Image
         $width = self::getResizeSize($width, $imageWidth);
         $height = self::getResizeSize($height, $imageHeight);
 
-        $x = self::getCropPosition($x, $width, $imageWidth);
-        $y = self::getCropPosition($y, $height, $imageHeight);
+        $x = self::getCropPosition($x, $this->defaults['x'], $width, $imageWidth);
+        $y = self::getCropPosition($y, $this->defaults['y'], $height, $imageHeight);
 
         $this->image->crop($width, $height, $x, $y);
 
@@ -311,14 +354,15 @@ class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param integer|string $width  The new width in number (pixels) or percentaje
-     * @param integer|string $height The new height in number (pixels) or percentaje
-     * @param integer|string $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param integer|string $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string      $width   The new width in number (pixels) or percentaje
+     * @param integer|string      $height  The new height in number (pixels) or percentaje
+     * @param integer|string|null $x       The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
+     * @param integer|string|null $y       The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param boolean|null        $enlarge
      *
-     * @return $this
+     * @return self
      */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle')
+    public function resizeCrop($width, $height, $x = null, $y = null, $enlarge = null)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -334,9 +378,9 @@ class Image
         $height_resize = ($height / $imageHeight) * 100;
 
         if ($width_resize < $height_resize) {
-            $this->resize(0, $height);
+            $this->resize(0, $height, $enlarge);
         } else {
-            $this->resize($width, 0);
+            $this->resize($width, 0, $enlarge);
         }
 
         $this->crop($width, $height, $x, $y);
@@ -349,7 +393,7 @@ class Image
      *
      * @param integer $angle Rotation angle in degrees (anticlockwise)
      *
-     * @return $this
+     * @return self
      */
     public function rotate($angle)
     {
@@ -365,7 +409,7 @@ class Image
      *
      * @param integer $quality The quality (from 0 to 100)
      *
-     * @return $this
+     * @return self
      */
     public function setCompressionQuality($quality)
     {
@@ -387,7 +431,7 @@ class Image
      *
      * @param array $background The color in rgb, for example: array(0,127,34)
      *
-     * @return $this
+     * @return self
      */
     public function setBackground(array $background)
     {
@@ -402,7 +446,7 @@ class Image
      *
      * @param null|string $key
      *
-     * @return null|array The data where the array indexes are the header names and array values the associated values.
+     * @return null|array
      */
     public function getExifData($key = null)
     {
@@ -422,7 +466,7 @@ class Image
      *
      * @param string $operations The string with all operations separated by "|".
      *
-     * @return $this
+     * @return self
      */
     public function transform($operations = '')
     {
@@ -454,7 +498,7 @@ class Image
      * Auto-rotate the image according with its exif data
      * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964
      *
-     * @return $this
+     * @return self
      */
     public function autoRotate()
     {
@@ -521,7 +565,7 @@ class Image
      *
      * @param string $operations The operations string
      *
-     * @return array The operation width the function name and the parameters
+     * @return array
      */
     private static function parseOperations($operations)
     {
@@ -549,39 +593,61 @@ class Image
     /**
      * Calculates the x,y position
      *
-     * @param string|integer $position The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
-     * @param integer        $size     The size of the new cropped/resized image.
-     * @param integer        $canvas   The size of the old image
+     * @param string|integer|null $position     The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
+     * @param string|integer      $def_position The default value if the previous value is null
+     * @param integer             $size         The size of the new cropped/resized image.
+     * @param integer             $canvas       The size of the old image
      *
-     * @return integer The position of the point in pixeles.
+     * @return integer
      */
-    protected static function getCropPosition($position, $size, $canvas)
+    protected static function getCropPosition($position, $def_position, $size, $canvas)
     {
-        if (is_int($position)) {
-            return $position;
+        if ($position === null) {
+            $position = $def_position;
         }
 
+        if (ctype_digit($position)) {
+            return intval($position);
+        }
+
+        $percentage = intval(substr(static::getPositionInPercentage($position), 0, -1));
+
+        return ($center_canvas = ($canvas/100) * $percentage) - (($size/100) * $percentage);
+    }
+
+    /**
+     * Calculates the percentage of a point
+     *
+     * @param string|integer $position
+     * @param integer        $total_size
+     *
+     * @return string
+     */
+    protected static function getPositionInPercentage($position, $total_size = null)
+    {
         switch ($position) {
             case 'top':
             case 'left':
-                return 0;
+                return '0%';
 
             case 'middle':
             case 'center':
-                return ($canvas/2) - ($size/2);
+                return '50%';
 
             case 'right':
             case 'bottom':
-                return $canvas - $size;
+                return '100%';
         }
 
         if (substr($position, -1) === '%') {
-            $percentage = intval(substr($value, 0, -1));
-
-            return ($center_canvas = ($canvas/100) * $percentage) - (($size/100) * $percentage);
+            return $position;
         }
 
-        return intval($value);
+        if ($total_size && ctype_digit($position)) {
+            return (($position / $total_size) * 100).'%';
+        }
+
+        throw new ImageException("Invalid position: {$position}");
     }
 
     /**
@@ -590,7 +656,7 @@ class Image
      * @param string|integer $value      The size in numbers (pixels) or percentage.
      * @param integer        $total_size The total size of the image (used to calculate the percentaje)
      *
-     * @return integer The calculated value
+     * @return integer
      */
     protected static function getResizeSize($value, $total_size)
     {
@@ -611,9 +677,9 @@ class Image
      * @param integer $new_size      The new size of the image
      * @param integer $original_size The original size of the image
      *
-     * @return boolean True if the image must be enlarged and false if not.
+     * @return boolean
      */
-    protected static function enlarge($new_size, $original_size)
+    protected static function getEnlarge($new_size, $original_size)
     {
         if ($new_size && ($new_size > $original_size)) {
             return true;
@@ -627,14 +693,14 @@ class Image
      *
      * @param string $library The library name (Gd, Imagick)
      *
-     * @return string The library class
-     *
      * @throws ImageException if the image library does not exists.
+     *
+     * @return string
      */
     public static function getLibraryClass($library)
     {
         if (!$library) {
-            $library = Libs\Imagick::checkCompatibility() ? 'Imagick' : 'Gd';
+            $library = Libs\Imagick::checkCompatibility() ? self::LIB_IMAGICK : self::LIB_GD;
         }
 
         $class = 'Imagecow\\Libs\\'.$library;

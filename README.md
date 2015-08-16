@@ -15,14 +15,8 @@ It's a php library to manipulate images to web.
 * Written in PHP 5.3
 * Use GD2 or Imagick libraries (and can be extended with more)
 * Has an optional client-side javascript to generate responsive images
-* Very simple and easy to use. There is not a lot of features, just only the basics: crop, resize, resizeCrop, etc.
+* Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
 * Use the PSR-4 autoloader standard
-
-
-Notes on 1.x version
---------------------
-
-The API in 1.x version changes a little bit (not much, only on create the instances).
 
 
 How use it?
@@ -31,13 +25,13 @@ How use it?
 Use the static function Imagecow\Image::create() to load an image and returns an imageCow instance. This function has two arguments:
 
 * image: The image file path or a binary string with the image data
-* library: The library used (Gd or Imagick). If it's not provided, it's detected automatically (in order of preference: Imagick, Gd)
+* library: The library used (Gd or Imagick). If it's not provided, it's detected automatically (in order of preference: `Image::LIB_IMAGICK`, `Image::LIB_GD`)
 
 ```php
 use Imagecow\Image;
 
 //Create an Imagick instance of "my-image.jpg" file:
-$image = Image::create('my-image.jpg', 'Imagick');
+$image = Image::create('my-image.jpg', Image::LIB_IMAGICK);
 
 //Create an instance detecting the library automatically
 $image = Image::create('my-image.jpg');
@@ -61,6 +55,9 @@ $image->crop(200, 300); //Crops the image to 200x300px
 $image->crop(200, 300, 'left', 'top'); //Crops the image to 200x300px starting from left-top
 $image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 20px (x) / 50% (y)
 $image->crop('50%', '50%'); //Crops the image to half size
+
+//you can define the x,y positions by default:
+$image->centerPoint('33%', 'bottom')->crop(200, 300);
 ```
 
 #### Resize the image
@@ -71,14 +68,23 @@ $image->crop('50%', '50%'); //Crops the image to half size
 $image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
 $image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
 $image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
+
+//You can define an enlarge value by default:
+$image->enlarge(true)->resize(200, 300); //its the same than resize(200, 300, true)
 ```
 
 #### Resize and Crop the image
 
 ```php
-//Arguments: ($width, $height, $x = 'center', $y = 'middle')
+//Arguments: ($width, $height, $x = 'center', $y = 'middle', $enlarge = false)
 
 $image->resizeCrop(200, 300); //Resizes and crops the image to this size.
+
+//Define the enlarge, x and y positions by default:
+$image
+	->enlarge()
+	->centerPoint('23%', '100%')
+	->resizeCrop(200, 500);
 ```
 
 #### Rotate
@@ -182,12 +188,6 @@ img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
 ```
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
-
-
-Usage in PHP frameworks
------------------------
-
-For Laravel and PHP FuelPHP users you can use the wrapper by @kevbaldwyn: https://github.com/kevbaldwyn/image/
 
 Other utils
 -----------

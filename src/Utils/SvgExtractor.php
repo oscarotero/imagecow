@@ -2,7 +2,6 @@
 namespace Imagecow\Utils;
 
 use Imagick;
-use Imagecow\Libs\Imagick as ImagickLib;
 use Imagecow\Image;
 
 /**

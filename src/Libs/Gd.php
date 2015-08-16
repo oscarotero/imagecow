@@ -231,24 +231,13 @@ class Gd extends BaseLib implements LibInterface
      */
     public function resize($width, $height)
     {
-        $imageWidth = $this->getWidth();
-        $imageHeight = $this->getHeight();
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
-        if ($width !== 0 && ($height === 0 || ($imageWidth/$width) > ($imageHeight/$height))) {
-            $height = ceil(($width/$imageWidth) * $imageHeight);
-        } else {
-            $width = ceil(($height/$imageHeight) * $imageWidth);
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
+            throw new ImageException('There was an error resizing the image');
         }
 
-        if (($imageWidth !== $width) || ($imageHeight !== $height)) {
-            $image = $this->createImage($width, $height, array(0, 0, 0, 127));
-
-            if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $imageWidth, $imageHeight) === false) {
-                throw new ImageException('There was an error resizing the image');
-            }
-
-            $this->image = $image;
-        }
+        $this->image = $image;
     }
 
     /**

@@ -57,7 +57,7 @@ $image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 
 $image->crop('50%', '50%'); //Crops the image to half size
 
 //you can define the x,y positions by default:
-$image->centerPoint('33%', 'bottom')->crop(200, 300);
+$image->setCenterPoint('33%', 'bottom')->crop(200, 300);
 ```
 
 #### Resize the image
@@ -70,7 +70,7 @@ $image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps th
 $image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
 
 //You can define an enlarge value by default:
-$image->enlarge(true)->resize(200, 300); //its the same than resize(200, 300, true)
+$image->setEnlarge(true)->resize(200, 300); //its the same than resize(200, 300, true)
 ```
 
 #### Resize and Crop the image
@@ -82,8 +82,8 @@ $image->resizeCrop(200, 300); //Resizes and crops the image to this size.
 
 //Define the enlarge, x and y positions by default:
 $image
-	->enlarge()
-	->centerPoint('23%', '100%')
+	->setEnlarge()
+	->setCenterPoint('23%', '100%')
 	->resizeCrop(200, 500);
 ```
 

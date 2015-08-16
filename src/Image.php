@@ -1,6 +1,8 @@
 <?php
 namespace Imagecow;
 
+use Imagecow\Utils\Dimmensions;
+
 /**
  * Abstract core class extended by the available libraries (GD, Imagick)
  */
@@ -181,10 +183,10 @@ class Image
      *
      * @return self
      */
-    public function centerPoint($x, $y)
+    public function setCenterPoint($x, $y)
     {
-        $this->defaults['x'] = self::getPositionInPercentage($x);
-        $this->defaults['y'] = self::getPositionInPercentage($y);
+        $this->defaults['x'] = Dimmensions::getPercentageValue($x, $this->getWidth(), true);
+        $this->defaults['y'] = Dimmensions::getPercentageValue($y, $this->getHeight(), true);
 
         return $this;
     }
@@ -196,7 +198,7 @@ class Image
      *
      * @return self
      */
-    public function enlarge($enlarge = true)
+    public function setEnlarge($enlarge)
     {
         $this->defaults['enlarge'] = $enlarge;
 
@@ -301,22 +303,25 @@ class Image
      * @param integer|string $width   The max width of the image. It can be a number (pixels) or percentaje
      * @param integer|string $height  The max height of the image. It can be a number (pixels) or percentaje
      * @param boolean|null   $enlarge
+     * @param boolean        $cover
      *
      * @return self
      */
-    public function resize($width, $height = 0, $enlarge = null)
+    public function resize($width, $height = 0, $enlarge = null, $cover = false)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = self::getResizeSize($width, $imageWidth);
-        $height = self::getResizeSize($height, $imageHeight);
+        $width = Dimmensions::getIntegerValue($width, $imageWidth);
+        $height = Dimmensions::getIntegerValue($height, $imageHeight);
+
+        list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
 
         if ($enlarge === null) {
             $enlarge = $this->defaults['enlarge'];
         }
 
-        if (!$enlarge && self::getEnlarge($width, $imageWidth) && self::getEnlarge($height, $imageHeight)) {
+        if (($width === $imageWidth) || (!$enlarge && $width > $imageWidth)) {
             return $this;
         }
 
@@ -340,11 +345,11 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = self::getResizeSize($width, $imageWidth);
-        $height = self::getResizeSize($height, $imageHeight);
+        $width = Dimmensions::getIntegerValue($width, $imageWidth);
+        $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
-        $x = self::getCropPosition($x, $this->defaults['x'], $width, $imageWidth);
-        $y = self::getCropPosition($y, $this->defaults['y'], $height, $imageHeight);
+        $x = Dimmensions::getPositionValue(isset($x) ? $x : $this->defaults['x'], $width, $imageWidth);
+        $y = Dimmensions::getPositionValue(isset($y) ? $y : $this->defaults['y'], $height, $imageHeight);
 
         $this->image->crop($width, $height, $x, $y);
 
@@ -364,25 +369,7 @@ class Image
      */
     public function resizeCrop($width, $height, $x = null, $y = null, $enlarge = null)
     {
-        $imageWidth = $this->getWidth();
-        $imageHeight = $this->getHeight();
-
-        $width = self::getResizeSize($width, $imageWidth);
-        $height = self::getResizeSize($height, $imageHeight);
-
-        if (($width === 0) || ($height === 0)) {
-            return $this;
-        }
-
-        $width_resize = ($width / $imageWidth) * 100;
-        $height_resize = ($height / $imageHeight) * 100;
-
-        if ($width_resize < $height_resize) {
-            $this->resize(0, $height, $enlarge);
-        } else {
-            $this->resize($width, 0, $enlarge);
-        }
-
+        $this->resize($width, $height, $enlarge, true);
         $this->crop($width, $height, $x, $y);
 
         return $this;
@@ -450,7 +437,7 @@ class Image
      */
     public function getExifData($key = null)
     {
-        if ($this->filename && ($this->getMimeType() === 'image/jpeg')) {
+        if ($this->filename !== null && ($this->getMimeType() === 'image/jpeg')) {
             $exif = exif_read_data($this->filename);
 
             if ($key !== null) {
@@ -544,7 +531,7 @@ class Image
      */
     protected function isAnimatedGif()
     {
-        if (($this->getMimeType() !== 'image/gif') || !$this->filename || !($fh = @fopen($this->filename, 'rb'))) {
+        if (($this->getMimeType() !== 'image/gif') || $this->filename !== null || !($fh = @fopen($this->filename, 'rb'))) {
             return false;
         }
 
@@ -588,104 +575,6 @@ class Image
         }
 
         return $return;
-    }
-
-    /**
-     * Calculates the x,y position
-     *
-     * @param string|integer|null $position     The value of the position. It can be number (pixels), percentaje or one of the available keywords (top,left,bottom,right,middle,center)
-     * @param string|integer      $def_position The default value if the previous value is null
-     * @param integer             $size         The size of the new cropped/resized image.
-     * @param integer             $canvas       The size of the old image
-     *
-     * @return integer
-     */
-    protected static function getCropPosition($position, $def_position, $size, $canvas)
-    {
-        if ($position === null) {
-            $position = $def_position;
-        }
-
-        if (ctype_digit($position)) {
-            return intval($position);
-        }
-
-        $percentage = intval(substr(static::getPositionInPercentage($position), 0, -1));
-
-        return ($center_canvas = ($canvas/100) * $percentage) - (($size/100) * $percentage);
-    }
-
-    /**
-     * Calculates the percentage of a point
-     *
-     * @param string|integer $position
-     * @param integer        $total_size
-     *
-     * @return string
-     */
-    protected static function getPositionInPercentage($position, $total_size = null)
-    {
-        switch ($position) {
-            case 'top':
-            case 'left':
-                return '0%';
-
-            case 'middle':
-            case 'center':
-                return '50%';
-
-            case 'right':
-            case 'bottom':
-                return '100%';
-        }
-
-        if (substr($position, -1) === '%') {
-            return $position;
-        }
-
-        if ($total_size && ctype_digit($position)) {
-            return (($position / $total_size) * 100).'%';
-        }
-
-        throw new ImageException("Invalid position: {$position}");
-    }
-
-    /**
-     * Get the size of the image.
-     *
-     * @param string|integer $value      The size in numbers (pixels) or percentage.
-     * @param integer        $total_size The total size of the image (used to calculate the percentaje)
-     *
-     * @return integer
-     */
-    protected static function getResizeSize($value, $total_size)
-    {
-        if (empty($value)) {
-            return $total_size;
-        }
-
-        if (substr($value, -1) === '%') {
-            return ($total_size/100) * intval(substr($value, 0, -1));
-        }
-
-        return intval($value);
-    }
-
-    /**
-     * Check if the image must be enlarged or not (if the new dimmensions are bigger than original)
-     *
-     * @param integer $new_size      The new size of the image
-     * @param integer $original_size The original size of the image
-     *
-     * @return boolean
-     */
-    protected static function getEnlarge($new_size, $original_size)
-    {
-        if ($new_size && ($new_size > $original_size)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

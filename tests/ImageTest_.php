@@ -1,6 +1,4 @@
 <?php
-include_once dirname(__DIR__).'/src/autoloader.php';
-
 use Imagecow\Image;
 
 abstract class ImageTest_ extends PHPUnit_Framework_TestCase

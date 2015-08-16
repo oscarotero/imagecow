@@ -199,12 +199,12 @@ class Imagick extends BaseLib implements LibInterface
             $this->image = $this->image->coalesceImages();
 
             foreach ($this->image as $frame) {
-                $frame->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true));
+                $frame->scaleImage($width, $height);
             }
 
             $this->image = $this->image->deconstructImages();
         } else {
-            if ($this->image->scaleImage($width, $height, (($width === 0 || $height === 0) ? false : true)) !== true) {
+            if ($this->image->scaleImage($width, $height) !== true) {
                 throw new ImageException('There was an error resizing the image');
             }
 

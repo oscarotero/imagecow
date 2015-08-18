@@ -313,7 +313,7 @@ class Image
      *
      * @return self
      */
-    public function crop($width, $height, $x = null, $y = null)
+    public function crop($width, $height, $x = 'center', $y = 'middle')
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -347,7 +347,7 @@ class Image
      *
      * @return self
      */
-    public function resizeCrop($width, $height, $x = null, $y = null, $enlarge = null)
+    public function resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = null)
     {
         $this->resize($width, $height, $enlarge, true);
         $this->crop($width, $height, $x, $y);

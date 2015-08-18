@@ -107,6 +107,36 @@ $image->resizeCrop('50%', 300);                //Resizes and crops to half width
 $image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
 ```
 
+### Automatic cropping
+
+Stylecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
+
+* `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
+* `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)
+
+Note: **these methods are available only for Imagick**. If you use Gd, the methods fallback to "center,middle" positions.
+
+To use them:
+
+```php
+use Imagecow\Image;
+
+//Create a image:
+$image = Image::create('my-image.jpg');
+
+//Set the crop method to use:
+$image->setCropMethod()
+
+//Resizecrop the image automatically using the Entropy method to calculate the center point
+$image->resizeCrop(500, 200, Image::CROP_ENTROPY);
+
+//Crop the image automatically using the Balanced method to calculate the center point
+$image->crop(500, 200, Image::CROP_BALANCED);
+
+//If you use x,y params, the crop method won't be used:
+$image->resizeCrop(500, 200, '50%', '75%');
+```
+
 ### Rotate
 
 `Image::rotate($angle)`
@@ -252,32 +282,6 @@ img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
 
-#### Automatic cropping
-
-Stylecow includes some code from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
-
-* `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
-* `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)
-
-**Note: these methods are available only for Imagick**.
-
-To use them:
-
-```php
-use Imagecow\Image;
-
-//Create a image:
-$image = Image::create('my-image.jpg');
-
-//Set the crop method to use:
-$image->setCropMethod(Image::CROP_ENTROPY)
-
-//Resizecrop the image
-$image->resizeCrop(500, 200);
-
-//If you use x,y params, the crop method won't be used:
-$image->resizeCrop(500, 200, '50%', '75%');
-```
 
 ### Other utils
 

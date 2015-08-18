@@ -8,6 +8,11 @@ use Imagecow\ImageException;
  */
 class Gd extends BaseLib implements LibInterface
 {
+    public static $fallbackCropMethods = [
+        'Entropy' => ['center', 'middle'],
+        'Balanced' => ['center', 'middle'],
+    ];
+
     protected $image;
     protected $type;
 
@@ -245,6 +250,10 @@ class Gd extends BaseLib implements LibInterface
      */
     public function getCropOffsets($width, $height, $method)
     {
+        if (isset(static::$fallbackCropMethods[$method])) {
+            return static::$fallbackCropMethods[$method];
+        }
+
         throw new ImageException("The crop method '$method' is not available for Gd");
     }
 

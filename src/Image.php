@@ -16,7 +16,6 @@ class Image
 
     protected $image;
     protected $filename;
-    protected $cropMethod = ['center', 'middle'];
 
     /**
      * Static function to create a new Imagecow instance from an image file or string
@@ -184,20 +183,6 @@ class Image
     }
 
     /**
-     * Define an automatic crop method when no coordenates are defined
-     *
-     * @param string $method
-     *
-     * @return self
-     */
-    public function setCropMethod($method)
-    {
-        $this->cropMethod = $method;
-
-        return $this;
-    }
-
-    /**
      * Inverts the image vertically
      *
      * @return self
@@ -323,8 +308,8 @@ class Image
      *
      * @param integer|string      $width  The new width of the image. It can be a number (pixels) or percentaje
      * @param integer|string      $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param integer|string|null $x      The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param integer|string|null $y      The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string|null $x      The "x" position to crop. Can be number (pixels), percentaje or (left,center,right). You can use any of the Image::CROP_* constants
+     * @param integer|string|null $y      The "y" position to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
      *
      * @return self
      */
@@ -336,12 +321,11 @@ class Image
         $width = Dimmensions::getIntegerValue($width, $imageWidth);
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
-        if ($x === null || $y === null) {
-            if (is_array($this->cropMethod)) {
-                list($x, $y) = $this->cropMethod;
-            } else {
-                list($x, $y) = $this->image->getCropOffsets($width, $height, $this->cropMethod);
-            }
+        switch ($x) {
+            case Image::CROP_BALANCED:
+            case Image::CROP_ENTROPY:
+                list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
+                break;
         }
 
         $x = Dimmensions::getPositionValue($x, $width, $imageWidth);

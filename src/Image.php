@@ -306,10 +306,10 @@ class Image
     /**
      * Crops the image
      *
-     * @param integer|string      $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param integer|string      $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param integer|string|null $x      The "x" position to crop. Can be number (pixels), percentaje or (left,center,right). You can use any of the Image::CROP_* constants
-     * @param integer|string|null $y      The "y" position to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
+     * @param integer|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param integer|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param integer|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
+     * @param integer|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
      *
      * @return self
      */
@@ -339,15 +339,15 @@ class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param integer|string      $width   The new width in number (pixels) or percentaje
-     * @param integer|string      $height  The new height in number (pixels) or percentaje
-     * @param integer|string|null $x       The "x" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (left,center,right)
-     * @param integer|string|null $y       The "y" position where start to crop. It can be number (pixels), percentaje or one of the available keywords (top,middle,bottom)
-     * @param boolean|null        $enlarge
+     * @param integer|string $width   The new width in number (pixels) or percentaje
+     * @param integer|string $height  The new height in number (pixels) or percentaje
+     * @param integer|string $x       The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
+     * @param integer|string $y       The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param boolean        $enlarge
      *
      * @return self
      */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = null)
+    public function resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = false)
     {
         $this->resize($width, $height, $enlarge, true);
         $this->crop($width, $height, $x, $y);

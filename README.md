@@ -79,7 +79,7 @@ $image->resize(2000, 2000, true, true); // enlarge to 4000x2000
 
 ### Crop
 
-`Image::crop($width, $height = 0, $x = 'center', $y = 'middle')`
+`Image::crop($width, $height, $x = 'center', $y = 'middle')`
 
 Crops the image:
 
@@ -113,7 +113,7 @@ $image->crop(500, 200, Image::CROP_BALANCED); // The same as above but using the
 
 ### ResizeCrop
 
-`Image::resizeCrop($width, $height = 0, $x = 'center', $y = 'middle', $enlarge = false)`
+`Image::resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = false)`
 
 Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments description.
 

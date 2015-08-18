@@ -2,7 +2,6 @@
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
-use Imagecow\Utils\Entropy;
 
 /**
  * Imagick library

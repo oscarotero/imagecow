@@ -5,7 +5,7 @@ namespace Imagecow\Crops;
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
  * Copyright (c) 2013, Stig Lindqvist
- * 
+ *
  * CropBalanced
  *
  * This class calculates the most interesting point in the image by:
@@ -88,7 +88,7 @@ class Balanced implements CropInterface
 
         // Calulate the mean weighted center x and y
         $totalPoints = count($points);
-        for ($idx=0; $idx < $totalPoints; $idx++) {
+        for ($idx = 0; $idx < $totalPoints; $idx++) {
             $centerX += $points[$idx]['x'] * ($points[$idx]['sum'] / $totalWeight);
             $centerY += $points[$idx]['y'] * ($points[$idx]['sum'] / $totalWeight);
         }
@@ -133,7 +133,7 @@ class Balanced implements CropInterface
         // Only sample 1/50 of all the pixels in the image
         $sampleSize = round($size['height']*$size['width'])/50;
 
-        for ($k=0; $k<$sampleSize; $k++) {
+        for ($k = 0; $k<$sampleSize; $k++) {
             $i = mt_rand(0, $size['width']-1);
             $j = mt_rand(0, $size['height']-1);
 

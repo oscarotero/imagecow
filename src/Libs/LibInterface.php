@@ -85,13 +85,13 @@ interface LibInterface
 
     /**
      * Calculates automatically the x,y positions of a crop using a specific method
-     * 
-     * @param integer $width The new width of the image
+     *
+     * @param integer $width  The new width of the image
      * @param integer $height The new height of the image
-     * @param string $method The method name (for example: "Entropy")
-     * 
+     * @param string  $method The method name (for example: "Entropy")
+     *
      * @throws ImageException if the method is not available
-     * 
+     *
      * @return array [x, y]
      */
     public function getCropOffsets($width, $height, $method);

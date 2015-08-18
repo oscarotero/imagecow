@@ -5,7 +5,7 @@ namespace Imagecow\Crops;
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
  * Copyright (c) 2013, Stig Lindqvist
- * 
+ *
  * CropEntropy
  *
  * This class finds the a position in the picture with the most energy in it.
@@ -64,14 +64,13 @@ class Entropy implements CropInterface
         return array($leftX, $topY);
     }
 
-
     /**
      * slice
      *
-     * @param mixed $image
-     * @param mixed $originalSize
-     * @param mixed $targetSize
-     * @param mixed $axis         h=horizontal, v = vertical
+     * @param  mixed $image
+     * @param  mixed $originalSize
+     * @param  mixed $targetSize
+     * @param  mixed $axis         h=horizontal, v = vertical
      * @access protected
      * @return void
      */
@@ -166,9 +165,9 @@ class Entropy implements CropInterface
     /**
      * getPotential
      *
-     * @param mixed $position
-     * @param mixed $top
-     * @param mixed $sliceSize
+     * @param  mixed $position
+     * @param  mixed $top
+     * @param  mixed $sliceSize
      * @access protected
      * @return void
      */

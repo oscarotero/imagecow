@@ -1,0 +1,66 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "18dac90bc6103c3f0ab995a200bffa3c",
+    "packages": [
+        {
+            "name": "stojg/crop",
+            "version": "1.2.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stojg/crop.git",
+                "reference": "63b2a3f505e57c100c65bccd3cce9c3ef41dd28b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stojg/crop/zipball/63b2a3f505e57c100c65bccd3cce9c3ef41dd28b",
+                "reference": "63b2a3f505e57c100c65bccd3cce9c3ef41dd28b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "stojg\\crop": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2"
+            ],
+            "authors": [
+                {
+                    "name": "Stig Lindqvist",
+                    "email": "stojg.lindqvist@gmail.com",
+                    "homepage": "https://stojg.se/"
+                },
+                {
+                    "name": "Julien Deniau jdeniau",
+                    "email": "julien.deniau@gmail.com",
+                    "homepage": "http://www.mapado.com"
+                }
+            ],
+            "description": "Image cropping classes",
+            "homepage": "http://github.com/stojg/crop",
+            "keywords": [
+                "image"
+            ],
+            "time": "2014-10-25 08:42:29"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}

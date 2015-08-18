@@ -243,6 +243,14 @@ class Gd extends BaseLib implements LibInterface
     /**
      * {@inheritDoc}
      */
+    public function getCropOffsets($width, $height, $method)
+    {
+        throw new ImageException("The crop method '$method' is not available for Gd");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function crop($width, $height, $x, $y)
     {
         $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : array(0, 0, 0, 127));

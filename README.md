@@ -1,5 +1,4 @@
-Imagecow
-========
+# Imagecow
 
 [![Build Status](https://travis-ci.org/oscarotero/imagecow.svg?branch=master)](https://travis-ci.org/oscarotero/imagecow)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/oscarotero/imagecow/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/oscarotero/imagecow/?branch=master)
@@ -7,8 +6,7 @@ Imagecow
 Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
 
-What is Imagecow?
------------------
+## What is Imagecow?
 
 It's a php library to manipulate images to web.
 
@@ -18,9 +16,20 @@ It's a php library to manipulate images to web.
 * Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
 * Use the PSR-4 autoloader standard
 
+Simple usage example:
 
-How use it?
------------
+```php
+use Imagecow\Image;
+
+Image::create('my-image.gif')
+    ->autoRotate()
+    ->resizeCrop(300, 400, 'center', 'middle')
+    ->format('png')
+    ->save('converted-image.png')
+    ->show();
+```
+
+## How use it?
 
 Use the static function Imagecow\Image::create() to load an image and returns an imageCow instance. This function has two arguments:
 
@@ -46,100 +55,156 @@ $image = Image::createFromString($data);
 $image = Image::createFromFile($file);
 ```
 
-#### Crop the image
+### Resize
+
+`Image::resize($width, $height = 0, $enlarge = false, $cover = false)`
+
+Resizes the image keeping the aspect ratio.
+
+* `$width`: The new max-width of the image. You can use percentages or numbers (pixels). If it's `0`, it will be calculated automatically using the height
+* `$height`: The new max-height of the image. As width, you can use percentages or numbers and it will be calculated automatically if it's `0`
+* `$enlarge`: By default is `false`. This means that the image won't be scaled if the new value is bigger.
+* `$cover`: If it's `true`, the new dimensions will cover both width and height values. It's like css's `image-size: cover`.
 
 ```php
-//Arguments: ($width, $height, $x = 'center', $y = 'middle');
+//Assuming the original image is 1000x500
 
-$image->crop(200, 300); //Crops the image to 200x300px
-$image->crop(200, 300, 'left', 'top'); //Crops the image to 200x300px starting from left-top
-$image->crop(200, 300, 20, '50%'); //Crops the image to 200x300px starting from 20px (x) / 50% (y)
-$image->crop('50%', '50%'); //Crops the image to half size
-
-//you can define the x,y positions by default:
-$image->setCenterPoint('33%', 'bottom')->crop(200, 300);
+$image->resize(200);                    // change to 200x100
+$image->resize(0, 200);                 // change to 400x200
+$image->resize(200, 300);               // change to 200x100
+$image->resize(2000, 2000);             // keeps 1000x500
+$image->resize(2000, 2000, true);       // enlarge to 2000x1000
+$image->resize(2000, 2000, true, true); // enlarge to 4000x2000
 ```
 
-#### Resize the image
+### Crop
+
+`Image::crop($width, $height = 0, $x = null, $y = null)`
+
+Crops the image:
+
+* `$width`: The width of the cropped image. It can be number (pixels) or percentage
+* `$height`: The height of the cropped image. It can be number (pixels) or percentage
+* `$x`: The horizontal offset of the crop. It can be a number (for pixels) or percentage. You can also use the keywords `left`, `center` and `right`. If it's not defined, used the value by default (`center`).
+* `$x`: The vertical offset of the crop. As with $x, it can be a number or percentage. You can also use the keywords `top`, `middle` and `bottom`. If it's not defined, used the value by default (`middle`).
 
 ```php
-//Arguments: ($width, $height = 0, $enlarge = false)
-
-$image->resize(200, 300); //Resizes the image to max size 200x300px (keeps the aspect ratio. If the image is lower, don't resize it)
-$image->resize(800, 600, 1); //Resizes the image to max size 800x600px (keeps the aspect ratio. If the image is lower enlarge it)
-$image->resize(800); //Resizes the image to 800px width and calculates the height maintaining the proportion.
-
-//You can define an enlarge value by default:
-$image->setEnlarge(true)->resize(200, 300); //its the same than resize(200, 300, true)
+$image->crop(200, 300);                 // crops to 200x300px
+$image->crop(200, 300, 'left', 'top');  // crops to 200x300px from left and top
+$image->crop(200, 300, 20, '50%');      // crops to 200x300px from 20px left and 50% top
+$image->crop('50%', '50%');             // crops to half size
 ```
 
-#### Resize and Crop the image
+### ResizeCrop
+
+`Image::resizeCrop($width, $height = 0, $x = null, $y = null, $enlarge = false)`
+
+Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments explanation.
 
 ```php
-//Arguments: ($width, $height, $x = 'center', $y = 'middle', $enlarge = false)
-
-$image->resizeCrop(200, 300); //Resizes and crops the image to this size.
-
-//Define the enlarge, x and y positions by default:
-$image
-	->setEnlarge()
-	->setCenterPoint('23%', '100%')
-	->resizeCrop(200, 500);
+$image->resizeCrop(200, 300);                  //Resizes and crops to 200x300px.
+$image->resizeCrop('50%', 300);                //Resizes and crops to half width and 300px height
+$image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
 ```
 
-#### Rotate
+### Rotate
+
+`Image::rotate($angle)`
+
+Rotates the image
+
+* `$angle`: Rotation angle in degrees (anticlockwise)
 
 ```php
-$image->rotate(90); //Rotates the image 90 degrees
-$image->autoRotate(); //Rotates the image according its EXIF data.
+$image->rotate(90); // rotates the image 90 degrees
 ```
 
-#### Convert the image to other formats:
+### AutoRotate
+
+`Image::autoRotate()`
+
+Autorotates the image according its EXIF data
 
 ```php
-$image->format('png');
+$image->autoRotate(); // rotates the image 90 degrees
 ```
 
-#### Save the image to a file
+### Format
+
+`Image::format($format)`
+
+Converts the image to other format.
+
+* `$format`: The format name. It can be "jpg", "png" or "gif".
 
 ```php
-$image->save('my-new-image.png');
-
-//Overwrite the image (only if has been loaded from a file)
-$image->save();
+$image->format('png'); // converts to png
 ```
 
-#### Execute multiple functions (resize, crop, resizeCrop, format)
+### Save
 
-This is useful to get images transformed dinamically using get variables: image.php?transform=resize,200,300|format,png
+Save the image to a file.
+
+* `$filename`: The filename for the saved image. If it's not defined, overwrite the file (only if has been loaded from a file).
+
+```php
+$image->save('my-new-image.png'); // save to this file
+$image->save(); // overwrite file
+```
+
+### SetBackground
+
+`Image::setBackground(array $background)`
+
+Set a default background used in some transformations: for example on rotate or on convert a transparent png to jpg.
+
+* `$background`: An array with the RGB value of the color
+
+```php
+$image->setBackground(array(255, 255, 255)); // set the background to white
+```
+
+### SetCompressionQuality
+
+`Image::setCompressionQuality($quality)`
+
+Defines the image compression quality for jpg images
+
+* `$quality`: An integer value between 0 and 100
+
+```php
+$image->setCompressionQuality(80); // change the quality to 80
+```
+
+### Show
+
+Send the HTTP header with the content-type, output the image data and die.
+
+```php
+$image->show(); // you should see this image in your browser
+```
+
+### Get image info:
+
+* `$image->getWidth()`: Returns the image width in pixels
+* `$image->getHeight()`: Returns the image height in pixels
+* `$image->getMimeType()`: Returns the image mime-type
+* `$image->getExifData()`: Returns the EXIF data of the image
+* `$image->getString()`: Returns a string with the image content
+
+
+#### Execute multiple functions
+
+You can execute some of these functions defined as a string. This is useful to get images transformed dinamically using variables, for example: `image.php?transform=resize,200,300|format,png`. All operations are separated by `|` and use commas for the arguments:
 
 ```php
 $image->transform('resize,200,300|format,png');
+
+//This is the same than:
+$image->resize(200, 300)->format('png');
 ```
 
-#### Show the image
-
-```php
-$image->show();
-```
-
-#### Other functions:
-
-```php
-$image->getWidth();
-$image->getHeight();
-$image->getMimeType();
-
-$image->getString(); //Returns the image in a string
-
-$image->setBackground(array(255, 255, 255)); //Set a default background used in some transformations (for example, convert a transparent png to jpg)
-$image->getExifData();
-$image->setCompressionQuality(80); //Define the image compression quality for jpg images
-```
-
-
-Responsive images
------------------
+### Responsive images
 
 Include the Imagecow.js library in the html page and execute the function Imagecow.init();
 
@@ -147,7 +212,7 @@ Include the Imagecow.js library in the html page and execute the function Imagec
 <script src="Imagecow.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
-	Imagecow.init();
+    Imagecow.init();
 </script>
 ```
 
@@ -167,9 +232,7 @@ use Imagecow\Image;
 
 $operations = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
 
-$image = Image::create();
-
-$image->load($_GET['img'])->transform($operations)->show();
+Image::create($_GET['img'])->transform($operations)->show();
 ```
 
 Now you can transform the image according with the client dimmensions. The available options are:
@@ -189,10 +252,38 @@ img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
 
 Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
 
-Other utils
------------
+#### Automatic cropping
 
-IconExtractor. Class to extract the images from an .ico file and convert to png. Only for Imagick:
+Stylecow includes some code from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
+
+* `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
+* `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)
+
+**Note: these methods are available only for Imagick**.
+
+To use them:
+
+```php
+use Imagecow\Image;
+
+//Create a image:
+$image = Image::create('my-image.jpg');
+
+//Set the crop method to use:
+$image->setCropMethod(Image::CROP_ENTROPY)
+
+//Resizecrop the image
+$image->resizeCrop(500, 200);
+
+//If you use x,y params, the crop method won't be used:
+$image->resizeCrop(500, 200, '50%', '75%');
+```
+
+### Other utils
+
+#### IconExtractor.
+
+**Only for Imagick**. Class to extract the images from an .ico file and convert to png.
 
 ```php
 use Imagecow\Utils\IconExtractor;
@@ -206,7 +297,9 @@ $image = $icon->getBetterQuality();
 $image->resize(100)->save('my-image.png');
 ```
 
-SvgExtractor. This class allows generate images from a svg file (usefull for browsers that don't support svg format):
+#### SvgExtractor.
+
+**Only for Imagick** This class allows generate images from a svg file (usefull for browsers that don't support svg format):
 
 ```php
 use Imagecow\Utils\SvgExtractor;
@@ -221,10 +314,13 @@ $image->resize(200)->format('jpg')->save('image.jpg');
 ```
 
 
-Maintainers:
-------------
+### Maintainers:
 
 * @oscarotero (creator)
 * @eusonlito (contributor)
 * @AndreasHeiberg (contributor)
 * @kevbaldwyn (contributor)
+
+### Thanks to
+
+Stig Lindqvist and Julien Deniau jdeniau for the [stojg/crop library](https://github.com/stojg/crop)

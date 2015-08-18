@@ -11,13 +11,12 @@ class Image
     const LIB_GD = 'Gd';
     const LIB_IMAGICK = 'Imagick';
 
+    const CROP_ENTROPY = 'Entropy';
+    const CROP_BALANCED = 'Balanced';
+
     protected $image;
     protected $filename;
-    protected $defaults = array(
-        'enlarge' => false,
-        'x' => 'center',
-        'y' => 'middle',
-    );
+    protected $cropMethod = ['center', 'middle'];
 
     /**
      * Static function to create a new Imagecow instance from an image file or string
@@ -174,33 +173,26 @@ class Image
         }
     }
 
-    /**
-     * Defined the center point of the image
-     * used by default by the resize method
-     *
-     * @param string $x
-     * @param string $y
-     *
-     * @return self
-     */
-    public function setCenterPoint($x, $y)
+    public function getImage()
     {
-        $this->defaults['x'] = Dimmensions::getPercentageValue($x, $this->getWidth(), true);
-        $this->defaults['y'] = Dimmensions::getPercentageValue($y, $this->getHeight(), true);
+        return $this->image->getImage();
+    }
 
-        return $this;
+    public function setImage($image)
+    {
+        return $this->image->setImage($image);
     }
 
     /**
-     * Configure whether the image can be enlarged or not
+     * Define an automatic crop method when no coordenates are defined
      *
-     * @param boolean $enlarge
+     * @param string $method
      *
      * @return self
      */
-    public function setEnlarge($enlarge)
+    public function setCropMethod($method)
     {
-        $this->defaults['enlarge'] = $enlarge;
+        $this->cropMethod = $method;
 
         return $this;
     }
@@ -307,7 +299,7 @@ class Image
      *
      * @return self
      */
-    public function resize($width, $height = 0, $enlarge = null, $cover = false)
+    public function resize($width, $height = 0, $enlarge = false, $cover = false)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -316,10 +308,6 @@ class Image
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
-
-        if ($enlarge === null) {
-            $enlarge = $this->defaults['enlarge'];
-        }
 
         if (($width === $imageWidth) || (!$enlarge && $width > $imageWidth)) {
             return $this;
@@ -348,8 +336,16 @@ class Image
         $width = Dimmensions::getIntegerValue($width, $imageWidth);
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
-        $x = Dimmensions::getPositionValue(isset($x) ? $x : $this->defaults['x'], $width, $imageWidth);
-        $y = Dimmensions::getPositionValue(isset($y) ? $y : $this->defaults['y'], $height, $imageHeight);
+        if ($x === null || $y === null) {
+            if (is_array($this->cropMethod)) {
+                list($x, $y) = $this->cropMethod;
+            } else {
+                list($x, $y) = $this->image->getCropOffsets($width, $height, $this->cropMethod);
+            }
+        }
+
+        $x = Dimmensions::getPositionValue($x, $width, $imageWidth);
+        $y = Dimmensions::getPositionValue($y, $height, $imageHeight);
 
         $this->image->crop($width, $height, $x, $y);
 

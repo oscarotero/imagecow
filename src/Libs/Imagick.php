@@ -2,6 +2,7 @@
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
+use Imagecow\Utils\Entropy;
 
 /**
  * Imagick library
@@ -210,6 +211,20 @@ class Imagick extends BaseLib implements LibInterface
 
             $this->image->setImagePage(0, 0, 0, 0);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCropOffsets($width, $height, $method)
+    {
+        $class = 'Imagecow\\Crops\\'.ucfirst(strtolower($method));
+
+        if (!class_exists($class)) {
+            throw new ImageException("The crop method '$method' is not available for Imagick");
+        }
+
+        return $class::getOffsets($this->image, $width, $height);
     }
 
     /**

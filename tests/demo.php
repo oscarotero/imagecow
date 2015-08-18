@@ -1,14 +1,9 @@
 <?php
-include_once dirname(__DIR__).'/src/autoloader.php';
+include_once dirname(__DIR__).'/vendor/autoload.php';
 
 use Imagecow\Image;
 
-$image = Image::create(__DIR__.'/images/image.jpg');
-
-$image
-    ->setCenterPoint('center', 'top')
-    ->setEnlarge(true)
-    ->resizeCrop(300, 400)
-    ->resize(400);
-
-//$image->show();
+Image::create(__DIR__.'/images/crop.jpg')
+	->setCropMethod('Balanced')
+	->resizeCrop(100, 200)
+	->show();

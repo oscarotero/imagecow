@@ -8,10 +8,10 @@ use Imagecow\ImageException;
  */
 class Gd extends BaseLib implements LibInterface
 {
-    public static $fallbackCropMethods = [
-        'Entropy' => ['center', 'middle'],
-        'Balanced' => ['center', 'middle'],
-    ];
+    public static $fallbackCropMethods = array(
+        'Entropy' => array('center', 'middle'),
+        'Balanced' => array('center', 'middle'),
+    );
 
     protected $image;
     protected $type;

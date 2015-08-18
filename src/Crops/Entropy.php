@@ -283,4 +283,18 @@ class Entropy implements CropInterface
 
         return $size['height'] * $size['width'];
     }
+
+    /**
+     * Returns a YUV weighted greyscale value
+     *
+     * @param  int $r
+     * @param  int $g
+     * @param  int $b
+     * @return int
+     * @see http://en.wikipedia.org/wiki/YUV
+     */
+    protected static function rgb2bw($r, $g, $b)
+    {
+        return ($r*0.299)+($g*0.587)+($b*0.114);
+    }
 }

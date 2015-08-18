@@ -86,7 +86,7 @@ Crops the image:
 * `$width`: The width of the cropped image. It can be number (pixels) or percentage
 * `$height`: The height of the cropped image. It can be number (pixels) or percentage
 * `$x`: The horizontal offset of the crop. It can be a number (for pixels) or percentage. You can also use the keywords `left`, `center` and `right`. If it's not defined, used the value by default (`center`).
-* `$x`: The vertical offset of the crop. As with $x, it can be a number or percentage. You can also use the keywords `top`, `middle` and `bottom`. If it's not defined, used the value by default (`middle`).
+* `$y`: The vertical offset of the crop. As with $x, it can be a number or percentage. You can also use the keywords `top`, `middle` and `bottom`. If it's not defined, used the value by default (`middle`).
 
 ```php
 $image->crop(200, 300);                 // crops to 200x300px
@@ -95,46 +95,32 @@ $image->crop(200, 300, 20, '50%');      // crops to 200x300px from 20px left and
 $image->crop('50%', '50%');             // crops to half size
 ```
 
-### ResizeCrop
-
-`Image::resizeCrop($width, $height = 0, $x = null, $y = null, $enlarge = false)`
-
-Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments explanation.
-
-```php
-$image->resizeCrop(200, 300);                  //Resizes and crops to 200x300px.
-$image->resizeCrop('50%', 300);                //Resizes and crops to half width and 300px height
-$image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
-```
-
-### Automatic cropping
+#### Automatic cropping
 
 Stylecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
 
 * `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
 * `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)
 
-Note: **these methods are available only for Imagick**. If you use Gd, the methods fallback to "center,middle" positions.
+Note: **these methods are available only for Imagick**. If you use Gd, the methods fallback to "center", "middle" positions.
 
 To use them:
 
 ```php
-use Imagecow\Image;
+$image->crop(500, 200, Image::CROP_ENTROPY);  // crops to 500x200 using the Entropy method to calculate the center point
+$image->crop(500, 200, Image::CROP_BALANCED); // The same as above but using the Balanced method
+```
 
-//Create a image:
-$image = Image::create('my-image.jpg');
+### ResizeCrop
 
-//Set the crop method to use:
-$image->setCropMethod()
+`Image::resizeCrop($width, $height = 0, $x = null, $y = null, $enlarge = false)`
 
-//Resizecrop the image automatically using the Entropy method to calculate the center point
-$image->resizeCrop(500, 200, Image::CROP_ENTROPY);
+Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments description.
 
-//Crop the image automatically using the Balanced method to calculate the center point
-$image->crop(500, 200, Image::CROP_BALANCED);
-
-//If you use x,y params, the crop method won't be used:
-$image->resizeCrop(500, 200, '50%', '75%');
+```php
+$image->resizeCrop(200, 300);                  //Resizes and crops to 200x300px.
+$image->resizeCrop('50%', 300);                //Resizes and crops to half width and 300px height
+$image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
 ```
 
 ### Rotate
@@ -156,7 +142,7 @@ $image->rotate(90); // rotates the image 90 degrees
 Autorotates the image according its EXIF data
 
 ```php
-$image->autoRotate(); // rotates the image 90 degrees
+$image->autoRotate();
 ```
 
 ### Format
@@ -186,7 +172,7 @@ $image->save(); // overwrite file
 
 `Image::setBackground(array $background)`
 
-Set a default background used in some transformations: for example on rotate or on convert a transparent png to jpg.
+Set a default background used in some transformations: for example on convert a transparent png to jpg.
 
 * `$background`: An array with the RGB value of the color
 
@@ -215,6 +201,8 @@ $image->show(); // you should see this image in your browser
 ```
 
 ### Get image info:
+
+There are other functions to returns image info:
 
 * `$image->getWidth()`: Returns the image width in pixels
 * `$image->getHeight()`: Returns the image height in pixels

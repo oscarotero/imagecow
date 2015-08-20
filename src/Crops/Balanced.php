@@ -2,7 +2,7 @@
 namespace Imagecow\Crops;
 
 use Exception, Imagick;
-use Imagecow\Utils\ColorTrait;
+use Imagecow\Utils\Color;
 
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
@@ -22,8 +22,6 @@ use Imagecow\Utils\ColorTrait;
  */
 class Balanced implements CropInterface
 {
-    use ColorTrait;
-
     /**
      * {@inheritdoc}
      */
@@ -148,7 +146,7 @@ class Balanced implements CropInterface
             $g = ($rgb >> 8) & 0xFF;
             $b = $rgb & 0xFF;
 
-            $val = static::rgb2bw($r, $g, $b);
+            $val = Color::rgb2bw($r, $g, $b);
             $sum += $val;
             $xcenter += ($i + 1) * $val;
             $ycenter += ($j + 1) * $val;

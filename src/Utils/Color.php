@@ -2,9 +2,9 @@
 namespace Imagecow\Utils;
 
 /**
- * Trait to manage generic color conversions
+ * Generic color conversions functions
  */
-trait ColorTrait
+class Color
 {
     /**
      * Returns a YUV weighted greyscale value

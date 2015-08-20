@@ -2,7 +2,7 @@
 namespace Imagecow\Crops;
 
 use Imagick;
-use Imagecow\Utils\ColorTrait;
+use Imagecow\Utils\Color;
 
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
@@ -23,8 +23,6 @@ use Imagecow\Utils\ColorTrait;
  */
 class Entropy implements CropInterface
 {
-    use ColorTrait;
-
     const POTENTIAL_RATIO = 1.5;
 
     /**
@@ -242,7 +240,7 @@ class Entropy implements CropInterface
 
         for ($idx = 0; $idx < $colors; $idx++) {
             $colors = $histogram[$idx]->getColor();
-            $grey = static::rgb2bw($colors['r'], $colors['g'], $colors['b']);
+            $grey = Color::rgb2bw($colors['r'], $colors['g'], $colors['b']);
 
             if (isset($newHistogram[$grey])) {
                 $newHistogram[$grey] += $histogram[$idx]->getColorCount();

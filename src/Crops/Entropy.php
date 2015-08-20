@@ -1,6 +1,9 @@
 <?php
 namespace Imagecow\Crops;
 
+use Imagick;
+use Imagecow\Utils\ColorTrait;
+
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
@@ -20,12 +23,14 @@ namespace Imagecow\Crops;
  */
 class Entropy implements CropInterface
 {
+    use ColorTrait;
+
     const POTENTIAL_RATIO = 1.5;
 
     /**
      * {@inheritdoc}
      */
-    public static function getOffsets(\Imagick $original, $targetWidth, $targetHeight)
+    public static function getOffsets(Imagick $original, $targetWidth, $targetHeight)
     {
         $measureImage = clone($original);
         // Enhance edges
@@ -41,13 +46,13 @@ class Entropy implements CropInterface
     /**
      * Get the offset of where the crop should start
      *
-     * @param  \Imagick $image
+     * @param  Imagick $image
      * @param  int      $targetHeight
      * @param  int      $targetHeight
      * @param  int      $sliceSize
      * @return array
      */
-    protected static function getOffsetFromEntropy(\Imagick $originalImage, $targetWidth, $targetHeight)
+    protected static function getOffsetFromEntropy(Imagick $originalImage, $targetWidth, $targetHeight)
     {
         // The entropy works better on a blured image
         $image = clone $originalImage;
@@ -86,13 +91,14 @@ class Entropy implements CropInterface
         $aTop = 0;
 
         // while there still are uninvestigated slices of the image
-        while ($aBottom - $aTop > $targetSize) {
+        while (($aBottom - $aTop) > $targetSize) {
             // Make sure that we don't try to slice outside the picture
             $sliceSize = min($aBottom - $aTop - $targetSize, $sliceSize);
 
             // Make a top slice image
             if (!$aSlice) {
                 $aSlice = clone $image;
+
                 if ($axis === 'h') {
                     $aSlice->cropImage($sliceSize, $originalSize, $aTop, 0);
                 } else {
@@ -103,6 +109,7 @@ class Entropy implements CropInterface
             // Make a bottom slice image
             if (!$bSlice) {
                 $bSlice = clone $image;
+
                 if ($axis === 'h') {
                     $bSlice->cropImage($sliceSize, $originalSize, $aBottom - $sliceSize, 0);
                 } else {
@@ -111,8 +118,8 @@ class Entropy implements CropInterface
             }
 
             // calculate slices potential
-            $aPosition = ($axis === 'h' ? 'left' : 'top');
-            $bPosition = ($axis === 'h' ? 'right' : 'bottom');
+            $aPosition = (($axis === 'h') ? 'left' : 'top');
+            $bPosition = (($axis === 'h') ? 'right' : 'bottom');
 
             $aPot = static::getPotential($aPosition, $aTop, $sliceSize);
             $bPot = static::getPotential($bPosition, $aBottom, $sliceSize);
@@ -122,9 +129,9 @@ class Entropy implements CropInterface
 
             // if no slices are "cutable", we force if a slice has a lot of potential
             if (!$canCutA && !$canCutB) {
-                if ($aPot * self::POTENTIAL_RATIO < $bPot) {
+                if (($aPot * self::POTENTIAL_RATIO) < $bPot) {
                     $canCutA = true;
-                } elseif ($aPot > $bPot * self::POTENTIAL_RATIO) {
+                } elseif ($aPot > ($bPot * self::POTENTIAL_RATIO)) {
                     $canCutB = true;
                 }
             }
@@ -173,11 +180,7 @@ class Entropy implements CropInterface
      */
     protected static function getPotential($position, $top, $sliceSize)
     {
-        $safeZoneList = static::getSafeZoneList();
-
-        $safeRatio = 0;
-
-        if ($position == 'top' || $position == 'left') {
+        if (($position === 'top') || ($position === 'left')) {
             $start = $top;
             $end = $top + $sliceSize;
         } else {
@@ -185,16 +188,17 @@ class Entropy implements CropInterface
             $end = $top;
         }
 
+        $safeZoneList = static::getSafeZoneList();
+        $safeRatio = 0;
+
         for ($i = $start; $i < $end; $i++) {
             foreach ($safeZoneList as $safeZone) {
-                if ($position == 'top' || $position == 'bottom') {
-                    if ($safeZone['top'] <= $i && $safeZone['bottom'] >= $i) {
+                if (($position === 'top') || ($position === 'bottom')) {
+                    if (($safeZone['top'] <= $i) && ($safeZone['bottom'] >= $i)) {
                         $safeRatio = max($safeRatio, ($safeZone['right'] - $safeZone['left']));
                     }
-                } else {
-                    if ($safeZone['left'] <= $i && $safeZone['right'] >= $i) {
-                        $safeRatio = max($safeRatio, ($safeZone['bottom'] - $safeZone['top']));
-                    }
+                } elseif (($safeZone['left'] <= $i) && ($safeZone['right'] >= $i)) {
+                    $safeRatio = max($safeRatio, ($safeZone['bottom'] - $safeZone['top']));
                 }
             }
         }
@@ -207,18 +211,16 @@ class Entropy implements CropInterface
      *
      * A higher value of entropy means more noise / liveliness / color / business
      *
-     * @param  \Imagick $image
+     * @param  Imagick $image
      * @return float
      *
      * @see http://brainacle.com/calculating-image-entropy-with-python-how-and-why.html
      * @see http://www.mathworks.com/help/toolbox/images/ref/entropy.html
      */
-    protected static function grayscaleEntropy(\Imagick $image)
+    protected static function grayscaleEntropy(Imagick $image)
     {
         // The histogram consists of a list of 0-254 and the number of pixels that has that value
-        $histogram = $image->getImageHistogram();
-
-        return static::getEntropy($histogram, static::area($image));
+        return static::getEntropy($image->getImageHistogram(), static::area($image));
     }
 
     /**
@@ -227,23 +229,25 @@ class Entropy implements CropInterface
      * If the source image is in color we need to transform RGB into a grayscale image
      * so we can calculate the entropy more performant.
      *
-     * @param  \Imagick $image
+     * @param  Imagick $image
      * @return float
      */
-    protected static function colorEntropy(\Imagick $image)
+    protected static function colorEntropy(Imagick $image)
     {
         $histogram = $image->getImageHistogram();
         $newHistogram = array();
 
         // Translates a color histogram into a bw histogram
         $colors = count($histogram);
+
         for ($idx = 0; $idx < $colors; $idx++) {
             $colors = $histogram[$idx]->getColor();
             $grey = static::rgb2bw($colors['r'], $colors['g'], $colors['b']);
-            if (!isset($newHistogram[$grey])) {
-                $newHistogram[$grey] = $histogram[$idx]->getColorCount();
-            } else {
+
+            if (isset($newHistogram[$grey])) {
                 $newHistogram[$grey] += $histogram[$idx]->getColorCount();
+            } else {
+                $newHistogram[$grey] = $histogram[$idx]->getColorCount();
             }
         }
 
@@ -259,14 +263,15 @@ class Entropy implements CropInterface
     protected static function getEntropy($histogram, $area)
     {
         $value = 0.0;
-
         $colors = count($histogram);
+
         for ($idx = 0; $idx < $colors; $idx++) {
             // calculates the percentage of pixels having this color value
             $p = $histogram[$idx]->getColorCount() / $area;
             // A common way of representing entropy in scalar
             $value = $value + $p * log($p, 2);
         }
+
         // $value is always 0.0 or negative, so transform into positive scalar value
         return -$value;
     }
@@ -274,27 +279,13 @@ class Entropy implements CropInterface
     /**
      * Get the area in pixels for this image
      *
-     * @param  \Imagick $image
+     * @param  Imagick $image
      * @return int
      */
-    protected static function area(\Imagick $image)
+    protected static function area(Imagick $image)
     {
         $size = $image->getImageGeometry();
 
         return $size['height'] * $size['width'];
-    }
-
-    /**
-     * Returns a YUV weighted greyscale value
-     *
-     * @param  int $r
-     * @param  int $g
-     * @param  int $b
-     * @return int
-     * @see http://en.wikipedia.org/wiki/YUV
-     */
-    protected static function rgb2bw($r, $g, $b)
-    {
-        return ($r*0.299)+($g*0.587)+($b*0.114);
     }
 }

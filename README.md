@@ -97,7 +97,7 @@ $image->crop('50%', '50%');             // crops to half size
 
 #### Automatic cropping
 
-Stylecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
+Imagecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
 
 * `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
 * `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)

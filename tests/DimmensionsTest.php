@@ -7,6 +7,7 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
     {
         return array(
             array(1000, 500, 500, 0, false, 500, 250),
+            array(1000, 500, 500.0, 0.0, false, 500, 250),
             array(1000, 500, 0, 250, false, 500, 250),
             array(1000, 500, 500, 250, false, 500, 250),
             array(1000, 500, 500, 500, false, 500, 250),
@@ -42,7 +43,9 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
         return array(
             array(500, 1000, 500),
             array('0%', 1000, 0),
+            array('0.0%', 1000, 0),
             array('100%', 1000, 1000),
+            array('100%', 1000.0, 1000),
             array('75%', 1000, 750),
             array('75.5%', 1000, 755),
             array('755', 1000, 755),
@@ -69,9 +72,11 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
         return array(
             array(500, 1000, '50%'),
             array(0, 1000, '0%'),
+            array(0.0, 1000.0, '0%'),
             array(1000, 1000, '100%'),
             array(750, 1000, '75%'),
             array(755, 1000, '75.5%'),
+            array(755.0, 1000, '75.5%'),
             array('top', 1000, '0%'),
             array('middle', 1000, '50%'),
             array('bottom', 1000, '100%'),
@@ -93,9 +98,12 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
         return array(
             array(25, 500, 1000, 25),
             array('50%', 500, 1000, 250),
+            array('50.0%', 500, 1000, 250),
             array('0%', 500, 1000, 0),
             array('100%', 500, 1000, 500),
+            array('100%', 500, 1000, 500),
             array(750, 500, 1000, 750),
+            array(750.0, 500, 1000, 750),
         );
     }
 

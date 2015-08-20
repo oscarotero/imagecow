@@ -31,11 +31,11 @@ class Dimmensions
     public static function getResizeDimmensions($oldWidth, $oldHeight, $newWidth, $newHeight, $cover = false)
     {
         if (empty($newHeight)) {
-            return array($newWidth, (int) ceil(($newWidth/$oldWidth) * $oldHeight));
+            return array((int) $newWidth, (int) ceil(($newWidth/$oldWidth) * $oldHeight));
         }
 
         if (empty($newWidth)) {
-            return array((int) ceil(($newHeight/$oldHeight) * $oldWidth), $newHeight);
+            return array((int) ceil(($newHeight/$oldHeight) * $oldWidth), (int) $newHeight);
         }
 
         $scaleWidth = $newWidth/$oldWidth;
@@ -43,31 +43,31 @@ class Dimmensions
 
         if ($cover) {
             if ($scaleWidth > $scaleHeight) {
-                return array($newWidth, (int) ceil($scaleWidth * $oldHeight));
+                return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
             }
 
             if ($scaleWidth < $scaleHeight) {
-                return array((int) ceil($scaleHeight * $oldWidth), $newHeight);
+                return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
             }
         } else {
             if ($scaleWidth < $scaleHeight) {
-                return array($newWidth, (int) ceil($scaleWidth * $oldHeight));
+                return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
             }
 
             if ($scaleWidth > $scaleHeight) {
-                return array((int) ceil($scaleHeight * $oldWidth), $newHeight);
+                return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
             }
         }
 
         if ($scaleWidth < $scaleHeight || ($cover && $scaleWidth > $scaleHeight)) {
-            return array($newWidth, (int) ceil($scaleWidth * $oldHeight));
+            return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
         }
 
         if ($scaleWidth > $scaleHeight || ($cover && $scaleWidth < $scaleHeight)) {
-            return array((int) ceil($scaleHeight * $oldWidth), $newHeight);
+            return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
         }
 
-        return array($newWidth, $newHeight);
+        return array((int) $newWidth, (int) $newHeight);
     }
 
     /**
@@ -111,7 +111,7 @@ class Dimmensions
             return $value;
         }
 
-        if (is_int($value) || ctype_digit($value)) {
+        if (is_numeric($value)) {
             return empty($value) ? '0%' : (($value / $relatedValue) * 100).'%';
         }
 
@@ -129,7 +129,7 @@ class Dimmensions
      */
     public static function getPositionValue($position, $newValue, $oldValue)
     {
-        if (is_int($position) || ctype_digit($position)) {
+        if (is_numeric($position)) {
             return intval($position);
         }
 

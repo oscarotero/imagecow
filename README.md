@@ -121,6 +121,7 @@ Resizes and crops the image. See [resize](resize) and [crop](crop) for the argum
 $image->resizeCrop(200, 300);                  //Resizes and crops to 200x300px.
 $image->resizeCrop('50%', 300);                //Resizes and crops to half width and 300px height
 $image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
+$image->resizeCrop(200, 300, Image::CROP_BALANCED); //Resizes and crops to 200x300px using the CROP_BALANCED method
 ```
 
 ### Rotate
@@ -216,10 +217,13 @@ There are other functions to returns image info:
 You can execute some of these functions defined as a string. This is useful to get images transformed dinamically using variables, for example: `image.php?transform=resize,200,300|format,png`. All operations are separated by `|` and use commas for the arguments:
 
 ```php
-$image->transform('resize,200,300|format,png');
+$image->transform('resize,200,50%|format,png|crop,100,100,CROP_ENTROPY');
 
 //This is the same than:
-$image->resize(200, 300)->format('png');
+$image
+	->resize(200, '50%')
+	->format('png')
+	->crop(100, 100, Image::CROP_ENTROPY);
 ```
 
 ### Responsive images

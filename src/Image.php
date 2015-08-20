@@ -444,6 +444,23 @@ class Image
         $operations = self::parseOperations($operations);
 
         foreach ($operations as $operation) {
+            switch (strtolower($operation['function'])) {
+                case 'crop':
+                case 'resizecrop':
+                    if (isset($operation['params'][2])) {
+                        switch ($operation['params'][2]) {
+                            case 'CROP_ENTROPY':
+                                $operation['params'][2] = Image::CROP_ENTROPY;
+                                break;
+
+                            case 'CROP_BALANCED':
+                                $operation['params'][2] = Image::CROP_BALANCED;
+                                break;
+                        }
+                    }
+                    break;
+            }
+
             call_user_func_array(array($this, $operation['function']), $operation['params']);
         }
 

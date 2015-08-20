@@ -29,7 +29,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         $this->assertSame(1500, $image->getHeight());
 
         //Crop
-        $image->crop(1000, 800);
+        $image->crop(1000, 800, Image::CROP_ENTROPY);
 
         $this->assertSame(1000, $image->getWidth());
         $this->assertSame(800, $image->getHeight());
@@ -71,7 +71,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         $this->assertSame(500, $image->getHeight());
 
         //Crop
-        $image->crop(400, 300);
+        $image->crop(400, 300, Image::CROP_ENTROPY);
 
         $this->assertSame(400, $image->getWidth());
         $this->assertSame(300, $image->getHeight());

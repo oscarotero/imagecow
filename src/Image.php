@@ -376,9 +376,25 @@ class Image
      *
      * @param integer $quality The quality (from 0 to 100)
      *
+     * @deprecated Use quality instead
+     *
      * @return self
      */
     public function setCompressionQuality($quality)
+    {
+        error_log("The method `setCompressionQuality()` is deprecated. Use `quality()` instead.");
+
+        return $this->quality($quality);
+    }
+
+    /**
+     * Define the image compression quality for jpg images
+     *
+     * @param integer $quality The quality (from 0 to 100)
+     *
+     * @return self
+     */
+    public function quality($quality)
     {
         $quality = intval($quality);
 
@@ -553,7 +569,7 @@ class Image
      */
     private static function parseOperations($operations)
     {
-        $valid_operations = array('resize', 'resizeCrop', 'crop', 'format');
+        $valid_operations = array('resize', 'resizeCrop', 'crop', 'format', 'quality');
         $operations = explode('|', str_replace(' ', '', $operations));
         $return = array();
 

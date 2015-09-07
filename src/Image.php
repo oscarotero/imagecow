@@ -499,7 +499,7 @@ class Image
      *
      * @return string|null
      */
-    public function url()
+    public function base64()
     {
         if (($string = $this->getString()) && ($mimetype = $this->getMimeType())) {
             $string = base64_encode($string);

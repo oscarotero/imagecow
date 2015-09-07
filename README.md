@@ -193,12 +193,18 @@ Defines the image compression quality for jpg images
 $image->setCompressionQuality(80); // change the quality to 80
 ```
 
-### Show
+### Display the image
 
-Send the HTTP header with the content-type, output the image data and die.
+Send the HTTP header with the content-type, output the image data and die:
 
 ```php
 $image->show(); // you should see this image in your browser
+```
+
+Insert the image as base64 url:
+
+```php
+echo '<img src="' . $image->base64() . '">';
 ```
 
 ### Get image info:

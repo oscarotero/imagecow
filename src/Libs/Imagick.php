@@ -182,7 +182,7 @@ class Imagick extends BaseLib implements LibInterface
             list($r, $g, $b) = $this->background;
 
             $this->image->setImageBackgroundColor("rgb($r,$g,$b)");
-            $this->image = $this->image->flattenImages();
+            $this->image = $this->image->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
         }
 
         if ($this->image->setImageFormat($format) !== true) {

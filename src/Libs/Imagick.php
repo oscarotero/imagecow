@@ -56,7 +56,7 @@ class Imagick extends BaseLib implements LibInterface
     public function __construct(\Imagick $image)
     {
         //Convert CMYK to RGB
-        if (method_exists($image, 'getImageProfiles') && ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK)) {
+        if ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK) {
             $profiles = $image->getImageProfiles('*', false);
 
             if (array_search('icc', $profiles) === false) {
@@ -64,6 +64,7 @@ class Imagick extends BaseLib implements LibInterface
             }
 
             $image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
+            $image->transformImageColorspace(\Imagick::COLORSPACE_SRGB);
         }
 
         $this->image = $image;

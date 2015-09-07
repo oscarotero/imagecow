@@ -495,6 +495,19 @@ class Image
     }
 
     /**
+     * Returns the image as base64 url
+     *
+     * @return string|null
+     */
+    public function url()
+    {
+        if (($string = $this->getString()) && ($mimetype = $this->getMimeType())) {
+            $string = base64_encode($string);
+            return "data:{$mimetype};base64,{$string}";
+        }
+    }
+
+    /**
      * Auto-rotate the image according with its exif data
      * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964
      *

@@ -1,6 +1,9 @@
 <?php
 namespace Imagecow\Crops;
 
+use Exception, Imagick;
+use Imagecow\Utils\Color;
+
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
@@ -22,7 +25,7 @@ class Balanced implements CropInterface
     /**
      * {@inheritdoc}
      */
-    public static function getOffsets(\Imagick $original, $targetWidth, $targetHeight)
+    public static function getOffsets(Imagick $original, $targetWidth, $targetHeight)
     {
         $measureImage = clone($original);
         // Enhance edges with radius 1
@@ -30,7 +33,7 @@ class Balanced implements CropInterface
         // Turn image into a grayscale
         $measureImage->modulateImage(100, 0, 100);
         // Turn everything darker than this to pitch black
-        $measureImage->blackThresholdImage("#101010");
+        $measureImage->blackThresholdImage('#101010');
         // Get the calculated offset for cropping
         return static::getOffsetBalanced($original, $targetWidth, $targetHeight);
     }
@@ -42,14 +45,14 @@ class Balanced implements CropInterface
      * @return array
      * @todo refactor so it follows DRY
      */
-    protected static function getOffsetBalanced(\Imagick $original, $targetWidth, $targetHeight)
+    protected static function getOffsetBalanced(Imagick $original, $targetWidth, $targetHeight)
     {
         $size = $original->getImageGeometry();
 
         $points = array();
 
-        $halfWidth = ceil($size['width']/2);
-        $halfHeight = ceil($size['height']/2);
+        $halfWidth = ceil($size['width'] / 2);
+        $halfHeight = ceil($size['height'] / 2);
 
         // First quadrant
         $clone = clone($original);
@@ -61,19 +64,19 @@ class Balanced implements CropInterface
         $clone = clone($original);
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, 0);
         $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x']+$halfWidth, 'y' => $point['y'], 'sum' => $point['sum']);
+        $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'], 'sum' => $point['sum']);
 
         // Third quadrant
         $clone = clone($original);
         $clone->cropimage($halfWidth, $halfHeight, 0, $halfHeight);
         $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x'], 'y' => $point['y']+$halfHeight, 'sum' => $point['sum']);
+        $points[] = array('x' => $point['x'], 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
 
         // Fourth quadrant
         $clone = clone($original);
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, $halfHeight);
         $point = $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x']+$halfWidth, 'y' => $point['y']+$halfHeight, 'sum' => $point['sum']);
+        $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
 
         // get the totalt sum value so we can find out a mean center point
         $totalWeight = array_reduce(
@@ -99,13 +102,13 @@ class Balanced implements CropInterface
 
         // If we don't have enough width for the crop, back up $topleftX until
         // we can make the image meet $targetWidth
-        if ($topleftX + $targetWidth > $size['width']) {
-            $topleftX -= ($topleftX+$targetWidth) - $size['width'];
+        if (($topleftX + $targetWidth) > $size['width']) {
+            $topleftX -= ($topleftX + $targetWidth) - $size['width'];
         }
         // If we don't have enough height for the crop, back up $topleftY until
         // we can make the image meet $targetHeight
-        if ($topleftY+$targetHeight > $size['height']) {
-            $topleftY -= ($topleftY+$targetHeight) - $size['height'];
+        if (($topleftY + $targetHeight) > $size['height']) {
+            $topleftY -= ($topleftY + $targetHeight) - $size['height'];
         }
 
         return array($topleftX, $topleftY);
@@ -115,37 +118,38 @@ class Balanced implements CropInterface
      * By doing random sampling from the image, find the most energetic point on the passed in
      * image
      *
-     * @param  \Imagick $image
+     * @param  Imagick $image
      * @return array
      */
-    protected static function getHighestEnergyPoint(\Imagick $image)
+    protected static function getHighestEnergyPoint(Imagick $image)
     {
-        $size = $image->getImageGeometry();
         // It's more performant doing random pixel uplook via GD
-        $im = imagecreatefromstring($image->getImageBlob());
-        if ($im === false) {
-            $msg = 'GD failed to create image from string';
-            throw new \Exception($msg);
+        if (($im = imagecreatefromstring($image->getImageBlob())) === false) {
+            throw new Exception('GD failed to create image from string');
         }
+
+        $size = $image->getImageGeometry();
+
         $xcenter = 0;
         $ycenter = 0;
         $sum = 0;
-        // Only sample 1/50 of all the pixels in the image
-        $sampleSize = round($size['height']*$size['width'])/50;
 
-        for ($k = 0; $k<$sampleSize; $k++) {
-            $i = mt_rand(0, $size['width']-1);
-            $j = mt_rand(0, $size['height']-1);
+        // Only sample 1/50 of all the pixels in the image
+        $sampleSize = round($size['height'] * $size['width']) / 50;
+
+        for ($k = 0; $k < $sampleSize; $k++) {
+            $i = mt_rand(0, $size['width'] - 1);
+            $j = mt_rand(0, $size['height'] - 1);
 
             $rgb = imagecolorat($im, $i, $j);
             $r = ($rgb >> 16) & 0xFF;
             $g = ($rgb >> 8) & 0xFF;
             $b = $rgb & 0xFF;
 
-            $val = static::rgb2bw($r, $g, $b);
+            $val = Color::rgb2bw($r, $g, $b);
             $sum += $val;
-            $xcenter += ($i+1)*$val;
-            $ycenter += ($j+1)*$val;
+            $xcenter += ($i + 1) * $val;
+            $ycenter += ($j + 1) * $val;
         }
 
         if ($sum) {
@@ -153,22 +157,8 @@ class Balanced implements CropInterface
             $ycenter /= $sum;
         }
 
-        $point = array('x' => $xcenter, 'y' => $ycenter, 'sum' => $sum/round($size['height']*$size['width']));
+        $sum = $sum / round($size['height'] * $size['width']);
 
-        return $point;
-    }
-
-    /**
-     * Returns a YUV weighted greyscale value
-     *
-     * @param  int $r
-     * @param  int $g
-     * @param  int $b
-     * @return int
-     * @see http://en.wikipedia.org/wiki/YUV
-     */
-    protected static function rgb2bw($r, $g, $b)
-    {
-        return ($r*0.299)+($g*0.587)+($b*0.114);
+        return array('x' => $xcenter, 'y' => $ycenter, 'sum' => $sum);
     }
 }

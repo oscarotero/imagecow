@@ -236,12 +236,11 @@ class Image
      *
      * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
      * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
-     * @param bool|null  $enlarge
      * @param bool       $cover
      *
      * @return self
      */
-    public function resize($width, $height = 0, $enlarge = false, $cover = false)
+    public function resize($width, $height = 0, $cover = false)
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -251,7 +250,7 @@ class Image
 
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
 
-        if (($width === $imageWidth) || (!$enlarge && $width > $imageWidth)) {
+        if ($width >= $imageWidth) {
             return $this;
         }
 
@@ -306,13 +305,12 @@ class Image
      * @param int|string $height  The new height in number (pixels) or percentaje
      * @param int|string $x       The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
      * @param int|string $y       The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
-     * @param bool       $enlarge
      *
      * @return self
      */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = false)
+    public function resizeCrop($width, $height, $x = 'center', $y = 'middle')
     {
-        $this->resize($width, $height, $enlarge, true);
+        $this->resize($width, $height, true);
         $this->crop($width, $height, $x, $y);
 
         return $this;

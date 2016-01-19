@@ -14,6 +14,11 @@ class Image
 
     protected $image;
     protected $filename;
+    protected $clientHints = [
+        'dpr' => null,
+        'viewport-width' => null,
+        'width' => null,
+    ];
 
     /**
      * Static function to create a new Imagecow instance from an image file.
@@ -61,14 +66,77 @@ class Image
         }
     }
 
-    public function getImage()
-    {
-        return $this->image->getImage();
+    /**
+     * Set the available client hints
+     * 
+     * @param array $hints
+     * 
+     * @return self
+     */
+    public function setClientHints(array $clientHints) {
+        $normalize = [];
+
+        foreach ($clientHints as $key => $value) {
+            $normalize[strtolower($key)] = is_null($value) ? null : (float) $value;
+        }
+
+        if (array_diff_key($clientHints, $this->clientHints)) {
+            throw new \InvalidArgumentException('Invalid client hints');
+        }
+
+        $this->clientHints = array_replace($this->clientHints, $clientHints);
     }
 
-    public function setImage($image)
+    /**
+     * Set a default background color used to fill in some transformation functions.
+     *
+     * @param array $background The color in rgb, for example: array(0,127,34)
+     *
+     * @return self
+     */
+    public function setBackground(array $background)
     {
-        return $this->image->setImage($image);
+        $this->image->setBackground($background);
+
+        return $this;
+    }
+
+    /**
+     * Define the image compression quality for jpg images.
+     *
+     * @param int $quality The quality (from 0 to 100)
+     *
+     * @deprecated Use quality instead
+     *
+     * @return self
+     */
+    public function setCompressionQuality($quality)
+    {
+        error_log('The method `setCompressionQuality()` is deprecated. Use `quality()` instead.');
+
+        return $this->quality($quality);
+    }
+
+    /**
+     * Get the fixed size according with the client hints
+     * 
+     * @param int $width
+     * @param int $height
+     * 
+     * @return array
+     */
+    public function calculateClientSize($width, $height)
+    {
+        if ($this->clientHints['width'] !== null && $this->clientHints['width'] < $width) {
+            list($width, $height) = Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
+        }
+
+        if ($this->clientHints['dpr'] !== null) {
+            $width *= $this->clientHints['dpr'];
+            $height *= $this->clientHints['dpr'];
+        }
+
+        return [$width, $height];
     }
 
     /**
@@ -187,6 +255,10 @@ class Image
             return $this;
         }
 
+        if (!$cover) {
+            list($width, $height) = $this->calculateClientSize($width, $height);
+        }
+
         $this->image->resize($width, $height);
 
         return $this;
@@ -209,6 +281,8 @@ class Image
 
         $width = Dimmensions::getIntegerValue($width, $imageWidth);
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
+
+        list($width, $height) = $this->calculateClientSize($width, $height);
 
         switch ($x) {
             case self::CROP_BALANCED:
@@ -265,22 +339,6 @@ class Image
      *
      * @param int $quality The quality (from 0 to 100)
      *
-     * @deprecated Use quality instead
-     *
-     * @return self
-     */
-    public function setCompressionQuality($quality)
-    {
-        error_log('The method `setCompressionQuality()` is deprecated. Use `quality()` instead.');
-
-        return $this->quality($quality);
-    }
-
-    /**
-     * Define the image compression quality for jpg images.
-     *
-     * @param int $quality The quality (from 0 to 100)
-     *
      * @return self
      */
     public function quality($quality)
@@ -294,20 +352,6 @@ class Image
         }
 
         $this->image->setCompressionQuality($quality);
-
-        return $this;
-    }
-
-    /**
-     * Set a default background color used to fill in some transformation functions.
-     *
-     * @param array $background The color in rgb, for example: array(0,127,34)
-     *
-     * @return self
-     */
-    public function setBackground(array $background)
-    {
-        $this->image->setBackground($background);
 
         return $this;
     }
@@ -349,7 +393,7 @@ class Image
         $operations = self::parseOperations($operations);
 
         foreach ($operations as $operation) {
-            switch (strtolower($operation['function'])) {
+            switch ($operation['function']) {
                 case 'crop':
                 case 'resizecrop':
                     if (isset($operation['params'][2])) {
@@ -472,15 +516,15 @@ class Image
      */
     private static function parseOperations($operations)
     {
-        $valid_operations = ['resize', 'resizeCrop', 'crop', 'format', 'quality'];
+        $valid_operations = ['resize', 'resizecrop', 'crop', 'format', 'quality'];
         $operations = explode('|', str_replace(' ', '', $operations));
         $return = [];
 
         foreach ($operations as $operations) {
             $params = explode(',', $operations);
-            $function = trim(array_shift($params));
+            $function = strtolower(trim(array_shift($params)));
 
-            if (!in_array($function, $valid_operations)) {
+            if (!in_array($function, $valid_operations, true)) {
                 throw new ImageException("The transform function '{$function}' is not valid");
             }
 
@@ -502,7 +546,7 @@ class Image
      *
      * @return string
      */
-    public static function getLibraryClass($library)
+    private static function getLibraryClass($library)
     {
         if (!$library) {
             $library = Libs\Imagick::checkCompatibility() ? self::LIB_IMAGICK : self::LIB_GD;

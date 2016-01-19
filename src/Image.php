@@ -131,6 +131,10 @@ class Image
             return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
         }
 
+        if ($this->clientHints['viewport-width'] !== null && $this->clientHints['viewport-width'] < $width) {
+            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['viewport-width'], null);
+        }
+
         if ($this->clientHints['dpr'] !== null) {
             $width *= $this->clientHints['dpr'];
             $height *= $this->clientHints['dpr'];

@@ -28,7 +28,7 @@ class Image
      *
      * @return Image
      */
-    public static function createFromFile($image, $library = null)
+    public static function fromFile($image, $library = null)
     {
         $class = self::getLibraryClass($library);
 
@@ -43,7 +43,7 @@ class Image
      *
      * @return Image
      */
-    public static function createFromString($string, $library = null)
+    public static function fromString($string, $library = null)
     {
         $class = self::getLibraryClass($library);
 
@@ -125,10 +125,10 @@ class Image
      * 
      * @return array
      */
-    public function calculateClientSize($width, $height)
+    private function calculateClientSize($width, $height)
     {
         if ($this->clientHints['width'] !== null && $this->clientHints['width'] < $width) {
-            list($width, $height) = Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
+            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
         }
 
         if ($this->clientHints['dpr'] !== null) {
@@ -249,13 +249,10 @@ class Image
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
+        list($width, $height) = $this->calculateClientSize($width, $height);
 
         if ($width >= $imageWidth) {
             return $this;
-        }
-
-        if (!$cover) {
-            list($width, $height) = $this->calculateClientSize($width, $height);
         }
 
         $this->image->resize($width, $height);
@@ -382,10 +379,11 @@ class Image
      *
      * @return self
      */
-    public function transform($operations = '')
+    public function transform($operations = null)
     {
-        if (!$operations) {
-            return $this;
+        //No transform operations, resize to fix the client size
+        if (empty($operations)) {
+            return $this->resize($this->getWidth(), $this->getHeight());
         }
 
         $operations = self::parseOperations($operations);

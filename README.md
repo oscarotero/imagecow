@@ -10,7 +10,7 @@ Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
 It's a php library to manipulate images to web.
 
-* PHP >= 5.4
+* PHP >= 5.5
 * Use GD2 or Imagick libraries
 * Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
 

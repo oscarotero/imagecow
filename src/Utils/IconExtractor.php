@@ -1,4 +1,5 @@
 <?php
+
 namespace Imagecow\Utils;
 
 use Imagick;
@@ -7,14 +8,14 @@ use Imagecow\Image;
 
 /**
  * Simple class to extracts all images from .ico files
- * Requires Imagick
+ * Requires Imagick.
  */
 class IconExtractor
 {
     protected $image;
 
     /**
-     * Contructor
+     * Contructor.
      *
      * @param string $filename The path of ico file
      */
@@ -31,7 +32,7 @@ class IconExtractor
     }
 
     /**
-     * Get the better quality image found in the icon
+     * Get the better quality image found in the icon.
      *
      * @return Image
      */

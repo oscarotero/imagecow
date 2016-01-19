@@ -1,4 +1,5 @@
 <?php
+
 namespace Imagecow;
 
 use Imagecow\Utils\Dimmensions;
@@ -15,7 +16,7 @@ class Image
     protected $filename;
 
     /**
-     * Static function to create a new Imagecow instance from an image file
+     * Static function to create a new Imagecow instance from an image file.
      *
      * @param string $image   The path of the file
      * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
@@ -30,7 +31,7 @@ class Image
     }
 
     /**
-     * Static function to create a new Imagecow instance from a binary string
+     * Static function to create a new Imagecow instance from a binary string.
      *
      * @param string $string  The string of the image
      * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
@@ -71,7 +72,7 @@ class Image
     }
 
     /**
-     * Inverts the image vertically
+     * Inverts the image vertically.
      *
      * @return self
      */
@@ -83,7 +84,7 @@ class Image
     }
 
     /**
-     * Inverts the image horizontally
+     * Inverts the image horizontally.
      *
      * @return self
      */
@@ -95,7 +96,7 @@ class Image
     }
 
     /**
-     * Saves the image in a file
+     * Saves the image in a file.
      *
      * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
      *
@@ -109,7 +110,7 @@ class Image
     }
 
     /**
-     * Gets the image data in a string
+     * Gets the image data in a string.
      *
      * @return string The image data
      */
@@ -119,7 +120,7 @@ class Image
     }
 
     /**
-     * Gets the mime type of the image
+     * Gets the mime type of the image.
      *
      * @return string The mime type
      */
@@ -129,9 +130,9 @@ class Image
     }
 
     /**
-     * Gets the width of the image
+     * Gets the width of the image.
      *
-     * @return integer The width in pixels
+     * @return int The width in pixels
      */
     public function getWidth()
     {
@@ -139,9 +140,9 @@ class Image
     }
 
     /**
-     * Gets the height of the image
+     * Gets the height of the image.
      *
-     * @return integer The height in pixels
+     * @return int The height in pixels
      */
     public function getHeight()
     {
@@ -149,7 +150,7 @@ class Image
     }
 
     /**
-     * Converts the image to other format
+     * Converts the image to other format.
      *
      * @param string $format The new format: png, jpg, gif
      *
@@ -163,12 +164,12 @@ class Image
     }
 
     /**
-     * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300)
+     * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300).
      *
-     * @param integer|string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param integer|string $height  The max height of the image. It can be a number (pixels) or percentaje
-     * @param boolean|null   $enlarge
-     * @param boolean        $cover
+     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param bool|null  $enlarge
+     * @param bool       $cover
      *
      * @return self
      */
@@ -192,12 +193,12 @@ class Image
     }
 
     /**
-     * Crops the image
+     * Crops the image.
      *
-     * @param integer|string $width  The new width of the image. It can be a number (pixels) or percentaje
-     * @param integer|string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param integer|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
-     * @param integer|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
+     * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
      *
      * @return self
      */
@@ -210,8 +211,8 @@ class Image
         $height = Dimmensions::getIntegerValue($height, $imageHeight);
 
         switch ($x) {
-            case Image::CROP_BALANCED:
-            case Image::CROP_ENTROPY:
+            case self::CROP_BALANCED:
+            case self::CROP_ENTROPY:
                 list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
                 break;
         }
@@ -227,11 +228,11 @@ class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param integer|string $width   The new width in number (pixels) or percentaje
-     * @param integer|string $height  The new height in number (pixels) or percentaje
-     * @param integer|string $x       The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
-     * @param integer|string $y       The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
-     * @param boolean        $enlarge
+     * @param int|string $width   The new width in number (pixels) or percentaje
+     * @param int|string $height  The new height in number (pixels) or percentaje
+     * @param int|string $x       The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
+     * @param int|string $y       The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param bool       $enlarge
      *
      * @return self
      */
@@ -244,9 +245,9 @@ class Image
     }
 
     /**
-     * Rotates the image
+     * Rotates the image.
      *
-     * @param integer $angle Rotation angle in degrees (anticlockwise)
+     * @param int $angle Rotation angle in degrees (anticlockwise)
      *
      * @return self
      */
@@ -260,9 +261,9 @@ class Image
     }
 
     /**
-     * Define the image compression quality for jpg images
+     * Define the image compression quality for jpg images.
      *
-     * @param integer $quality The quality (from 0 to 100)
+     * @param int $quality The quality (from 0 to 100)
      *
      * @deprecated Use quality instead
      *
@@ -270,15 +271,15 @@ class Image
      */
     public function setCompressionQuality($quality)
     {
-        error_log("The method `setCompressionQuality()` is deprecated. Use `quality()` instead.");
+        error_log('The method `setCompressionQuality()` is deprecated. Use `quality()` instead.');
 
         return $this->quality($quality);
     }
 
     /**
-     * Define the image compression quality for jpg images
+     * Define the image compression quality for jpg images.
      *
-     * @param integer $quality The quality (from 0 to 100)
+     * @param int $quality The quality (from 0 to 100)
      *
      * @return self
      */
@@ -298,7 +299,7 @@ class Image
     }
 
     /**
-     * Set a default background color used to fill in some transformation functions
+     * Set a default background color used to fill in some transformation functions.
      *
      * @param array $background The color in rgb, for example: array(0,127,34)
      *
@@ -313,7 +314,7 @@ class Image
 
     /**
      * Reads the EXIF data from a JPEG and returns an associative array
-     * (requires the exif PHP extension enabled)
+     * (requires the exif PHP extension enabled).
      *
      * @param null|string $key
      *
@@ -333,7 +334,7 @@ class Image
     }
 
     /**
-     * Transform the image executing various operations of crop, resize, resizeCrop and format
+     * Transform the image executing various operations of crop, resize, resizeCrop and format.
      *
      * @param string $operations The string with all operations separated by "|".
      *
@@ -354,11 +355,11 @@ class Image
                     if (isset($operation['params'][2])) {
                         switch ($operation['params'][2]) {
                             case 'CROP_ENTROPY':
-                                $operation['params'][2] = Image::CROP_ENTROPY;
+                                $operation['params'][2] = self::CROP_ENTROPY;
                                 break;
 
                             case 'CROP_BALANCED':
-                                $operation['params'][2] = Image::CROP_BALANCED;
+                                $operation['params'][2] = self::CROP_BALANCED;
                                 break;
                         }
                     }
@@ -383,7 +384,7 @@ class Image
     }
 
     /**
-     * Returns the image as base64 url
+     * Returns the image as base64 url.
      *
      * @return string|null
      */
@@ -391,13 +392,14 @@ class Image
     {
         if (($string = $this->getString()) && ($mimetype = $this->getMimeType())) {
             $string = base64_encode($string);
+
             return "data:{$mimetype};base64,{$string}";
         }
     }
 
     /**
      * Auto-rotate the image according with its exif data
-     * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964
+     * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964.
      *
      * @return self
      */
@@ -437,11 +439,11 @@ class Image
     }
 
     /**
-     * Check whether the image is an animated gif
+     * Check whether the image is an animated gif.
      *
      * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
      *
-     * @return boolean
+     * @return bool
      */
     protected function isAnimatedGif()
     {
@@ -458,11 +460,11 @@ class Image
 
         fclose($fh);
 
-        return ($count > 1);
+        return $count > 1;
     }
 
     /**
-     * Converts a string with operations in an array
+     * Converts a string with operations in an array.
      *
      * @param string $operations The operations string
      *
@@ -492,7 +494,7 @@ class Image
     }
 
     /**
-     * Checks the library to use and returns its class
+     * Checks the library to use and returns its class.
      *
      * @param string $library The library name (Gd, Imagick)
      *

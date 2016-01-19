@@ -1,4 +1,5 @@
 <?php
+
 use Imagecow\Image;
 
 abstract class ImageTest_ extends PHPUnit_Framework_TestCase

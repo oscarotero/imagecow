@@ -1,4 +1,5 @@
 <?php
+
 namespace Imagecow\Crops;
 
 use Imagick;
@@ -7,7 +8,7 @@ use Imagecow\Utils\Color;
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
- * Copyright (c) 2013, Stig Lindqvist
+ * Copyright (c) 2013, Stig Lindqvist.
  *
  * CropEntropy
  *
@@ -19,7 +20,6 @@ use Imagecow\Utils\Color;
  * 2. Run a edge filter so that we're left with only edges.
  * 3. Find a piece in the picture that has the highest entropy (i.e. most edges)
  * 4. Return coordinates that makes sure that this piece of the picture is not cropped 'away'
- *
  */
 class Entropy implements CropInterface
 {
@@ -30,24 +30,25 @@ class Entropy implements CropInterface
      */
     public static function getOffsets(Imagick $original, $targetWidth, $targetHeight)
     {
-        $measureImage = clone($original);
+        $measureImage = clone $original;
         // Enhance edges
         $measureImage->edgeimage(1);
         // Turn image into a grayscale
         $measureImage->modulateImage(100, 0, 100);
         // Turn everything darker than this to pitch black
-        $measureImage->blackThresholdImage("#070707");
+        $measureImage->blackThresholdImage('#070707');
         // Get the calculated offset for cropping
         return static::getOffsetFromEntropy($measureImage, $targetWidth, $targetHeight);
     }
 
     /**
-     * Get the offset of where the crop should start
+     * Get the offset of where the crop should start.
      *
-     * @param  Imagick $image
-     * @param  int      $targetHeight
-     * @param  int      $targetHeight
-     * @param  int      $sliceSize
+     * @param Imagick $image
+     * @param int     $targetHeight
+     * @param int     $targetHeight
+     * @param int     $sliceSize
+     *
      * @return array
      */
     protected static function getOffsetFromEntropy(Imagick $originalImage, $targetWidth, $targetHeight)
@@ -68,14 +69,12 @@ class Entropy implements CropInterface
     }
 
     /**
-     * slice
+     * slice.
      *
-     * @param  mixed $image
-     * @param  mixed $originalSize
-     * @param  mixed $targetSize
-     * @param  mixed $axis         h=horizontal, v = vertical
-     * @access protected
-     * @return void
+     * @param mixed $image
+     * @param mixed $originalSize
+     * @param mixed $targetSize
+     * @param mixed $axis         h=horizontal, v = vertical
      */
     protected static function slice($image, $originalSize, $targetSize, $axis)
     {
@@ -157,9 +156,8 @@ class Entropy implements CropInterface
     }
 
     /**
-     * getSafeZoneList
+     * getSafeZoneList.
      *
-     * @access protected
      * @return array
      */
     protected static function getSafeZoneList()
@@ -168,13 +166,11 @@ class Entropy implements CropInterface
     }
 
     /**
-     * getPotential
+     * getPotential.
      *
-     * @param  mixed $position
-     * @param  mixed $top
-     * @param  mixed $sliceSize
-     * @access protected
-     * @return void
+     * @param mixed $position
+     * @param mixed $top
+     * @param mixed $sliceSize
      */
     protected static function getPotential($position, $top, $sliceSize)
     {
@@ -189,7 +185,7 @@ class Entropy implements CropInterface
         $safeZoneList = static::getSafeZoneList();
         $safeRatio = 0;
 
-        for ($i = $start; $i < $end; $i++) {
+        for ($i = $start; $i < $end; ++$i) {
             foreach ($safeZoneList as $safeZone) {
                 if (($position === 'top') || ($position === 'bottom')) {
                     if (($safeZone['top'] <= $i) && ($safeZone['bottom'] >= $i)) {
@@ -209,7 +205,8 @@ class Entropy implements CropInterface
      *
      * A higher value of entropy means more noise / liveliness / color / business
      *
-     * @param  Imagick $image
+     * @param Imagick $image
+     *
      * @return float
      *
      * @see http://brainacle.com/calculating-image-entropy-with-python-how-and-why.html
@@ -222,12 +219,13 @@ class Entropy implements CropInterface
     }
 
     /**
-     * Find out the entropy for a color image
+     * Find out the entropy for a color image.
      *
      * If the source image is in color we need to transform RGB into a grayscale image
      * so we can calculate the entropy more performant.
      *
-     * @param  Imagick $image
+     * @param Imagick $image
+     *
      * @return float
      */
     protected static function colorEntropy(Imagick $image)
@@ -238,7 +236,7 @@ class Entropy implements CropInterface
         // Translates a color histogram into a bw histogram
         $colors = count($histogram);
 
-        for ($idx = 0; $idx < $colors; $idx++) {
+        for ($idx = 0; $idx < $colors; ++$idx) {
             $colors = $histogram[$idx]->getColor();
             $grey = Color::rgb2bw($colors['r'], $colors['g'], $colors['b']);
 
@@ -253,9 +251,9 @@ class Entropy implements CropInterface
     }
 
     /**
+     * @param array $histogram - a value[count] array
+     * @param int   $area
      *
-     * @param  array $histogram - a value[count] array
-     * @param  int   $area
      * @return float
      */
     protected static function getEntropy($histogram, $area)
@@ -263,7 +261,7 @@ class Entropy implements CropInterface
         $value = 0.0;
         $colors = count($histogram);
 
-        for ($idx = 0; $idx < $colors; $idx++) {
+        for ($idx = 0; $idx < $colors; ++$idx) {
             // calculates the percentage of pixels having this color value
             $p = $histogram[$idx]->getColorCount() / $area;
             // A common way of representing entropy in scalar
@@ -275,9 +273,10 @@ class Entropy implements CropInterface
     }
 
     /**
-     * Get the area in pixels for this image
+     * Get the area in pixels for this image.
      *
-     * @param  Imagick $image
+     * @param Imagick $image
+     *
      * @return int
      */
     protected static function area(Imagick $image)

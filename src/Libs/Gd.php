@@ -1,10 +1,11 @@
 <?php
+
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
 
 /**
- * GD library
+ * GD library.
  */
 class Gd extends BaseLib implements LibInterface
 {
@@ -25,7 +26,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public static function createFromFile($filename)
     {
@@ -43,7 +44,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public static function createFromString($string)
     {
@@ -55,7 +56,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * Constructor of the class
+     * Constructor of the class.
      *
      * @param resource $image The Gd resource.
      */
@@ -69,7 +70,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * Destroy the image
+     * Destroy the image.
      */
     public function __destruct()
     {
@@ -77,7 +78,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flip()
     {
@@ -93,7 +94,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flop()
     {
@@ -109,11 +110,11 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * Creates a new truecolor image
+     * Creates a new truecolor image.
      *
-     * @param integer $width
-     * @param integer $height
-     * @param array   $background
+     * @param int   $width
+     * @param int   $height
+     * @param array $background
      *
      * @return resource
      */
@@ -141,7 +142,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function save($filename)
     {
@@ -154,7 +155,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getString()
     {
@@ -177,7 +178,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMimeType()
     {
@@ -185,7 +186,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getWidth()
     {
@@ -193,7 +194,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getHeight()
     {
@@ -201,7 +202,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function format($format)
     {
@@ -232,7 +233,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function resize($width, $height)
     {
@@ -246,7 +247,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCropOffsets($width, $height, $method)
     {
@@ -258,7 +259,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function crop($width, $height, $x, $y)
     {
@@ -272,7 +273,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rotate($angle)
     {

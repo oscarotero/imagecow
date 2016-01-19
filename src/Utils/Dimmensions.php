@@ -1,10 +1,11 @@
 <?php
+
 namespace Imagecow\Utils;
 
 use Imagecow\ImageException;
 
 /**
- * Usefull dimmensions calculations
+ * Usefull dimmensions calculations.
  */
 class Dimmensions
 {
@@ -18,28 +19,28 @@ class Dimmensions
     );
 
     /**
-     * Calculate the dimensions of a resize
+     * Calculate the dimensions of a resize.
      *
-     * @param integer $oldWidth
-     * @param integer $oldHeight
-     * @param integer $newWidth
-     * @param integer $newHeight
-     * @param boolean $cover
+     * @param int  $oldWidth
+     * @param int  $oldHeight
+     * @param int  $newWidth
+     * @param int  $newHeight
+     * @param bool $cover
      *
      * @return array [width, height]
      */
     public static function getResizeDimmensions($oldWidth, $oldHeight, $newWidth, $newHeight, $cover = false)
     {
         if (empty($newHeight)) {
-            return array((int) $newWidth, (int) ceil(($newWidth/$oldWidth) * $oldHeight));
+            return array((int) $newWidth, (int) ceil(($newWidth / $oldWidth) * $oldHeight));
         }
 
         if (empty($newWidth)) {
-            return array((int) ceil(($newHeight/$oldHeight) * $oldWidth), (int) $newHeight);
+            return array((int) ceil(($newHeight / $oldHeight) * $oldWidth), (int) $newHeight);
         }
 
-        $scaleWidth = $newWidth/$oldWidth;
-        $scaleHeight = $newHeight/$oldHeight;
+        $scaleWidth = $newWidth / $oldWidth;
+        $scaleHeight = $newHeight / $oldHeight;
 
         if ($cover) {
             if ($scaleWidth > $scaleHeight) {
@@ -71,13 +72,13 @@ class Dimmensions
     }
 
     /**
-     * Calculate a dimension value
+     * Calculate a dimension value.
      *
-     * @param integer|string $value
-     * @param integer        $relatedValue
-     * @param boolean        $position
+     * @param int|string $value
+     * @param int        $relatedValue
+     * @param bool       $position
      *
-     * @return integer
+     * @return int
      */
     public static function getIntegerValue($value, $relatedValue, $position = false)
     {
@@ -93,11 +94,11 @@ class Dimmensions
     }
 
     /**
-     * Calculate a dimension value
+     * Calculate a dimension value.
      *
-     * @param integer|string $value
-     * @param integer        $relatedValue
-     * @param boolean        $position
+     * @param int|string $value
+     * @param int        $relatedValue
+     * @param bool       $position
      *
      * @return string
      */
@@ -119,13 +120,13 @@ class Dimmensions
     }
 
     /**
-     * Calculates the x/y position
+     * Calculates the x/y position.
      *
-     * @param string|integer|null $position
-     * @param integer             $newValue
-     * @param integer             $oldValue
+     * @param string|int|null $position
+     * @param int             $newValue
+     * @param int             $oldValue
      *
-     * @return integer
+     * @return int
      */
     public static function getPositionValue($position, $newValue, $oldValue)
     {

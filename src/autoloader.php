@@ -1,4 +1,5 @@
 <?php
+
 spl_autoload_register(function ($class) {
     if (strpos($class, 'Imagecow\\') !== 0) {
         return;

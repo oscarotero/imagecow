@@ -1,13 +1,15 @@
 <?php
+
 namespace Imagecow\Crops;
 
-use Exception, Imagick;
+use Exception;
+use Imagick;
 use Imagecow\Utils\Color;
 
 /**
  * This class is adapted from Stig Lindqvist's great Crop library:
  * https://github.com/stojg/crop
- * Copyright (c) 2013, Stig Lindqvist
+ * Copyright (c) 2013, Stig Lindqvist.
  *
  * CropBalanced
  *
@@ -27,7 +29,7 @@ class Balanced implements CropInterface
      */
     public static function getOffsets(Imagick $original, $targetWidth, $targetHeight)
     {
-        $measureImage = clone($original);
+        $measureImage = clone $original;
         // Enhance edges with radius 1
         $measureImage->edgeimage(1);
         // Turn image into a grayscale
@@ -39,10 +41,11 @@ class Balanced implements CropInterface
     }
 
     /**
+     * @param int $targetWidth
+     * @param int $targetHeight
      *
-     * @param  int   $targetWidth
-     * @param  int   $targetHeight
      * @return array
+     *
      * @todo refactor so it follows DRY
      */
     protected static function getOffsetBalanced(Imagick $original, $targetWidth, $targetHeight)
@@ -55,25 +58,25 @@ class Balanced implements CropInterface
         $halfHeight = ceil($size['height'] / 2);
 
         // First quadrant
-        $clone = clone($original);
+        $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, 0, 0);
         $point = static::getHighestEnergyPoint($clone);
         $points[] = array('x' => $point['x'], 'y' => $point['y'], 'sum' => $point['sum']);
 
         // Second quadrant
-        $clone = clone($original);
+        $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, 0);
         $point = static::getHighestEnergyPoint($clone);
         $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'], 'sum' => $point['sum']);
 
         // Third quadrant
-        $clone = clone($original);
+        $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, 0, $halfHeight);
         $point = static::getHighestEnergyPoint($clone);
         $points[] = array('x' => $point['x'], 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
 
         // Fourth quadrant
-        $clone = clone($original);
+        $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, $halfHeight);
         $point = $point = static::getHighestEnergyPoint($clone);
         $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
@@ -91,7 +94,7 @@ class Balanced implements CropInterface
 
         // Calulate the mean weighted center x and y
         $totalPoints = count($points);
-        for ($idx = 0; $idx < $totalPoints; $idx++) {
+        for ($idx = 0; $idx < $totalPoints; ++$idx) {
             $centerX += $points[$idx]['x'] * ($points[$idx]['sum'] / $totalWeight);
             $centerY += $points[$idx]['y'] * ($points[$idx]['sum'] / $totalWeight);
         }
@@ -116,9 +119,10 @@ class Balanced implements CropInterface
 
     /**
      * By doing random sampling from the image, find the most energetic point on the passed in
-     * image
+     * image.
      *
-     * @param  Imagick $image
+     * @param Imagick $image
+     *
      * @return array
      */
     protected static function getHighestEnergyPoint(Imagick $image)
@@ -137,7 +141,7 @@ class Balanced implements CropInterface
         // Only sample 1/50 of all the pixels in the image
         $sampleSize = round($size['height'] * $size['width']) / 50;
 
-        for ($k = 0; $k < $sampleSize; $k++) {
+        for ($k = 0; $k < $sampleSize; ++$k) {
             $i = mt_rand(0, $size['width'] - 1);
             $j = mt_rand(0, $size['height'] - 1);
 

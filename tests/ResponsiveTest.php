@@ -1,4 +1,5 @@
 <?php
+
 use Imagecow\Image;
 
 class ResponsiveTest extends PHPUnit_Framework_TestCase

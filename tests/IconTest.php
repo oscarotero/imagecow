@@ -1,4 +1,5 @@
 <?php
+
 use Imagecow\Image;
 use Imagecow\Utils\IconExtractor;
 

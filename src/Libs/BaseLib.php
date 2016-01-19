@@ -1,8 +1,9 @@
 <?php
+
 namespace Imagecow\Libs;
 
 /**
- * Base class extended by other libraries with common methods and properties
+ * Base class extended by other libraries with common methods and properties.
  */
 abstract class BaseLib
 {
@@ -11,7 +12,7 @@ abstract class BaseLib
     protected $animated = false;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setCompressionQuality($quality)
     {
@@ -19,7 +20,7 @@ abstract class BaseLib
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setBackground(array $background)
     {
@@ -27,7 +28,7 @@ abstract class BaseLib
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setAnimated($animated)
     {

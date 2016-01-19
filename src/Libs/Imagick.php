@@ -7,7 +7,7 @@ use Imagecow\ImageException;
 /**
  * Imagick library.
  */
-class Imagick extends BaseLib implements LibInterface
+class Imagick extends AbstractLib implements LibInterface
 {
     protected $image;
 

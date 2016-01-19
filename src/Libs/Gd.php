@@ -7,7 +7,7 @@ use Imagecow\ImageException;
 /**
  * GD library.
  */
-class Gd extends BaseLib implements LibInterface
+class Gd extends AbstractLib implements LibInterface
 {
     public static $fallbackCropMethods = [
         'Entropy' => ['center', 'middle'],
@@ -67,6 +67,7 @@ class Gd extends BaseLib implements LibInterface
 
         imagealphablending($this->image, true);
         imagesavealpha($this->image, true);
+        imagesetinterpolation($this->image, IMG_BICUBIC);
     }
 
     /**
@@ -82,15 +83,7 @@ class Gd extends BaseLib implements LibInterface
      */
     public function flip()
     {
-        $width = $this->getWidth();
-        $height = $this->getHeight();
-        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
-
-        if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
-            throw new ImageException('Error flipping the image');
-        }
-
-        $this->image = $image;
+        imageflip($this->image, IMG_FLIP_VERTICAL);
     }
 
     /**
@@ -98,47 +91,7 @@ class Gd extends BaseLib implements LibInterface
      */
     public function flop()
     {
-        $width = $this->getWidth();
-        $height = $this->getHeight();
-        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
-
-        if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
-            throw new ImageException('Error flopping the image');
-        }
-
-        $this->image = $image;
-    }
-
-    /**
-     * Creates a new truecolor image.
-     *
-     * @param int   $width
-     * @param int   $height
-     * @param array $background
-     *
-     * @return resource
-     */
-    private function createImage($width, $height, array $background = [0, 0, 0])
-    {
-        if (($image = imagecreatetruecolor($width, $height)) === false) {
-            throw new ImageException('Error creating a image');
-        }
-
-        if (imagesavealpha($image, true) === false) {
-            throw new ImageException('Error saving the alpha chanel of the image');
-        }
-
-        if (isset($background[3])) {
-            $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
-        } else {
-            $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
-        }
-
-        if (imagefill($image, 0, 0, $background) === false) {
-            throw new ImageException('Error filling the image');
-        }
-
-        return $image;
+        imageflip($this->image, IMG_FLIP_HORIZONTAL);
     }
 
     /**
@@ -211,7 +164,24 @@ class Gd extends BaseLib implements LibInterface
             case 'jpeg':
                 $width = $this->getWidth();
                 $height = $this->getHeight();
-                $image = $this->createImage($width, $height, $this->background);
+
+                if (($image = imagecreatetruecolor($width, $height)) === false) {
+                    throw new ImageException('Error creating a image');
+                }
+
+                if (imagesavealpha($image, true) === false) {
+                    throw new ImageException('Error saving the alpha chanel of the image');
+                }
+
+                if (isset($background[3])) {
+                    $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
+                } else {
+                    $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
+                }
+
+                if (imagefill($image, 0, 0, $background) === false) {
+                    throw new ImageException('Error filling the image');
+                }
 
                 imagecopy($image, $this->image, 0, 0, 0, 0, $width, $height);
 
@@ -237,10 +207,8 @@ class Gd extends BaseLib implements LibInterface
      */
     public function resize($width, $height)
     {
-        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
-
-        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
-            throw new ImageException('There was an error resizing the image');
+        if (($image = imagescale($this->image, $width, $height, IMG_BICUBIC)) === false) {
+            throw new ImageException('Error resizing the image');
         }
 
         $this->image = $image;
@@ -263,10 +231,15 @@ class Gd extends BaseLib implements LibInterface
      */
     public function crop($width, $height, $x, $y)
     {
-        $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : [0, 0, 0, 127]);
+        $crop = [
+            'width' => $width,
+            'height' => $height,
+            'x' => $x,
+            'y' => $y,
+        ];
 
-        if (imagecopyresampled($image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false) {
-            throw new ImageException('There was an error cropping the image');
+        if (($image = imagecrop($this->image, $crop)) === false) {
+            throw new ImageException('Error cropping the image');
         }
 
         $this->image = $image;
@@ -280,7 +253,7 @@ class Gd extends BaseLib implements LibInterface
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
         if ($background === false || ($image = imagerotate($this->image, $angle, $background)) === false) {
-            throw new ImageException('There was an error rotating the image');
+            throw new ImageException('Error rotating the image');
         }
 
         $this->image = $image;

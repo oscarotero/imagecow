@@ -22,7 +22,7 @@ class IconTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(is_file($tmpFile));
 
-        $image = Image::create($tmpFile);
+        $image = Image::fromFile($tmpFile);
 
         $this->assertSame(256, $image->getWidth());
         $this->assertSame(256, $image->getHeight());

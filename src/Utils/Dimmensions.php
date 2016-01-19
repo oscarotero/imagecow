@@ -9,14 +9,14 @@ use Imagecow\ImageException;
  */
 class Dimmensions
 {
-    protected static $positionsKeywords = array(
+    protected static $positionsKeywords = [
         'top' => '0%',
         'left' => '0%',
         'middle' => '50%',
         'center' => '50%',
         'right' => '100%',
         'bottom' => '100%',
-    );
+    ];
 
     /**
      * Calculate the dimensions of a resize.
@@ -32,11 +32,11 @@ class Dimmensions
     public static function getResizeDimmensions($oldWidth, $oldHeight, $newWidth, $newHeight, $cover = false)
     {
         if (empty($newHeight)) {
-            return array((int) $newWidth, (int) ceil(($newWidth / $oldWidth) * $oldHeight));
+            return [(int) $newWidth, (int) ceil(($newWidth / $oldWidth) * $oldHeight)];
         }
 
         if (empty($newWidth)) {
-            return array((int) ceil(($newHeight / $oldHeight) * $oldWidth), (int) $newHeight);
+            return [(int) ceil(($newHeight / $oldHeight) * $oldWidth), (int) $newHeight];
         }
 
         $scaleWidth = $newWidth / $oldWidth;
@@ -44,31 +44,31 @@ class Dimmensions
 
         if ($cover) {
             if ($scaleWidth > $scaleHeight) {
-                return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
+                return [(int) $newWidth, (int) ceil($scaleWidth * $oldHeight)];
             }
 
             if ($scaleWidth < $scaleHeight) {
-                return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
+                return [(int) ceil($scaleHeight * $oldWidth), (int) $newHeight];
             }
         } else {
             if ($scaleWidth < $scaleHeight) {
-                return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
+                return [(int) $newWidth, (int) ceil($scaleWidth * $oldHeight)];
             }
 
             if ($scaleWidth > $scaleHeight) {
-                return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
+                return [(int) ceil($scaleHeight * $oldWidth), (int) $newHeight];
             }
         }
 
         if ($scaleWidth < $scaleHeight || ($cover && $scaleWidth > $scaleHeight)) {
-            return array((int) $newWidth, (int) ceil($scaleWidth * $oldHeight));
+            return [(int) $newWidth, (int) ceil($scaleWidth * $oldHeight)];
         }
 
         if ($scaleWidth > $scaleHeight || ($cover && $scaleWidth < $scaleHeight)) {
-            return array((int) ceil($scaleHeight * $oldWidth), (int) $newHeight);
+            return [(int) ceil($scaleHeight * $oldWidth), (int) $newHeight];
         }
 
-        return array((int) $newWidth, (int) $newHeight);
+        return [(int) $newWidth, (int) $newHeight];
     }
 
     /**

@@ -366,7 +366,7 @@ class Image
                     break;
             }
 
-            call_user_func_array(array($this, $operation['function']), $operation['params']);
+            call_user_func_array([$this, $operation['function']], $operation['params']);
         }
 
         return $this;
@@ -472,9 +472,9 @@ class Image
      */
     private static function parseOperations($operations)
     {
-        $valid_operations = array('resize', 'resizeCrop', 'crop', 'format', 'quality');
+        $valid_operations = ['resize', 'resizeCrop', 'crop', 'format', 'quality'];
         $operations = explode('|', str_replace(' ', '', $operations));
-        $return = array();
+        $return = [];
 
         foreach ($operations as $operations) {
             $params = explode(',', $operations);
@@ -484,10 +484,10 @@ class Image
                 throw new ImageException("The transform function '{$function}' is not valid");
             }
 
-            $return[] = array(
+            $return[] = [
                 'function' => $function,
                 'params' => $params,
-            );
+            ];
         }
 
         return $return;

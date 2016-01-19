@@ -9,10 +9,10 @@ use Imagecow\ImageException;
  */
 class Gd extends BaseLib implements LibInterface
 {
-    public static $fallbackCropMethods = array(
-        'Entropy' => array('center', 'middle'),
-        'Balanced' => array('center', 'middle'),
-    );
+    public static $fallbackCropMethods = [
+        'Entropy' => ['center', 'middle'],
+        'Balanced' => ['center', 'middle'],
+    ];
 
     protected $image;
     protected $type;
@@ -84,7 +84,7 @@ class Gd extends BaseLib implements LibInterface
     {
         $width = $this->getWidth();
         $height = $this->getHeight();
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
 
         if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
             throw new ImageException('Error flipping the image');
@@ -100,7 +100,7 @@ class Gd extends BaseLib implements LibInterface
     {
         $width = $this->getWidth();
         $height = $this->getHeight();
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
 
         if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
             throw new ImageException('Error flopping the image');
@@ -118,7 +118,7 @@ class Gd extends BaseLib implements LibInterface
      *
      * @return resource
      */
-    private function createImage($width, $height, array $background = array(0, 0, 0))
+    private function createImage($width, $height, array $background = [0, 0, 0])
     {
         if (($image = imagecreatetruecolor($width, $height)) === false) {
             throw new ImageException('Error creating a image');
@@ -237,7 +237,7 @@ class Gd extends BaseLib implements LibInterface
      */
     public function resize($width, $height)
     {
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+        $image = $this->createImage($width, $height, [0, 0, 0, 127]);
 
         if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
             throw new ImageException('There was an error resizing the image');
@@ -263,7 +263,7 @@ class Gd extends BaseLib implements LibInterface
      */
     public function crop($width, $height, $x, $y)
     {
-        $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : array(0, 0, 0, 127));
+        $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : [0, 0, 0, 127]);
 
         if (imagecopyresampled($image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false) {
             throw new ImageException('There was an error cropping the image');

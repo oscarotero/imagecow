@@ -65,7 +65,7 @@ class Entropy implements CropInterface
         $leftX = static::slice($image, $originalWidth, $targetWidth, 'h');
         $topY = static::slice($image, $originalHeight, $targetHeight, 'v');
 
-        return array($leftX, $topY);
+        return [$leftX, $topY];
     }
 
     /**
@@ -162,7 +162,7 @@ class Entropy implements CropInterface
      */
     protected static function getSafeZoneList()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -231,7 +231,7 @@ class Entropy implements CropInterface
     protected static function colorEntropy(Imagick $image)
     {
         $histogram = $image->getImageHistogram();
-        $newHistogram = array();
+        $newHistogram = [];
 
         // Translates a color histogram into a bw histogram
         $colors = count($histogram);

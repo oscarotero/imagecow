@@ -52,7 +52,7 @@ class Balanced implements CropInterface
     {
         $size = $original->getImageGeometry();
 
-        $points = array();
+        $points = [];
 
         $halfWidth = ceil($size['width'] / 2);
         $halfHeight = ceil($size['height'] / 2);
@@ -61,25 +61,25 @@ class Balanced implements CropInterface
         $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, 0, 0);
         $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x'], 'y' => $point['y'], 'sum' => $point['sum']);
+        $points[] = ['x' => $point['x'], 'y' => $point['y'], 'sum' => $point['sum']];
 
         // Second quadrant
         $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, 0);
         $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'], 'sum' => $point['sum']);
+        $points[] = ['x' => $point['x'] + $halfWidth, 'y' => $point['y'], 'sum' => $point['sum']];
 
         // Third quadrant
         $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, 0, $halfHeight);
         $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x'], 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
+        $points[] = ['x' => $point['x'], 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']];
 
         // Fourth quadrant
         $clone = clone $original;
         $clone->cropimage($halfWidth, $halfHeight, $halfWidth, $halfHeight);
         $point = $point = static::getHighestEnergyPoint($clone);
-        $points[] = array('x' => $point['x'] + $halfWidth, 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']);
+        $points[] = ['x' => $point['x'] + $halfWidth, 'y' => $point['y'] + $halfHeight, 'sum' => $point['sum']];
 
         // get the totalt sum value so we can find out a mean center point
         $totalWeight = array_reduce(
@@ -114,7 +114,7 @@ class Balanced implements CropInterface
             $topleftY -= ($topleftY + $targetHeight) - $size['height'];
         }
 
-        return array($topleftX, $topleftY);
+        return [$topleftX, $topleftY];
     }
 
     /**
@@ -163,6 +163,6 @@ class Balanced implements CropInterface
 
         $sum = $sum / round($size['height'] * $size['width']);
 
-        return array('x' => $xcenter, 'y' => $ycenter, 'sum' => $sum);
+        return ['x' => $xcenter, 'y' => $ycenter, 'sum' => $sum];
     }
 }

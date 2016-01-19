@@ -8,7 +8,7 @@ namespace Imagecow\Libs;
 abstract class BaseLib
 {
     protected $quality = 86;
-    protected $background = array(255, 255, 255);
+    protected $background = [255, 255, 255];
     protected $animated = false;
 
     /**

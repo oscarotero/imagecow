@@ -134,7 +134,7 @@ interface LibInterface
     /**
      * Set a default background color used to fill in some transformation functions.
      *
-     * @param array $background The color in rgb, for example: array(0, 127, 34)
+     * @param array $background The color in rgb, for example: [0, 127, 34]
      */
     public function setBackground(array $background);
 

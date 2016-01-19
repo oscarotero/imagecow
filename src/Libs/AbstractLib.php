@@ -5,7 +5,7 @@ namespace Imagecow\Libs;
 /**
  * Base class extended by other libraries with common methods and properties.
  */
-abstract class BaseLib
+abstract class AbstractLib
 {
     protected $quality = 86;
     protected $background = [255, 255, 255];

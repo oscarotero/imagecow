@@ -80,11 +80,11 @@ class Image
             $normalize[strtolower($key)] = is_null($value) ? null : (float) $value;
         }
 
-        if (array_diff_key($clientHints, $this->clientHints)) {
+        if (array_diff_key($normalize, $this->clientHints)) {
             throw new \InvalidArgumentException('Invalid client hints');
         }
 
-        $this->clientHints = array_replace($this->clientHints, $clientHints);
+        $this->clientHints = array_replace($this->clientHints, $normalize);
 
         return $this;
     }

@@ -18,9 +18,6 @@ use Imagecow\Utils\Color;
  * 1. Dividing the image into four equally squares
  * 2. Find the most energetic point per square
  * 3. Finding the images weighted mean interest point
- *
- * @todo Refactor to make cleaner
- * @todo Rename the class to something more sensible
  */
 class Balanced implements CropInterface
 {
@@ -45,8 +42,6 @@ class Balanced implements CropInterface
      * @param int $targetHeight
      *
      * @return array
-     *
-     * @todo refactor so it follows DRY
      */
     protected static function getOffsetBalanced(Imagick $original, $targetWidth, $targetHeight)
     {

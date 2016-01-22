@@ -30,7 +30,7 @@ class Gd extends AbstractLib implements LibInterface
      */
     public static function createFromFile($filename)
     {
-        $data = @getImageSize($filename);
+        $data = getImageSize($filename);
 
         if ($data && is_array($data)) {
             $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
@@ -48,7 +48,7 @@ class Gd extends AbstractLib implements LibInterface
      */
     public static function createFromString($string)
     {
-        if (($image = @imagecreatefromstring($string))) {
+        if (($image = imagecreatefromstring($string))) {
             return new static($image);
         }
 

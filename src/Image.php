@@ -85,6 +85,8 @@ class Image
         }
 
         $this->clientHints = array_replace($this->clientHints, $clientHints);
+
+        return $this;
     }
 
     /**

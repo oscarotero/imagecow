@@ -14,9 +14,6 @@ It's a php library to manipulate images to web.
 * Use GD2 or Imagick libraries
 * Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
 
-
-## How use it?
-
 Simple usage example:
 
 ```php
@@ -28,6 +25,17 @@ Image::fromFile('my-image.gif')
     ->format('png')
     ->save('converted-image.png')
     ->show();
+```
+
+
+## How use it?
+
+### Installation
+
+This package is installable and autoloadable via Composer as [imagecow/imagecow](https://packagist.org/packages/imagecow/imagecow).
+
+```php
+$ composer require imagecow/imagecow
 ```
 
 ### Creating a Imagecow\Image instance:

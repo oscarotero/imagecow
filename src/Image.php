@@ -69,7 +69,7 @@ class Image
     /**
      * Set the available client hints
      * 
-     * @param array $hints
+     * @param array $clientHints
      * 
      * @return self
      */

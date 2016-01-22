@@ -44,10 +44,9 @@ class Entropy implements CropInterface
     /**
      * Get the offset of where the crop should start.
      *
-     * @param Imagick $image
+     * @param Imagick $originalImage
      * @param int     $targetHeight
      * @param int     $targetHeight
-     * @param int     $sliceSize
      *
      * @return array
      */

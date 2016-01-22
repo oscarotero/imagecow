@@ -173,10 +173,10 @@ class Gd extends AbstractLib implements LibInterface
                     throw new ImageException('Error saving the alpha chanel of the image');
                 }
 
-                if (isset($background[3])) {
-                    $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
+                if (isset($this->background[3])) {
+                    $background = imagecolorallocatealpha($image, $this->background[0], $this->background[1], $this->background[2], $this->background[3]);
                 } else {
-                    $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
+                    $background = imagecolorallocate($image, $this->background[0], $this->background[1], $this->background[2]);
                 }
 
                 if (imagefill($image, 0, 0, $background) === false) {

@@ -73,8 +73,6 @@ $image->resize(200);                    // change to 200x100
 $image->resize(0, 200);                 // change to 400x200
 $image->resize(200, 300);               // change to 200x100
 $image->resize(2000, 2000);             // keeps 1000x500
-$image->resize(2000, 2000, true);       // enlarge to 2000x1000
-$image->resize(2000, 2000, true, true); // enlarge to 4000x2000
 ```
 
 ### crop

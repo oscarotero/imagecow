@@ -493,7 +493,7 @@ class Image
      */
     protected function isAnimatedGif()
     {
-        if (($this->filename === null) || !is_readable($this->filename) || ($this->getMimeType() !== 'image/gif') || !($fh = fopen($this->filename, 'rb'))) {
+        if (($this->filename === null) || ($this->getMimeType() !== 'image/gif') || !is_readable($this->filename) || !($fh = fopen($this->filename, 'rb'))) {
             return false;
         }
 

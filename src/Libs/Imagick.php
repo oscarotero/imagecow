@@ -1,12 +1,13 @@
 <?php
+
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
 
 /**
- * Imagick library
+ * Imagick library.
  */
-class Imagick extends BaseLib implements LibInterface
+class Imagick extends AbstractLib implements LibInterface
 {
     protected $image;
 
@@ -19,7 +20,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return Imagick
      */
@@ -35,7 +36,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return Imagick
      */
@@ -49,14 +50,14 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * Constructor of the class
+     * Constructor of the class.
      *
      * @param \Imagick $image The Imagick instance
      */
     public function __construct(\Imagick $image)
     {
         //Convert CMYK to RGB
-        if (method_exists($image, 'getImageProfiles') && ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK)) {
+        if ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK) {
             $profiles = $image->getImageProfiles('*', false);
 
             if (array_search('icc', $profiles) === false) {
@@ -64,13 +65,14 @@ class Imagick extends BaseLib implements LibInterface
             }
 
             $image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
+            $image->transformImageColorspace(\Imagick::COLORSPACE_SRGB);
         }
 
         $this->image = $image;
     }
 
     /**
-     * Destroy the image
+     * Destroy the image.
      */
     public function __destruct()
     {
@@ -78,7 +80,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flip()
     {
@@ -88,7 +90,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flop()
     {
@@ -98,7 +100,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function save($filename)
     {
@@ -120,7 +122,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getString()
     {
@@ -146,19 +148,19 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMimeType()
     {
         $format = strtolower($this->image->getImageFormat());
 
-        if (in_array($format, array('jpeg', 'jpg', 'gif', 'png'), true)) {
+        if (in_array($format, ['jpeg', 'jpg', 'gif', 'png'], true)) {
             return "image/$format";
         }
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getWidth()
     {
@@ -166,7 +168,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getHeight()
     {
@@ -174,7 +176,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function format($format)
     {
@@ -182,7 +184,7 @@ class Imagick extends BaseLib implements LibInterface
             list($r, $g, $b) = $this->background;
 
             $this->image->setImageBackgroundColor("rgb($r,$g,$b)");
-            $this->image = $this->image->flattenImages();
+            $this->image = $this->image->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
         }
 
         if ($this->image->setImageFormat($format) !== true) {
@@ -191,7 +193,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function resize($width, $height)
     {
@@ -213,7 +215,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCropOffsets($width, $height, $method)
     {
@@ -227,7 +229,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function crop($width, $height, $x, $y)
     {
@@ -250,7 +252,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rotate($angle)
     {
@@ -262,7 +264,7 @@ class Imagick extends BaseLib implements LibInterface
     }
 
     /**
-     * Returns a copy of the image compressed and ready to save or print
+     * Returns a copy of the image compressed and ready to save or print.
      *
      * @return \Imagick The instance of the image
      */

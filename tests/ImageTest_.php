@@ -1,4 +1,5 @@
 <?php
+
 use Imagecow\Image;
 
 abstract class ImageTest_ extends PHPUnit_Framework_TestCase
@@ -15,7 +16,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         $file = __DIR__.'/images/image.jpg';
         $tmpFile = __DIR__.'/images/tmp.'.static::$library.'.image.jpg';
 
-        $image = Image::create($file, static::$library);
+        $image = Image::fromFile($file, static::$library);
 
         $this->assertSame('image/jpeg', $image->getMimeType());
 
@@ -44,7 +45,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(is_file($tmpFile));
 
-        $image = Image::create($tmpFile, static::$library);
+        $image = Image::fromFile($tmpFile, static::$library);
 
         $this->assertSame(500, $image->getWidth());
         $this->assertSame(400, $image->getHeight());
@@ -57,7 +58,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
         $file = __DIR__.'/images/image.png';
         $tmpFile = __DIR__.'/images/tmp.'.static::$library.'.image.png';
 
-        $image = Image::create($file, static::$library);
+        $image = Image::fromFile($file, static::$library);
 
         $this->assertSame('image/png', $image->getMimeType());
 
@@ -86,7 +87,7 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(is_file($tmpFile));
 
-        $image = Image::create($tmpFile, static::$library);
+        $image = Image::fromFile($tmpFile, static::$library);
 
         $this->assertSame(200, $image->getWidth());
         $this->assertSame(150, $image->getHeight());

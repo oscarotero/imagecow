@@ -1,4 +1,5 @@
 <?php
+
 namespace Imagecow\Utils;
 
 use Imagick;
@@ -6,14 +7,14 @@ use Imagecow\Image;
 
 /**
  * Simple class to convert a svg file to png
- * Requires Imagick
+ * Requires Imagick.
  */
 class SvgExtractor
 {
     protected $image;
 
     /**
-     * Contructor
+     * Contructor.
      *
      * @param string $filename The path of the svg file
      */
@@ -36,7 +37,7 @@ class SvgExtractor
     }
 
     /**
-     * Get the svg as an image
+     * Get the svg as an image.
      *
      * @return \Imagecow\Image
      */
@@ -45,10 +46,10 @@ class SvgExtractor
         $imageWidth = $this->image->getImageWidth();
         $imageHeight = $this->image->getImageHeight();
 
-        if ($width !== 0 && ($height === 0 || ($imageWidth/$width) > ($imageHeight/$height))) {
-            $height = ceil(($width/$imageWidth) * $imageHeight);
+        if ($width !== 0 && ($height === 0 || ($imageWidth / $width) > ($imageHeight / $height))) {
+            $height = ceil(($width / $imageWidth) * $imageHeight);
         } elseif ($height !== 0) {
-            $width = ceil(($height/$imageHeight) * $imageWidth);
+            $width = ceil(($height / $imageHeight) * $imageWidth);
         } else {
             $width = $imageWidth;
             $height = $imageHeight;
@@ -64,7 +65,7 @@ class SvgExtractor
         $blob = preg_replace('/<svg([^>]*) height="([^"]*)"/si', '<svg$1 height="'.$height.'px"', $blob);
 
         $image->readImageBlob($blob);
-        $image->setImageFormat("png");
+        $image->setImageFormat('png');
 
         return new \Imagecow\Image(new \Imagecow\Libs\Imagick($image));
     }

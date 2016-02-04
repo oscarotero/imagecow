@@ -1,8 +1,9 @@
 <?php
+
 namespace Imagecow;
 
 /**
- * Exception class to manage the image errors
+ * Exception class to manage the image errors.
  */
 class ImageException extends \Exception
 {
@@ -16,10 +17,10 @@ class ImageException extends \Exception
      */
     public function getImage($width = 400, $height = 400)
     {
-        $image = imagecreate($width, $height);
+        $image = imagecreatetruecolor($width, $height);
         $textColor = imagecolorallocate($image, 255, 255, 255);
 
-        foreach (str_split($this->getMessage(), intval($width/10)) as $line => $text) {
+        foreach (str_split($this->getMessage(), intval($width / 10)) as $line => $text) {
             imagestring($image, 5, 10, (($line + 1) * 18), $text, $textColor);
         }
 

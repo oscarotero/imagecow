@@ -10,18 +10,16 @@ Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
 It's a php library to manipulate images to web.
 
-* Written in PHP 5.3
-* Use GD2 or Imagick libraries (and can be extended with more)
-* Has an optional client-side javascript to generate responsive images
+* PHP >= 5.5
+* Use GD2 or Imagick libraries
 * Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
-* Use the PSR-4 autoloader standard
 
 Simple usage example:
 
 ```php
 use Imagecow\Image;
 
-Image::create('my-image.gif')
+Image::fromFile('my-image.gif')
     ->autoRotate()
     ->resizeCrop(300, 400, 'center', 'middle')
     ->format('png')
@@ -29,41 +27,43 @@ Image::create('my-image.gif')
     ->show();
 ```
 
+
 ## How use it?
 
-Use the static function Imagecow\Image::create() to load an image and returns an imageCow instance. This function has two arguments:
+### Installation
 
-* image: The image file path or a binary string with the image data
-* library: The library used (Gd or Imagick). If it's not provided, it's detected automatically (in order of preference: `Image::LIB_IMAGICK`, `Image::LIB_GD`)
+This package is installable and autoloadable via Composer as [imagecow/imagecow](https://packagist.org/packages/imagecow/imagecow).
+
+```php
+$ composer require imagecow/imagecow
+```
+
+### Creating a Imagecow\Image instance:
 
 ```php
 use Imagecow\Image;
 
-//Create an Imagick instance of "my-image.jpg" file:
-$image = Image::create('my-image.jpg', Image::LIB_IMAGICK);
+//Using Imagick:
+$image = Image::fromFile('my-image.jpg', Image::LIB_IMAGICK);
 
-//Create an instance detecting the library automatically
-$image = Image::create('my-image.jpg');
+//Detect the available library automatically
+//(in order of preference: Imagick, Gd)
+$image = Image::fromFile('my-image.jpg');
 
-//Create an instance from a binary file
-$data = file_get_contents('my-image.jpg');
-
-$image = Image::create($data);
-
-//You can use also the direct functions:
-$image = Image::createFromString($data);
-$image = Image::createFromFile($file);
+//Create an instance from a string
+$image = Image::fromString(file_get_contents('my-image.jpg'));
 ```
 
-### Resize
+### resize
 
-`Image::resize($width, $height = 0, $enlarge = false, $cover = false)`
+`Image::resize($width, $height = 0, $cover = false)`
 
 Resizes the image keeping the aspect ratio.
 
+**Note:** If the new image is bigger than the original, the image wont be resized
+
 * `$width`: The new max-width of the image. You can use percentages or numbers (pixels). If it's `0`, it will be calculated automatically using the height
 * `$height`: The new max-height of the image. As width, you can use percentages or numbers and it will be calculated automatically if it's `0`
-* `$enlarge`: By default is `false`. This means that the image won't be scaled if the new value is bigger.
 * `$cover`: If it's `true`, the new dimensions will cover both width and height values. It's like css's `image-size: cover`.
 
 ```php
@@ -73,11 +73,9 @@ $image->resize(200);                    // change to 200x100
 $image->resize(0, 200);                 // change to 400x200
 $image->resize(200, 300);               // change to 200x100
 $image->resize(2000, 2000);             // keeps 1000x500
-$image->resize(2000, 2000, true);       // enlarge to 2000x1000
-$image->resize(2000, 2000, true, true); // enlarge to 4000x2000
 ```
 
-### Crop
+### crop
 
 `Image::crop($width, $height, $x = 'center', $y = 'middle')`
 
@@ -97,7 +95,7 @@ $image->crop('50%', '50%');             // crops to half size
 
 #### Automatic cropping
 
-Stylecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
+Imagecow includes some code copied from the great library [stojg/crop](https://github.com/stojg/crop) to calculate the most important parts of the image to crop and resizeCrop automatically. The available methods are:
 
 * `Image::CROP_ENTROPY` [more info](https://github.com/stojg/crop#cropentropy)
 * `Image::CROP_BALANCED` [more info](https://github.com/stojg/crop#cropbalanced)
@@ -111,9 +109,9 @@ $image->crop(500, 200, Image::CROP_ENTROPY);  // crops to 500x200 using the Entr
 $image->crop(500, 200, Image::CROP_BALANCED); // The same as above but using the Balanced method
 ```
 
-### ResizeCrop
+### resizeCrop
 
-`Image::resizeCrop($width, $height, $x = 'center', $y = 'middle', $enlarge = false)`
+`Image::resizeCrop($width, $height, $x = 'center', $y = 'middle')`
 
 Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments description.
 
@@ -124,7 +122,7 @@ $image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px f
 $image->resizeCrop(200, 300, Image::CROP_BALANCED); //Resizes and crops to 200x300px using the CROP_BALANCED method
 ```
 
-### Rotate
+### rotate
 
 `Image::rotate($angle)`
 
@@ -136,7 +134,7 @@ Rotates the image
 $image->rotate(90); // rotates the image 90 degrees
 ```
 
-### AutoRotate
+### autoRotate
 
 `Image::autoRotate()`
 
@@ -146,7 +144,7 @@ Autorotates the image according its EXIF data
 $image->autoRotate();
 ```
 
-### Format
+### format
 
 `Image::format($format)`
 
@@ -158,7 +156,7 @@ Converts the image to other format.
 $image->format('png'); // converts to png
 ```
 
-### Save
+### save
 
 Save the image to a file.
 
@@ -169,7 +167,7 @@ $image->save('my-new-image.png'); // save to this file
 $image->save(); // overwrite file
 ```
 
-### SetBackground
+### setBackground
 
 `Image::setBackground(array $background)`
 
@@ -181,7 +179,7 @@ Set a default background used in some transformations: for example on convert a 
 $image->setBackground(array(255, 255, 255)); // set the background to white
 ```
 
-### SetCompressionQuality
+### setCompressionQuality
 
 `Image::setCompressionQuality($quality)`
 
@@ -193,12 +191,38 @@ Defines the image compression quality for jpg images
 $image->setCompressionQuality(80); // change the quality to 80
 ```
 
-### Show
+### setClientHints
 
-Send the HTTP header with the content-type, output the image data and die.
+`Image::setClientHints(array $clientHints)`
+
+Defines the client hints to fix the final size of the image and generate responsive images. The available client hints are:
+
+* `dpr` Device pixel ratio
+* `width` The final image width
+* `viewport-width` The viewport width
+
+```php
+$image->setClientHints([
+    'dpr' => 2,
+    'width' => 300,
+    'viewport-width' => 1024,
+]);
+```
+
+More information about [client hints below](#responsive-images).
+
+### Display the image
+
+Send the HTTP header with the content-type, output the image data and die:
 
 ```php
 $image->show(); // you should see this image in your browser
+```
+
+Insert the image as base64 url:
+
+```php
+echo '<img src="' . $image->base64() . '">';
 ```
 
 ### Get image info:
@@ -228,52 +252,50 @@ $image
 
 ### Responsive images
 
-Include the Imagecow.js library in the html page and execute the function Imagecow.init();
+Imagecow has support for client hints, that allows to generate responsive images without using cookies or javascript code (like in 1.x version of stylecow). Client Hints is introduced by Google becoming a standard. [Here's a deep explain of how to use it](https://www.smashingmagazine.com/2016/01/leaner-responsive-images-client-hints/)
+
+Note that currently this is supported only by [chrome and opera browsers](http://caniuse.com/#feat=client-hints-dpr-width-viewport).
+
+Simple example:
+
+In your webpage, add the following code:
 
 ```html
-<script src="Imagecow.js" type="text/javascript" charset="utf-8"></script>
-
-<script type="text/javascript">
-    Imagecow.init();
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My webpage</title>
+    <!-- Activate client hints -->
+    <meta http-equiv="Accept-CH" content="DPR,Width,Viewport-Width"> 
+</head>
+<body>
+    <!-- Insert a responsive image -->
+    <img src="image.php?file=flower.jpg&amp;transform=resize,1000" sizes="25vw">
+</body>
+</html>
 ```
 
-This function saves a cookie with the client information (width, height, connection speed).
-You can configurate the cookie. The default values are:
-
-```javascript
-Imagecow.cookie_seconds = 3600*24;
-Imagecow.cookie_name = 'Imagecow_detection';
-Imagecow.cookie_path = '/';
-```
-
-In the server-side, use the cookie to generate the responsive operations:
+Now, in the server side:
 
 ```php
 use Imagecow\Image;
 
-$operations = Image::getResponsiveOperations($_COOKIE['Imagecow_detection'], $_GET['transform']);
+$file = __DIR__.'/'.$_GET['file'];
+$transform = isset($_GET['transform']) ? null;
 
-Image::create($_GET['img'])->transform($operations)->show();
+//Create the image instance
+$image = Image::fromFile($file);
+
+//Set the client hints
+$image->setClientHints([
+    'dpr' => isset($_SERVER['HTTP_DPR']) ? $_SERVER['HTTP_DPR'] : null,
+    'width' => isset($_SERVER['HTTP_WIDTH']) ? $_SERVER['HTTP_WIDTH'] : null,
+    'viewport-width' => isset($_SERVER['HTTP_VIEWPORT_WIDTH']) ? $_SERVER['HTTP_VIEWPORT_WIDTH'] : null,
+]);
+
+//Transform the image and display the result:
+$image->transform($transform)->show();
 ```
-
-Now you can transform the image according with the client dimmensions. The available options are:
-
-* max-width
-* min-width
-* max-height
-* min-height
-* width
-* height
-
-You can use the same syntax than transform, but separate the "media-query" with ";".
-
-```
-img.php?img=my_picture.png&transform=resizeCrop,800,600;max-width=400:resize,400
-```
-
-Get me the image "my_picture.png" with resizeCrop to 800x600. If the max-width of the client side is 400, resize to 400.
-
 
 ### Other utils
 

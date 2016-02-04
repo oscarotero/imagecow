@@ -1,4 +1,5 @@
 <?php
+
 use Imagecow\Utils\Dimmensions;
 
 class DimmensionsTest extends PHPUnit_Framework_TestCase

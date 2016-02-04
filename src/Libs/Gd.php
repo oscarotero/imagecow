@@ -1,17 +1,18 @@
 <?php
+
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
 
 /**
- * GD library
+ * GD library.
  */
-class Gd extends BaseLib implements LibInterface
+class Gd extends AbstractLib implements LibInterface
 {
-    public static $fallbackCropMethods = array(
-        'Entropy' => array('center', 'middle'),
-        'Balanced' => array('center', 'middle'),
-    );
+    public static $fallbackCropMethods = [
+        'Entropy' => ['center', 'middle'],
+        'Balanced' => ['center', 'middle'],
+    ];
 
     protected $image;
     protected $type;
@@ -25,11 +26,11 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public static function createFromFile($filename)
     {
-        $data = @getImageSize($filename);
+        $data = getImageSize($filename);
 
         if ($data && is_array($data)) {
             $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
@@ -43,11 +44,11 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public static function createFromString($string)
     {
-        if (($image = @imagecreatefromstring($string))) {
+        if (($image = imagecreatefromstring($string))) {
             return new static($image);
         }
 
@@ -55,7 +56,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * Constructor of the class
+     * Constructor of the class.
      *
      * @param resource $image The Gd resource.
      */
@@ -66,10 +67,11 @@ class Gd extends BaseLib implements LibInterface
 
         imagealphablending($this->image, true);
         imagesavealpha($this->image, true);
+        imagesetinterpolation($this->image, IMG_BICUBIC);
     }
 
     /**
-     * Destroy the image
+     * Destroy the image.
      */
     public function __destruct()
     {
@@ -77,71 +79,23 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flip()
     {
-        $width = $this->getWidth();
-        $height = $this->getHeight();
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
-
-        if (imagecopyresampled($image, $this->image, 0, 0, 0, ($height - 1), $width, $height, $width, -$height) === false) {
-            throw new ImageException('Error flipping the image');
-        }
-
-        $this->image = $image;
+        imageflip($this->image, IMG_FLIP_VERTICAL);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flop()
     {
-        $width = $this->getWidth();
-        $height = $this->getHeight();
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
-
-        if (imagecopyresampled($image, $this->image, 0, 0, ($width - 1), 0, $width, $height, -$width, $height) === false) {
-            throw new ImageException('Error flopping the image');
-        }
-
-        $this->image = $image;
+        imageflip($this->image, IMG_FLIP_HORIZONTAL);
     }
 
     /**
-     * Creates a new truecolor image
-     *
-     * @param integer $width
-     * @param integer $height
-     * @param array   $background
-     *
-     * @return resource
-     */
-    private function createImage($width, $height, array $background = array(0, 0, 0))
-    {
-        if (($image = imagecreatetruecolor($width, $height)) === false) {
-            throw new ImageException('Error creating a image');
-        }
-
-        if (imagesavealpha($image, true) === false) {
-            throw new ImageException('Error saving the alpha chanel of the image');
-        }
-
-        if (isset($background[3])) {
-            $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
-        } else {
-            $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
-        }
-
-        if (imagefill($image, 0, 0, $background) === false) {
-            throw new ImageException('Error filling the image');
-        }
-
-        return $image;
-    }
-
-    /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function save($filename)
     {
@@ -154,7 +108,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getString()
     {
@@ -177,7 +131,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMimeType()
     {
@@ -185,7 +139,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getWidth()
     {
@@ -193,7 +147,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getHeight()
     {
@@ -201,7 +155,7 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function format($format)
     {
@@ -210,7 +164,24 @@ class Gd extends BaseLib implements LibInterface
             case 'jpeg':
                 $width = $this->getWidth();
                 $height = $this->getHeight();
-                $image = $this->createImage($width, $height, $this->background);
+
+                if (($image = imagecreatetruecolor($width, $height)) === false) {
+                    throw new ImageException('Error creating a image');
+                }
+
+                if (imagesavealpha($image, true) === false) {
+                    throw new ImageException('Error saving the alpha chanel of the image');
+                }
+
+                if (isset($this->background[3])) {
+                    $background = imagecolorallocatealpha($image, $this->background[0], $this->background[1], $this->background[2], $this->background[3]);
+                } else {
+                    $background = imagecolorallocate($image, $this->background[0], $this->background[1], $this->background[2]);
+                }
+
+                if (imagefill($image, 0, 0, $background) === false) {
+                    throw new ImageException('Error filling the image');
+                }
 
                 imagecopy($image, $this->image, 0, 0, 0, 0, $width, $height);
 
@@ -232,21 +203,19 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function resize($width, $height)
     {
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
-
-        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
-            throw new ImageException('There was an error resizing the image');
+        if (($image = imagescale($this->image, $width, $height, IMG_BICUBIC)) === false) {
+            throw new ImageException('Error resizing the image');
         }
 
         $this->image = $image;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCropOffsets($width, $height, $method)
     {
@@ -258,28 +227,33 @@ class Gd extends BaseLib implements LibInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function crop($width, $height, $x, $y)
     {
-        $image = $this->createImage($width, $height, ($this->type === IMAGETYPE_JPEG) ? $this->background : array(0, 0, 0, 127));
+        $crop = [
+            'width' => $width,
+            'height' => $height,
+            'x' => $x,
+            'y' => $y,
+        ];
 
-        if (imagecopyresampled($image, $this->image, 0, 0, $x, $y, $width + $x, $height + $y, $width + $x, $height + $y) === false) {
-            throw new ImageException('There was an error cropping the image');
+        if (($image = imagecrop($this->image, $crop)) === false) {
+            throw new ImageException('Error cropping the image');
         }
 
         $this->image = $image;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rotate($angle)
     {
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
         if ($background === false || ($image = imagerotate($this->image, $angle, $background)) === false) {
-            throw new ImageException('There was an error rotating the image');
+            throw new ImageException('Error rotating the image');
         }
 
         $this->image = $image;

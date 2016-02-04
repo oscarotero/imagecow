@@ -1,15 +1,16 @@
 <?php
+
 namespace Imagecow\Crops;
 
 use Imagick;
 
 /**
- * Interface used by all crops
+ * Interface used by all crops.
  */
 interface CropInterface
 {
     /**
-     * Returns the x,y values
+     * Returns the x,y values.
      *
      * @param Imagick $original
      * @param int     $targetWidth

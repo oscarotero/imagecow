@@ -32,7 +32,19 @@ class Image
     {
         $class = self::getLibraryClass($library);
 
-        return new static($class::createFromFile($image), $image);
+        $image = new static($class::createFromFile($image), $image);
+
+        if ($image->getMimeType() === 'image/gif') {
+            $stream = fopen($image, 'rb');
+
+            if (self::isAnimatedGif($stream)) {
+                $image->image->setAnimated(true);
+            }
+
+            fclose($stream);
+        }
+
+        return $image;
     }
 
     /**
@@ -47,7 +59,21 @@ class Image
     {
         $class = self::getLibraryClass($library);
 
-        return new static($class::createFromString($string));
+        $image = new static($class::createFromString($string));
+
+        if ($image->getMimeType() === 'image/gif') {
+            $stream = fopen('php://temp', 'r+');
+            fwrite($stream, $string);
+            rewind($stream);
+
+            if (self::isAnimatedGif($stream)) {
+                $image->image->setAnimated(true);
+            }
+
+            fclose($stream);
+        }
+
+        return $image;
     }
 
     /**
@@ -60,10 +86,6 @@ class Image
     {
         $this->image = $image;
         $this->filename = $filename;
-
-        if ($this->isAnimatedGif()) {
-            $this->image->setAnimated(true);
-        }
     }
 
     /**
@@ -486,25 +508,20 @@ class Image
 
     /**
      * Check whether the image is an animated gif.
-     *
      * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
      *
+     * @param resource A stream pointer opened by fopen()
+     * 
      * @return bool
      */
-    protected function isAnimatedGif()
+    private static function isAnimatedGif($stream)
     {
-        if (($this->filename === null) || ($this->getMimeType() !== 'image/gif') || !is_readable($this->filename) || !($fh = fopen($this->filename, 'rb'))) {
-            return false;
-        }
-
         $count = 0;
 
-        while (!feof($fh) && $count < 2) {
-            $chunk = fread($fh, 1024 * 100); //read 100kb at a time
+        while (!feof($stream) && $count < 2) {
+            $chunk = fread($stream, 1024 * 100); //read 100kb at a time
             $count += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
         }
-
-        fclose($fh);
 
         return $count > 1;
     }

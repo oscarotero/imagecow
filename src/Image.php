@@ -89,13 +89,14 @@ class Image
     }
 
     /**
-     * Set the available client hints
+     * Set the available client hints.
      * 
      * @param array $clientHints
      * 
      * @return self
      */
-    public function setClientHints(array $clientHints) {
+    public function setClientHints(array $clientHints)
+    {
         $normalize = [];
 
         foreach ($clientHints as $key => $value) {
@@ -142,7 +143,7 @@ class Image
     }
 
     /**
-     * Get the fixed size according with the client hints
+     * Get the fixed size according with the client hints.
      * 
      * @param int $width
      * @param int $height
@@ -262,8 +263,8 @@ class Image
     /**
      * Resizes the image maintaining the proportion (A 800x600 image resized to 400x400 becomes to 400x300).
      *
-     * @param int|string $width   The max width of the image. It can be a number (pixels) or percentaje
-     * @param int|string $height  The max height of the image. It can be a number (pixels) or percentaje
+     * @param int|string $width  The max width of the image. It can be a number (pixels) or percentaje
+     * @param int|string $height The max height of the image. It can be a number (pixels) or percentaje
      * @param bool       $cover
      *
      * @return self
@@ -326,10 +327,10 @@ class Image
     /**
      * Adjust the image to the given dimmensions. Resizes and crops the image maintaining the proportions.
      *
-     * @param int|string $width   The new width in number (pixels) or percentaje
-     * @param int|string $height  The new height in number (pixels) or percentaje
-     * @param int|string $x       The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
-     * @param int|string $y       The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param int|string $width  The new width in number (pixels) or percentaje
+     * @param int|string $height The new height in number (pixels) or percentaje
+     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
+     * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
      *
      * @return self
      */
@@ -508,7 +509,7 @@ class Image
 
     /**
      * Check whether the image is an animated gif.
-     * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181
+     * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181.
      *
      * @param resource A stream pointer opened by fopen()
      * 

@@ -35,7 +35,7 @@ class Image
         $image = new static($class::createFromFile($image), $image);
 
         if ($image->getMimeType() === 'image/gif') {
-            $stream = fopen($image, 'rb');
+            $stream = fopen($image->filename, 'rb');
 
             if (self::isAnimatedGif($stream)) {
                 $image->image->setAnimated(true);

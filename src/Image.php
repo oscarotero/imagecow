@@ -23,19 +23,19 @@ class Image
     /**
      * Static function to create a new Imagecow instance from an image file.
      *
-     * @param string $image   The path of the file
-     * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
+     * @param string $filename The path of the file
+     * @param string $library  The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
      *
      * @return Image
      */
-    public static function fromFile($image, $library = null)
+    public static function fromFile($filename, $library = null)
     {
         $class = self::getLibraryClass($library);
 
-        $image = new static($class::createFromFile($image), $image);
+        $image = new static($class::createFromFile($filename), $filename);
 
         if ($image->getMimeType() === 'image/gif') {
-            $stream = fopen($image->filename, 'rb');
+            $stream = fopen($filename, 'rb');
 
             if (self::isAnimatedGif($stream)) {
                 $image->image->setAnimated(true);

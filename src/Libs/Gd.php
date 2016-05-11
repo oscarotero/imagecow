@@ -3,6 +3,7 @@
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
+use Imagecow\Utils;
 
 /**
  * GD library.
@@ -32,15 +33,15 @@ class Gd extends AbstractLib implements LibInterface
     {
         $data = getImageSize($filename);
 
-        if ($data && is_array($data)) {
-            $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
-
-            if (function_exists($function)) {
-                return new static($function($filename), $data[2]);
-            }
+        if (empty($data) || !is_array($data)) {
+            throw new ImageException("The image file '{$filename}' cannot be loaded");
         }
 
-        throw new ImageException("The image file '{$filename}' cannot be loaded");
+        $function = 'imagecreatefrom'.image_type_to_extension($data[2], false);
+
+        if (function_exists($function)) {
+            return new static($function($filename), $data[2]);
+        }
     }
 
     /**
@@ -105,6 +106,16 @@ class Gd extends AbstractLib implements LibInterface
         if (!function_exists($function) || ($function($this->image, $filename) === false)) {
             throw new ImageException("The image format '{$extension}' cannot be saved to '{$filename}'");
         }
+    }
+
+    /**
+     * Gets the original image object.
+     *
+     * @return resource
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 
     /**
@@ -257,5 +268,47 @@ class Gd extends AbstractLib implements LibInterface
         }
 
         $this->image = $image;
+    }
+
+    /**
+     * @param string $watermark Watermark image object
+     * @param array  $x         Position x
+     * @param array  $y         Position y
+     */
+    public function watermark($watermark, $x, $y)
+    {
+        imagecopy($this->image, $watermark, $x, $y, 0, 0, imagesx($watermark), imagesy($watermark));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function opacity($opacity)
+    {
+        if ((int)$opacity === 100) {
+            return;
+        }
+
+        $opacity = $opacity / 100;
+
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+
+        imagealphablending($this->image, false);
+
+        for ($x = 0; $x < $width; ++$x) {
+            for ($y = 0; $y < $height; ++$y) {
+                $color = imagecolorat($this->image, $x, $y);
+                $alpha = 127 - (($color >> 24) & 0xFF);
+
+                if ($alpha <= 0) {
+                    continue;
+                }
+
+                $color = ($color & 0xFFFFFF) | ((int)round(127 - $alpha * $opacity) << 24);
+
+                imagesetpixel($this->image, $x, $y, $color);
+            }
+        }
     }
 }

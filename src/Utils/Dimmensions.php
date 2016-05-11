@@ -139,4 +139,35 @@ class Dimmensions
 
         return $oldCenter - $newCenter;
     }
+
+    /**
+     * Calculates the x/y position.
+     *
+     * @param string|int|null $position
+     * @param int             $original
+     * @param int             $reference
+     * @param int             $padding
+     *
+     * @return int
+     */
+    public static function getPositionFromReferenceValue($position, $original, $reference, $padding = 0)
+    {
+        if (is_numeric($position)) {
+            $value = intval($position);
+        } else {
+            $value = static::getIntegerValue($position, $original, true);
+        }
+
+        $padding = static::getIntegerValue($padding, $original, true);
+
+        if (($position === 'top') || ($position === 'left')) {
+            $value = $padding;
+        } elseif (($position === 'bottom') || ($position === 'right')) {
+            $value -= $reference + $padding;
+        } elseif (($position === 'middle') || ($position === 'center')) {
+            $value = ($original / 2) - ($reference / 2);
+        }
+
+        return $value;
+    }
 }

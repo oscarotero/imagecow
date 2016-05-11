@@ -2,6 +2,7 @@
 
 namespace Imagecow;
 
+use Exception;
 use Imagecow\Utils\Dimmensions;
 
 class Image
@@ -20,6 +21,22 @@ class Image
         'width' => null,
     ];
 
+    protected static $watermarkSettings = [
+        'padding' => '2%',
+        'opacity' => 80,
+        'align' => ['bottom', 'right']
+    ];
+
+    /**
+     * Add configuration to watermark position
+     *
+     * @param array $settings
+     */
+    public static function configureWatermark(array $settings)
+    {
+        self::$watermarkSettings = array_merge(self::$watermarkSettings, $settings);
+    }
+
     /**
      * Static function to create a new Imagecow instance from an image file.
      *
@@ -34,15 +51,17 @@ class Image
 
         $image = new static($class::createFromFile($filename), $filename);
 
-        if ($image->getMimeType() === 'image/gif') {
-            $stream = fopen($filename, 'rb');
-
-            if (self::isAnimatedGif($stream)) {
-                $image->image->setAnimated(true);
-            }
-
-            fclose($stream);
+        if ($image->getMimeType() !== 'image/gif') {
+            return $image;
         }
+
+        $stream = fopen($filename, 'rb');
+
+        if (self::isAnimatedGif($stream)) {
+            $image->image->setAnimated(true);
+        }
+
+        fclose($stream);
 
         return $image;
     }
@@ -61,17 +80,20 @@ class Image
 
         $image = new static($class::createFromString($string));
 
-        if ($image->getMimeType() === 'image/gif') {
-            $stream = fopen('php://temp', 'r+');
-            fwrite($stream, $string);
-            rewind($stream);
-
-            if (self::isAnimatedGif($stream)) {
-                $image->image->setAnimated(true);
-            }
-
-            fclose($stream);
+        if ($image->getMimeType() !== 'image/gif') {
+            return $image;
         }
+
+        $stream = fopen('php://temp', 'r+');
+
+        fwrite($stream, $string);
+        rewind($stream);
+
+        if (self::isAnimatedGif($stream)) {
+            $image->image->setAnimated(true);
+        }
+
+        fclose($stream);
 
         return $image;
     }
@@ -90,9 +112,9 @@ class Image
 
     /**
      * Set the available client hints.
-     * 
+     *
      * @param array $clientHints
-     * 
+     *
      * @return self
      */
     public function setClientHints(array $clientHints)
@@ -144,10 +166,10 @@ class Image
 
     /**
      * Get the fixed size according with the client hints.
-     * 
+     *
      * @param int $width
      * @param int $height
-     * 
+     *
      * @return array
      */
     private function calculateClientSize($width, $height)
@@ -204,6 +226,16 @@ class Image
         $this->image->save($filename ?: $this->filename);
 
         return $this;
+    }
+
+    /**
+     * Gets the original image object.
+     *
+     * @return object|resource
+     */
+    public function getImage()
+    {
+        return $this->image->getImage();
     }
 
     /**
@@ -309,11 +341,8 @@ class Image
 
         list($width, $height) = $this->calculateClientSize($width, $height);
 
-        switch ($x) {
-            case self::CROP_BALANCED:
-            case self::CROP_ENTROPY:
-                list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
-                break;
+        if (($x === self::CROP_BALANCED) || ($x === self::CROP_ENTROPY)) {
+            list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
         }
 
         $x = Dimmensions::getPositionValue($x, $width, $imageWidth);
@@ -381,6 +410,55 @@ class Image
     }
 
     /**
+     * Add a watermark to current image
+     *
+     * @param string|object $watermark Image to set as watermark
+     * @param array         $settings  Overwrite default settings
+     *
+     * @return self
+     */
+    public function watermark($watermark, $settings = [])
+    {
+        if (is_string($watermark)) {
+            $watermark = self::fromFile($watermark);
+        }
+
+        $settings = array_merge(self::$watermarkSettings, $settings);
+
+        if ($settings['opacity'] < 100) {
+            $watermark->opacity($settings['opacity']);
+        }
+
+        $iw = $this->getWidth();
+        $ih = $this->getHeight();
+
+        $ww = $watermark->getWidth();
+        $wh = $watermark->getHeight();
+
+        $y = $settings['align'][0];
+        $x = $settings['align'][1];
+
+        $x = Utils\Dimmensions::getPositionFromReferenceValue($x, $iw, $ww, $settings['padding']);
+        $y = Utils\Dimmensions::getPositionFromReferenceValue($y, $ih, $wh, $settings['padding']);
+
+        $this->image->watermark($watermark->getImage(), $x, $y);
+
+        return $this;
+    }
+
+    /**
+     * Add opacity to image from 0 (transparent) to 100 (opaque)
+     *
+     * @param integer $opacity Opacity value
+     */
+    public function opacity($opacity)
+    {
+        $this->image->opacity($opacity);
+
+        return $this;
+    }
+
+    /**
      * Reads the EXIF data from a JPEG and returns an associative array
      * (requires the exif PHP extension enabled).
      *
@@ -421,17 +499,20 @@ class Image
             switch ($operation['function']) {
                 case 'crop':
                 case 'resizecrop':
-                    if (isset($operation['params'][2])) {
-                        switch ($operation['params'][2]) {
-                            case 'CROP_ENTROPY':
-                                $operation['params'][2] = self::CROP_ENTROPY;
-                                break;
-
-                            case 'CROP_BALANCED':
-                                $operation['params'][2] = self::CROP_BALANCED;
-                                break;
-                        }
+                    if (empty($operation['params'][2])) {
+                        break;
                     }
+
+                    switch ($operation['params'][2]) {
+                        case 'CROP_ENTROPY':
+                            $operation['params'][2] = self::CROP_ENTROPY;
+                            break;
+
+                        case 'CROP_BALANCED':
+                            $operation['params'][2] = self::CROP_BALANCED;
+                            break;
+                    }
+
                     break;
             }
 
@@ -512,7 +593,7 @@ class Image
      * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181.
      *
      * @param resource A stream pointer opened by fopen()
-     * 
+     *
      * @return bool
      */
     private static function isAnimatedGif($stream)

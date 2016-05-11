@@ -2,8 +2,9 @@
 
 namespace Imagecow\Utils;
 
-use Imagick;
-use Imagecow\Image;
+use Exception;
+use Imagick, ImagickPixel;
+use Imagecow;
 
 /**
  * Simple class to convert a svg file to png
@@ -21,14 +22,14 @@ class SvgExtractor
     public function __construct($filename)
     {
         if (!extension_loaded('imagick')) {
-            throw new \Exception('SvgExtractor needs imagick extension');
+            throw new Exception('SvgExtractor needs imagick extension');
         }
 
-        $image = new \Imagick();
-        $image->setBackgroundColor(new \ImagickPixel('transparent'));
+        $image = new Imagick();
+        $image->setBackgroundColor(new ImagickPixel('transparent'));
 
         if (!is_file($filename)) {
-            throw new \Exception("'$filename' is not a readable file");
+            throw new Exception("'$filename' is not a readable file");
         }
 
         $image->readImage($filename);
@@ -55,8 +56,8 @@ class SvgExtractor
             $height = $imageHeight;
         }
 
-        $image = new \Imagick();
-        $image->setBackgroundColor(new \ImagickPixel('transparent'));
+        $image = new Imagick();
+        $image->setBackgroundColor(new ImagickPixel('transparent'));
         $image->setResolution($width, $height);
 
         $blob = $this->image->getImageBlob();
@@ -67,6 +68,6 @@ class SvgExtractor
         $image->readImageBlob($blob);
         $image->setImageFormat('png');
 
-        return new \Imagecow\Image(new \Imagecow\Libs\Imagick($image));
+        return new Imagecow\Image(new Imagecow\Libs\Imagick($image));
     }
 }

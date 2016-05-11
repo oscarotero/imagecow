@@ -2,7 +2,9 @@
 
 namespace Imagecow\Libs;
 
+use Imagick as BaseImagick;
 use Imagecow\ImageException;
+use Imagecow\Utils;
 
 /**
  * Imagick library.
@@ -26,7 +28,7 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public static function createFromFile($filename)
     {
-        $imagick = new \Imagick();
+        $imagick = new BaseImagick();
 
         if ($imagick->readImage($filename) !== true) {
             throw new ImageException("The image file '{$filename}' cannot be loaded");
@@ -42,7 +44,7 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public static function createFromString($string)
     {
-        $imagick = new \Imagick();
+        $imagick = new BaseImagick();
 
         $imagick->readImageBlob($string);
 
@@ -52,23 +54,25 @@ class Imagick extends AbstractLib implements LibInterface
     /**
      * Constructor of the class.
      *
-     * @param \Imagick $image The Imagick instance
+     * @param BaseImagick $image The Imagick instance
      */
-    public function __construct(\Imagick $image)
+    public function __construct(BaseImagick $image)
     {
+        $this->image = $image;
+
         //Convert CMYK to RGB
-        if ($image->getImageColorspace() === \Imagick::COLORSPACE_CMYK) {
-            $profiles = $image->getImageProfiles('*', false);
-
-            if (array_search('icc', $profiles) === false) {
-                $image->profileImage('icc', file_get_contents(__DIR__.'/icc/us_web_uncoated.icc'));
-            }
-
-            $image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
-            $image->transformImageColorspace(\Imagick::COLORSPACE_SRGB);
+        if ($this->image->getImageColorspace() !== BaseImagick::COLORSPACE_CMYK) {
+            return $this;
         }
 
-        $this->image = $image;
+        $profiles = $this->image->getImageProfiles('*', false);
+
+        if (array_search('icc', $profiles) === false) {
+            $this->image->profileImage('icc', file_get_contents(__DIR__.'/icc/us_web_uncoated.icc'));
+        }
+
+        $this->image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
+        $this->image->transformImageColorspace(BaseImagick::COLORSPACE_SRGB);
     }
 
     /**
@@ -114,11 +118,19 @@ class Imagick extends AbstractLib implements LibInterface
             $image->writeImagesFile($fp);
 
             fclose($fp);
-        } else {
-            if (!$image->writeImage($filename)) {
-                throw new ImageException("The image file '{$filename}' cannot be saved");
-            }
+        } elseif (!$image->writeImage($filename)) {
+            throw new ImageException("The image file '{$filename}' cannot be saved");
         }
+    }
+
+    /**
+     * Gets the original image object.
+     *
+     * @return object
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 
     /**
@@ -128,23 +140,23 @@ class Imagick extends AbstractLib implements LibInterface
     {
         $image = $this->getCompressed();
 
-        if ($this->animated) {
-            if (!($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
-                throw new ImageException('Cannot create a temp file to generate the string data image');
-            }
-
-            $image->writeImagesFile($fp);
-
-            fclose($fp);
-
-            $string = file_get_contents($file);
-
-            unlink($file);
-
-            return $string;
+        if (!$this->animated) {
+            return $image->getImageBlob();
         }
 
-        return $image->getImageBlob();
+        if (!($fp = fopen($file = tempnam(sys_get_temp_dir(), 'imagick'), 'w'))) {
+            throw new ImageException('Cannot create a temp file to generate the string data image');
+        }
+
+        $image->writeImagesFile($fp);
+
+        fclose($fp);
+
+        $string = file_get_contents($file);
+
+        unlink($file);
+
+        return $string;
     }
 
     /**
@@ -184,7 +196,7 @@ class Imagick extends AbstractLib implements LibInterface
             list($r, $g, $b) = $this->background;
 
             $this->image->setImageBackgroundColor("rgb($r,$g,$b)");
-            $this->image = $this->image->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+            $this->image = $this->image->mergeImageLayers(BaseImagick::LAYERMETHOD_FLATTEN);
         }
 
         if ($this->image->setImageFormat($format) !== true) {
@@ -256,7 +268,7 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public function rotate($angle)
     {
-        if ($this->image->rotateImage(new \ImagickPixel(), $angle) !== true) {
+        if ($this->image->rotateImage(new BaseImagickPixel(), $angle) !== true) {
             throw new ImageException('There was an error rotating the image');
         }
 
@@ -266,7 +278,7 @@ class Imagick extends AbstractLib implements LibInterface
     /**
      * Returns a copy of the image compressed and ready to save or print.
      *
-     * @return \Imagick The instance of the image
+     * @return BaseImagick The instance of the image
      */
     private function getCompressed()
     {
@@ -281,30 +293,57 @@ class Imagick extends AbstractLib implements LibInterface
                 $frame->setImageCompressionQuality($this->quality);
             }
 
-            $image = $image->deconstructImages();
-        } else {
-            $format = strtolower($image->getImageFormat());
+            return $image->deconstructImages();
+        }
 
-            $image->stripImage();
-            $image->setImageUnits(1);
-            $image->setImageCompressionQuality($this->quality);
+        $format = strtolower($image->getImageFormat());
 
-            switch ($format) {
-                case 'jpeg':
-                    $image->setInterlaceScheme(\Imagick::INTERLACE_JPEG);
-                    $image->setImageCompression(\Imagick::COMPRESSION_JPEG);
-                    break;
+        $image->stripImage();
+        $image->setImageUnits(1);
+        $image->setImageCompressionQuality($this->quality);
 
-                case 'gif':
-                    $image->setInterlaceScheme(\Imagick::INTERLACE_GIF);
-                    break;
+        switch ($format) {
+            case 'jpeg':
+                $image->setInterlaceScheme(BaseImagick::INTERLACE_JPEG);
+                $image->setImageCompression(BaseImagick::COMPRESSION_JPEG);
+                break;
 
-                case 'png':
-                    $image->setInterlaceScheme(\Imagick::INTERLACE_PNG);
-                    break;
-            }
+            case 'gif':
+                $image->setInterlaceScheme(BaseImagick::INTERLACE_GIF);
+                break;
+
+            case 'png':
+                $image->setInterlaceScheme(BaseImagick::INTERLACE_PNG);
+                break;
         }
 
         return $image;
+    }
+
+    /**
+     * @param string $watermark Watermark image object
+     * @param array  $x         Position x
+     * @param array  $y         Position y
+     */
+    public function watermark($watermark, $x, $y)
+    {
+        $this->image->compositeImage($watermark, BaseImagick::COMPOSITE_DISSOLVE, $x, $y);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function opacity($opacity)
+    {
+        if ($opacity === 100) {
+            return;
+        }
+
+        if ($this->image->getImageAlphaChannel() !== BaseImagick::ALPHACHANNEL_ACTIVATE) {
+            $this->image->setImageAlphaChannel(BaseImagick::ALPHACHANNEL_OPAQUE);
+        }
+
+        // NOTE: Using setImageOpacity will destroy current alpha channels!
+        $this->image->evaluateImage(BaseImagick::EVALUATE_MULTIPLY, $opacity / 100, BaseImagick::CHANNEL_ALPHA);
     }
 }

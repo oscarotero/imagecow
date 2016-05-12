@@ -280,8 +280,8 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = Dimmensions::getIntegerValue($width, $imageWidth);
-        $height = Dimmensions::getIntegerValue($height, $imageHeight);
+        $width = Dimmensions::getIntegerValue('x', $width, $imageWidth);
+        $height = Dimmensions::getIntegerValue('y', $height, $imageHeight);
 
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
         list($width, $height) = $this->calculateClientSize($width, $height);
@@ -310,8 +310,8 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = Dimmensions::getIntegerValue($width, $imageWidth);
-        $height = Dimmensions::getIntegerValue($height, $imageHeight);
+        $width = Dimmensions::getIntegerValue('x', $width, $imageWidth);
+        $height = Dimmensions::getIntegerValue('y', $height, $imageHeight);
 
         list($width, $height) = $this->calculateClientSize($width, $height);
 
@@ -319,8 +319,8 @@ class Image
             list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
         }
 
-        $x = Dimmensions::getPositionValue($x, $width, $imageWidth);
-        $y = Dimmensions::getPositionValue($y, $height, $imageHeight);
+        $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);
+        $y = Dimmensions::getPositionValue('y', $y, $height, $imageHeight);
 
         $this->image->crop($width, $height, $x, $y);
 
@@ -408,8 +408,8 @@ class Image
         $width = $watermark->getWidth();
         $height = $watermark->getHeight();
 
-        $x = Dimmensions::getPositionValue($x, $width, $imageWidth);
-        $y = Dimmensions::getPositionValue($y, $height, $imageHeight);
+        $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);
+        $y = Dimmensions::getPositionValue('y', $y, $height, $imageHeight);
 
         $this->image->watermark($watermark, $x, $y);
 

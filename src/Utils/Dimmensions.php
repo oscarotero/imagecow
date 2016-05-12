@@ -9,12 +9,15 @@ use Imagecow\ImageException;
  */
 class Dimmensions
 {
-    protected static $positionsKeywords = [
-        'top' => '0%',
+    protected static $positionsKeywordsX = [
         'left' => '0%',
-        'middle' => '50%',
         'center' => '50%',
         'right' => '100%',
+    ];
+
+    protected static $positionsKeywordsY = [
+        'top' => '0%',
+        'middle' => '50%',
         'bottom' => '100%',
     ];
 
@@ -74,16 +77,19 @@ class Dimmensions
     /**
      * Calculate a dimension value.
      *
+     * @param string     $direction
      * @param int|string $value
      * @param int        $relatedValue
      * @param bool       $position
      *
      * @return int
      */
-    public static function getIntegerValue($value, $relatedValue, $position = false)
+    public static function getIntegerValue($direction, $value, $relatedValue, $position = false)
     {
-        if ($position && isset(static::$positionsKeywords[$value])) {
-            $value = static::$positionsKeywords[$value];
+        $keywords = ($direction === 'y') ? static::$positionsKeywordsY : static::$positionsKeywordsX;
+
+        if ($position && isset($keywords[$value])) {
+            $value = $keywords[$value];
         }
 
         if (substr($value, -1) === '%') {
@@ -96,16 +102,19 @@ class Dimmensions
     /**
      * Calculate a dimension value.
      *
+     * @param string     $direction
      * @param int|string $value
      * @param int        $relatedValue
      * @param bool       $position
      *
      * @return string
      */
-    public static function getPercentageValue($value, $relatedValue, $position = false)
+    public static function getPercentageValue($direction, $value, $relatedValue, $position = false)
     {
-        if ($position && isset(static::$positionsKeywords[$value])) {
-            return static::$positionsKeywords[$value];
+        $keywords = ($direction === 'y') ? static::$positionsKeywordsY : static::$positionsKeywordsX;
+
+        if ($position && isset($keywords[$value])) {
+            return $keywords[$value];
         }
 
         if (substr($value, -1) === '%') {
@@ -122,13 +131,14 @@ class Dimmensions
     /**
      * Calculates the x/y position.
      *
+     * @param string          $direction (y or x)
      * @param string|int|null $position
      * @param int             $newValue
      * @param int             $oldValue
      *
      * @return int
      */
-    public static function getPositionValue($position, $newValue, $oldValue)
+    public static function getPositionValue($direction, $position, $newValue, $oldValue)
     {
         $split = explode(' ', $position, 2);
         $position = $split[0];
@@ -138,8 +148,8 @@ class Dimmensions
             return intval($position) + $offset;
         }
 
-        $newCenter = static::getIntegerValue($position, $newValue, true);
-        $oldCenter = static::getIntegerValue($position, $oldValue, true);
+        $newCenter = static::getIntegerValue($direction, $position, $newValue, true);
+        $oldCenter = static::getIntegerValue($direction, $position, $oldValue, true);
 
         return $oldCenter - $newCenter + $offset;
     }

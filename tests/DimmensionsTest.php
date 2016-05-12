@@ -42,28 +42,28 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
     public function integerValueDataProvider()
     {
         return array(
-            array(500, 1000, 500),
-            array('0%', 1000, 0),
-            array('0.0%', 1000, 0),
-            array('100%', 1000, 1000),
-            array('100%', 1000.0, 1000),
-            array('75%', 1000, 750),
-            array('75.5%', 1000, 755),
-            array('755', 1000, 755),
-            array('755.0', 1000, 755),
-            array('755.5', 1000, 755),
-            array('top', 1000, 0),
-            array('middle', 1000, 500),
-            array('bottom', 1000, 1000),
+            array('x', 500, 1000, 500),
+            array('x', '0%', 1000, 0),
+            array('x', '0.0%', 1000, 0),
+            array('x', '100%', 1000, 1000),
+            array('x', '100%', 1000.0, 1000),
+            array('x', '75%', 1000, 750),
+            array('x', '75.5%', 1000, 755),
+            array('x', '755', 1000, 755),
+            array('x', '755.0', 1000, 755),
+            array('x', '755.5', 1000, 755),
+            array('y', 'top', 1000, 0),
+            array('y', 'middle', 1000, 500),
+            array('y', 'bottom', 1000, 1000),
         );
     }
 
     /**
      * @dataProvider integerValueDataProvider
      */
-    public function testIntegerValue($value, $relatedValue, $expected)
+    public function testIntegerValue($direction, $value, $relatedValue, $expected)
     {
-        $result = Dimmensions::getIntegerValue($value, $relatedValue, true);
+        $result = Dimmensions::getIntegerValue($direction, $value, $relatedValue, true);
 
         $this->assertSame($expected, $result);
     }
@@ -71,25 +71,25 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
     public function percentageValueDataProvider()
     {
         return array(
-            array(500, 1000, '50%'),
-            array(0, 1000, '0%'),
-            array(0.0, 1000.0, '0%'),
-            array(1000, 1000, '100%'),
-            array(750, 1000, '75%'),
-            array(755, 1000, '75.5%'),
-            array(755.0, 1000, '75.5%'),
-            array('top', 1000, '0%'),
-            array('middle', 1000, '50%'),
-            array('bottom', 1000, '100%'),
+            array('y', 500, 1000, '50%'),
+            array('y', 0, 1000, '0%'),
+            array('y', 0.0, 1000.0, '0%'),
+            array('y', 1000, 1000, '100%'),
+            array('y', 750, 1000, '75%'),
+            array('y', 755, 1000, '75.5%'),
+            array('y', 755.0, 1000, '75.5%'),
+            array('y', 'top', 1000, '0%'),
+            array('y', 'middle', 1000, '50%'),
+            array('y', 'bottom', 1000, '100%'),
         );
     }
 
     /**
      * @dataProvider percentageValueDataProvider
      */
-    public function testPercentageValue($value, $relatedValue, $expected)
+    public function testPercentageValue($direction, $value, $relatedValue, $expected)
     {
-        $result = Dimmensions::getPercentageValue($value, $relatedValue, true);
+        $result = Dimmensions::getPercentageValue($direction, $value, $relatedValue, true);
 
         $this->assertSame($expected, $result);
     }
@@ -97,23 +97,23 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
     public function positionValueDataProvider()
     {
         return array(
-            array(25, 500, 1000, 25),
-            array('50%', 500, 1000, 250),
-            array('50.0%', 500, 1000, 250),
-            array('0%', 500, 1000, 0),
-            array('100%', 500, 1000, 500),
-            array('100%', 500, 1000, 500),
-            array(750, 500, 1000, 750),
-            array(750.0, 500, 1000, 750),
+            array('x', 25, 500, 1000, 25),
+            array('x', '50%', 500, 1000, 250),
+            array('x', '50.0%', 500, 1000, 250),
+            array('x', '0%', 500, 1000, 0),
+            array('x', '100%', 500, 1000, 500),
+            array('x', '100%', 500, 1000, 500),
+            array('x', 750, 500, 1000, 750),
+            array('x', 750.0, 500, 1000, 750),
         );
     }
 
     /**
      * @dataProvider positionValueDataProvider
      */
-    public function testPositionValue($position, $newSize, $oldSize, $expected)
+    public function testPositionValue($direction, $position, $newSize, $oldSize, $expected)
     {
-        $result = Dimmensions::getPositionValue($position, $newSize, $oldSize);
+        $result = Dimmensions::getPositionValue($direction, $position, $newSize, $oldSize);
 
         $this->assertSame($expected, $result);
     }

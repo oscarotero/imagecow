@@ -116,7 +116,7 @@ class Dimmensions
 
         $value = $oldCenter - $newCenter;
 
-        if (isset($split[1])) {
+        if (isset($split[2])) {
             $offset = static::getIntegerValue($direction, $split[2], $oldValue, true);
 
             if ($split[1] === '-') {

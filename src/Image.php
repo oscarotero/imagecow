@@ -212,6 +212,16 @@ class Image
     }
 
     /**
+     * Returns the image instance.
+     *
+     * @return Libs\LibInterface
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
      * Gets the image data in a string.
      *
      * @return string The image data
@@ -388,29 +398,21 @@ class Image
      * @param string $file    Image to set as watermark
      * @param mixed  $x       Horizontal position
      * @param mixed  $y       Vertical position
-     * @param int    $opacity Opacity value
      *
      * @return self
      */
-    public function watermark($file, $x = 'right', $y = 'bottom', $opacity = 100)
+    public function watermark(Image $image, $x = 'right', $y = 'bottom')
     {
-        $class = get_class($this->image);
-        $watermark = $class::createFromFile($file);
-
-        if ($opacity < 100) {
-            $watermark->opacity((int) $opacity);
-        }
-
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = $watermark->getWidth();
-        $height = $watermark->getHeight();
+        $width = $image->getWidth();
+        $height = $image->getHeight();
 
         $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);
         $y = Dimmensions::getPositionValue('y', $y, $height, $imageHeight);
 
-        $this->image->watermark($watermark, $x, $y);
+        $this->image->watermark($image->getImage(), $x, $y);
 
         return $this;
     }

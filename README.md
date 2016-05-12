@@ -156,12 +156,17 @@ $image->opacity(50);
 
 ### watermark
 
-`Image::watermark($imageFile, $x = 'right', $y = 'bottom', $opacity = 100)`
+`Image::watermark($image, $x = 'right', $y = 'bottom')`
 
 Applies a image as a watermark. You can configure the position and opacity.
 
 ```php
-$image->watermark('logo.png');
+$image = Image::fromFile('photo.jpg');
+$logo = Image::fromFile('logo.png');
+
+$logo->opacity(50);
+
+$image->watermark($logo);
 ```
 
 ### format

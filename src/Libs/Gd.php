@@ -275,7 +275,7 @@ class Gd extends AbstractLib implements LibInterface
     public function watermark(LibInterface $image, $x, $y)
     {
         if (!($image instanceof self)) {
-            throw new ImageException(sprintf('The image used for the watermark must be an instance of %s. %s given', __CLASS__, get_class($image)));
+            $image = self::createFromString($image->getString());
         }
 
         imagecopy($this->image, $image->getImage(), $x, $y, 0, 0, $image->getWidth(), $image->getHeight());

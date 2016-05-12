@@ -395,9 +395,9 @@ class Image
     /**
      * Add a watermark to current image.
      *
-     * @param string $file    Image to set as watermark
-     * @param mixed  $x       Horizontal position
-     * @param mixed  $y       Vertical position
+     * @param string $file Image to set as watermark
+     * @param mixed  $x    Horizontal position
+     * @param mixed  $y    Vertical position
      *
      * @return self
      */

@@ -68,32 +68,6 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function percentageValueDataProvider()
-    {
-        return array(
-            array('y', 500, 1000, '50%'),
-            array('y', 0, 1000, '0%'),
-            array('y', 0.0, 1000.0, '0%'),
-            array('y', 1000, 1000, '100%'),
-            array('y', 750, 1000, '75%'),
-            array('y', 755, 1000, '75.5%'),
-            array('y', 755.0, 1000, '75.5%'),
-            array('y', 'top', 1000, '0%'),
-            array('y', 'middle', 1000, '50%'),
-            array('y', 'bottom', 1000, '100%'),
-        );
-    }
-
-    /**
-     * @dataProvider percentageValueDataProvider
-     */
-    public function testPercentageValue($direction, $value, $relatedValue, $expected)
-    {
-        $result = Dimmensions::getPercentageValue($direction, $value, $relatedValue, true);
-
-        $this->assertSame($expected, $result);
-    }
-
     public function positionValueDataProvider()
     {
         return array(

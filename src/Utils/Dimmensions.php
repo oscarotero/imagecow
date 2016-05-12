@@ -100,35 +100,6 @@ class Dimmensions
     }
 
     /**
-     * Calculate a dimension value.
-     *
-     * @param string     $direction
-     * @param int|string $value
-     * @param int        $relatedValue
-     * @param bool       $position
-     *
-     * @return string
-     */
-    public static function getPercentageValue($direction, $value, $relatedValue, $position = false)
-    {
-        $keywords = ($direction === 'y') ? static::$positionsKeywordsY : static::$positionsKeywordsX;
-
-        if ($position && isset($keywords[$value])) {
-            return $keywords[$value];
-        }
-
-        if (substr($value, -1) === '%') {
-            return $value;
-        }
-
-        if (is_numeric($value)) {
-            return empty($value) ? '0%' : (($value / $relatedValue) * 100).'%';
-        }
-
-        throw new ImageException("Invalid position: {$value}");
-    }
-
-    /**
      * Calculates the x/y position.
      *
      * @param string          $direction (y or x)

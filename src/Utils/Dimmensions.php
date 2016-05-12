@@ -109,17 +109,23 @@ class Dimmensions
      */
     public static function getPositionValue($direction, $position, $newValue, $oldValue)
     {
-        $split = explode(' ', $position, 2);
-        $position = $split[0];
-        $offset = isset($split[1]) ? (int) $split[1] : 0;
+        $split = preg_split('/([\+\-])/', str_replace(' ', '', $position), 2, PREG_SPLIT_DELIM_CAPTURE);
 
-        if (is_numeric($position)) {
-            return intval($position) + $offset;
+        $newCenter = static::getIntegerValue($direction, $split[0], $newValue, true);
+        $oldCenter = static::getIntegerValue($direction, $split[0], $oldValue, true);
+
+        $value = $oldCenter - $newCenter;
+
+        if (isset($split[1])) {
+            $offset = static::getIntegerValue($direction, $split[2], $oldValue, true);
+
+            if ($split[1] === '-') {
+                return $value - $offset;
+            }
+
+            return $value + $offset;
         }
 
-        $newCenter = static::getIntegerValue($direction, $position, $newValue, true);
-        $oldCenter = static::getIntegerValue($direction, $position, $oldValue, true);
-
-        return $oldCenter - $newCenter + $offset;
+        return $value;
     }
 }

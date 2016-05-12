@@ -2,7 +2,6 @@
 
 namespace Imagecow;
 
-use Exception;
 use Imagecow\Utils\Dimmensions;
 
 class Image
@@ -384,7 +383,7 @@ class Image
     }
 
     /**
-     * Add a watermark to current image
+     * Add a watermark to current image.
      *
      * @param string $file    Image to set as watermark
      * @param mixed  $x       Horizontal position
@@ -417,7 +416,7 @@ class Image
     }
 
     /**
-     * Add opacity to image from 0 (transparent) to 100 (opaque)
+     * Add opacity to image from 0 (transparent) to 100 (opaque).
      *
      * @param int $opacity Opacity value
      * 

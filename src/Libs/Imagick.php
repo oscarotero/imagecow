@@ -4,7 +4,6 @@ namespace Imagecow\Libs;
 
 use Imagick as BaseImagick;
 use Imagecow\ImageException;
-use Imagecow\Utils;
 
 /**
  * Imagick library.

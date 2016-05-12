@@ -3,7 +3,6 @@
 namespace Imagecow\Libs;
 
 use Imagecow\ImageException;
-use Imagecow\Utils;
 
 /**
  * GD library.
@@ -309,7 +308,7 @@ class Gd extends AbstractLib implements LibInterface
                     continue;
                 }
 
-                $color = ($color & 0xFFFFFF) | ((int)round(127 - $alpha * $opacity) << 24);
+                $color = ($color & 0xFFFFFF) | ((int) round(127 - $alpha * $opacity) << 24);
 
                 imagesetpixel($this->image, $x, $y, $color);
             }

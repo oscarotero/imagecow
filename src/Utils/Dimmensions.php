@@ -2,8 +2,6 @@
 
 namespace Imagecow\Utils;
 
-use Imagecow\ImageException;
-
 /**
  * Usefull dimmensions calculations.
  */

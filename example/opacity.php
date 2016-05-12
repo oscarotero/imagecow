@@ -1,4 +1,5 @@
 <?php
+
 require dirname(__DIR__).'/src/autoloader.php';
 
 use Imagecow\Image;

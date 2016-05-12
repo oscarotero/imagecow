@@ -3,7 +3,8 @@
 namespace Imagecow\Utils;
 
 use Exception;
-use Imagick, ImagickPixel;
+use Imagick;
+use ImagickPixel;
 use Imagecow;
 
 /**

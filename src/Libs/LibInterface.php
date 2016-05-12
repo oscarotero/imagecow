@@ -130,11 +130,11 @@ interface LibInterface
     public function opacity($opacity);
 
     /**
-     * Applies a watermark image
+     * Applies a watermark image.
      * 
      * @param LibInterface $image
-     * @param int          $x         The horizontal position
-     * @param int          $y         The vertical position
+     * @param int          $x     The horizontal position
+     * @param int          $y     The vertical position
      */
     public function watermark(LibInterface $image, $x, $y);
 

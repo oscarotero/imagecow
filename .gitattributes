@@ -1,0 +1,7 @@
+/tests/      export-ignore
+/phpunit.xml export-ignore
+/example     export-ignore
+.*           export-ignore
+
+# Set the line ending configuration
+* text=lf

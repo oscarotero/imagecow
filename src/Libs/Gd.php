@@ -271,13 +271,15 @@ class Gd extends AbstractLib implements LibInterface
     }
 
     /**
-     * @param resource $watermark Watermark image resource
-     * @param array    $x         Position x
-     * @param array    $y         Position y
+     * {@inheritdoc}
      */
-    public function watermark($watermark, $x, $y)
+    public function watermark(LibInterface $image, $x, $y)
     {
-        imagecopy($this->image, $watermark, $x, $y, 0, 0, imagesx($watermark), imagesy($watermark));
+        if (!($image instanceof self)) {
+            throw new ImageException(sprintf('The image used for the watermark must be an instance of %s. %s given', __CLASS__, get_class($image)));
+        }
+
+        imagecopy($this->image, $image->getImage(), $x, $y, 0, 0, $image->getWidth(), $image->getHeight());
     }
 
     /**
@@ -285,9 +287,11 @@ class Gd extends AbstractLib implements LibInterface
      */
     public function opacity($opacity)
     {
-        if ((int)$opacity === 100) {
+        if ($opacity >= 100 || $opacity < 0) {
             return;
         }
+
+        $this->format('png');
 
         $opacity = $opacity / 100;
 

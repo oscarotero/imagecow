@@ -125,6 +125,20 @@ interface LibInterface
     public function flop();
 
     /**
+     * Changes the opacity of the image.
+     */
+    public function opacity($opacity);
+
+    /**
+     * Applies a watermark image
+     * 
+     * @param LibInterface $image
+     * @param int          $x         The horizontal position
+     * @param int          $y         The vertical position
+     */
+    public function watermark(LibInterface $image, $x, $y);
+
+    /**
      * Define the image compression quality for jpg images.
      *
      * @param int $quality The quality (from 0 to 100)

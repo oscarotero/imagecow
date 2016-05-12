@@ -321,13 +321,15 @@ class Imagick extends AbstractLib implements LibInterface
     }
 
     /**
-     * @param object $watermark Watermark image object
-     * @param array  $x         Position x
-     * @param array  $y         Position y
+     * {@inheritdoc}
      */
-    public function watermark($watermark, $x, $y)
+    public function watermark(LibInterface $image, $x, $y)
     {
-        $this->image->compositeImage($watermark, BaseImagick::COMPOSITE_DISSOLVE, $x, $y);
+        if (!($image instanceof self)) {
+            throw new ImageException(sprintf('The image used for the watermark must be an instance of %s. %s given', __CLASS__, get_class($image)));
+        }
+
+        $this->image->compositeImage($image->getImage(), BaseImagick::COMPOSITE_DISSOLVE, $x, $y);
     }
 
     /**
@@ -335,7 +337,7 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public function opacity($opacity)
     {
-        if ($opacity === 100) {
+        if ($opacity >= 100 || $opacity < 0) {
             return;
         }
 

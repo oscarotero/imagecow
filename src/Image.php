@@ -21,22 +21,6 @@ class Image
         'width' => null,
     ];
 
-    protected static $watermarkSettings = [
-        'padding' => '2%',
-        'opacity' => 80,
-        'align' => ['bottom', 'right']
-    ];
-
-    /**
-     * Add configuration to watermark position
-     *
-     * @param array $settings
-     */
-    public static function configureWatermark(array $settings)
-    {
-        self::$watermarkSettings = $settings + self::$watermarkSettings;
-    }
-
     /**
      * Static function to create a new Imagecow instance from an image file.
      *
@@ -229,16 +213,6 @@ class Image
     }
 
     /**
-     * Gets the original image object.
-     *
-     * @return object|resource
-     */
-    public function getImage()
-    {
-        return $this->image->getImage();
-    }
-
-    /**
      * Gets the image data in a string.
      *
      * @return string The image data
@@ -412,36 +386,32 @@ class Image
     /**
      * Add a watermark to current image
      *
-     * @param string|Image  $watermark Image to set as watermark
-     * @param array         $settings  Overwrite default settings
+     * @param string $file    Image to set as watermark
+     * @param mixed  $x       Horizontal position
+     * @param mixed  $y       Vertical position
+     * @param int    $opacity Opacity value
      *
      * @return self
      */
-    public function watermark($watermark, array $settings = [])
+    public function watermark($file, $x = 'right', $y = 'bottom', $opacity = 100)
     {
-        if (is_string($watermark)) {
-            $watermark = self::fromFile($watermark);
+        $class = get_class($this->image);
+        $watermark = $class::createFromFile($file);
+
+        if ($opacity < 100) {
+            $watermark->opacity((int) $opacity);
         }
 
-        $settings += self::$watermarkSettings;
+        $imageWidth = $this->getWidth();
+        $imageHeight = $this->getHeight();
 
-        if ($settings['opacity'] < 100) {
-            $watermark->opacity($settings['opacity']);
-        }
+        $width = $watermark->getWidth();
+        $height = $watermark->getHeight();
 
-        $iw = $this->getWidth();
-        $ih = $this->getHeight();
+        $x = Dimmensions::getPositionValue($x, $width, $imageWidth);
+        $y = Dimmensions::getPositionValue($y, $height, $imageHeight);
 
-        $ww = $watermark->getWidth();
-        $wh = $watermark->getHeight();
-
-        $y = $settings['align'][0];
-        $x = $settings['align'][1];
-
-        $x = Utils\Dimmensions::getPositionFromReferenceValue($x, $iw, $ww, $settings['padding']);
-        $y = Utils\Dimmensions::getPositionFromReferenceValue($y, $ih, $wh, $settings['padding']);
-
-        $this->image->watermark($watermark->getImage(), $x, $y);
+        $this->image->watermark($watermark, $x, $y);
 
         return $this;
     }
@@ -449,7 +419,9 @@ class Image
     /**
      * Add opacity to image from 0 (transparent) to 100 (opaque)
      *
-     * @param integer $opacity Opacity value
+     * @param int $opacity Opacity value
+     * 
+     * @return self
      */
     public function opacity($opacity)
     {

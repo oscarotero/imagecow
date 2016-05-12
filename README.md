@@ -144,6 +144,26 @@ Autorotates the image according its EXIF data
 $image->autoRotate();
 ```
 
+### opacity
+
+`Image::opacity($value)`
+
+Set the alpha channel of the image. The value must be between 0 (transparent) to 100 (opaque). Note that the image will be converted to png (if it's not already)
+
+```php
+$image->opacity(50);
+```
+
+### watermark
+
+`Image::watermark($imageFile, $x = 'right', $y = 'bottom', $opacity = 100)`
+
+Applies a image as a watermark. You can configure the position and opacity.
+
+```php
+$image->watermark('logo.png');
+```
+
 ### format
 
 `Image::format($format)`

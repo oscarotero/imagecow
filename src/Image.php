@@ -34,7 +34,7 @@ class Image
      */
     public static function configureWatermark(array $settings)
     {
-        self::$watermarkSettings = array_merge(self::$watermarkSettings, $settings);
+        self::$watermarkSettings = $settings + self::$watermarkSettings;
     }
 
     /**
@@ -412,18 +412,18 @@ class Image
     /**
      * Add a watermark to current image
      *
-     * @param string|object $watermark Image to set as watermark
+     * @param string|Image  $watermark Image to set as watermark
      * @param array         $settings  Overwrite default settings
      *
      * @return self
      */
-    public function watermark($watermark, $settings = [])
+    public function watermark($watermark, array $settings = [])
     {
         if (is_string($watermark)) {
             $watermark = self::fromFile($watermark);
         }
 
-        $settings = array_merge(self::$watermarkSettings, $settings);
+        $settings += self::$watermarkSettings;
 
         if ($settings['opacity'] < 100) {
             $watermark->opacity($settings['opacity']);

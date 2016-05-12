@@ -77,6 +77,8 @@ class DimmensionsTest extends PHPUnit_Framework_TestCase
             array('x', '0%', 500, 1000, 0),
             array('x', '100%', 500, 1000, 500),
             array('x', '100%', 500, 1000, 500),
+            array('x', '100%+10', 500, 1000, 510),
+            array('x', '100%-10px', 500, 1000, 490),
             array('x', 750, 500, 1000, 750),
             array('x', 750.0, 500, 1000, 750),
         );

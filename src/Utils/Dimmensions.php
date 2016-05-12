@@ -111,21 +111,27 @@ class Dimmensions
     {
         $split = preg_split('/([\+\-])/', str_replace(' ', '', $position), 2, PREG_SPLIT_DELIM_CAPTURE);
 
-        $newCenter = static::getIntegerValue($direction, $split[0], $newValue, true);
-        $oldCenter = static::getIntegerValue($direction, $split[0], $oldValue, true);
+        //Base value
+        $value = $split[0];
 
-        $value = $oldCenter - $newCenter;
+        if (is_numeric($value)) {
+            $value = (int) $value;
+        } else {
+            $newCenter = static::getIntegerValue($direction, $value, $newValue, true);
+            $oldCenter = static::getIntegerValue($direction, $value, $oldValue, true);
 
-        if (isset($split[2])) {
-            $offset = static::getIntegerValue($direction, $split[2], $oldValue, true);
-
-            if ($split[1] === '-') {
-                return $value - $offset;
-            }
-
-            return $value + $offset;
+            $value = $oldCenter - $newCenter;
         }
 
-        return $value;
+        //Offset
+        $offset = isset($split[2]) ? $split[1].$split[2] : 0;
+
+        if (is_numeric($offset)) {
+            $offset = (int) $offset;
+        } else {
+            $offset = static::getIntegerValue($direction, $offset, $oldValue, true);
+        }
+
+        return $value + $offset;
     }
 }

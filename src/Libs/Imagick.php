@@ -321,7 +321,7 @@ class Imagick extends AbstractLib implements LibInterface
     }
 
     /**
-     * @param string $watermark Watermark image object
+     * @param object $watermark Watermark image object
      * @param array  $x         Position x
      * @param array  $y         Position y
      */

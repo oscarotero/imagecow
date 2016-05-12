@@ -271,9 +271,9 @@ class Gd extends AbstractLib implements LibInterface
     }
 
     /**
-     * @param string $watermark Watermark image object
-     * @param array  $x         Position x
-     * @param array  $y         Position y
+     * @param resource $watermark Watermark image resource
+     * @param array    $x         Position x
+     * @param array    $y         Position y
      */
     public function watermark($watermark, $x, $y)
     {

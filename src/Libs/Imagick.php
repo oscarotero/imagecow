@@ -3,6 +3,7 @@
 namespace Imagecow\Libs;
 
 use Imagick as BaseImagick;
+use ImagickPixel as BaseImagickPixel;
 use Imagecow\ImageException;
 
 /**

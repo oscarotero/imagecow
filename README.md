@@ -204,16 +204,16 @@ Set a default background used in some transformations: for example on convert a 
 $image->setBackground(array(255, 255, 255)); // set the background to white
 ```
 
-### setCompressionQuality
+### quality
 
-`Image::setCompressionQuality($quality)`
+`Image::quality($quality)`
 
 Defines the image compression quality for jpg images
 
 * `$quality`: An integer value between 0 and 100
 
 ```php
-$image->setCompressionQuality(80); // change the quality to 80
+$image->quality(80); // change the quality to 80
 ```
 
 ### setClientHints

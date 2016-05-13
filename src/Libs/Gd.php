@@ -262,7 +262,7 @@ class Gd extends AbstractLib implements LibInterface
     {
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
-        if ($background === false || ($image = imagerotate($this->image, $angle, $background)) === false) {
+        if ($background === false || ($image = imagerotate($this->image, -$angle, $background)) === false) {
             throw new ImageException('Error rotating the image');
         }
 

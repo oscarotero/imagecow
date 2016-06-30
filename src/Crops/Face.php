@@ -99,8 +99,14 @@ class Face extends Entropy
         }
 
         $faceList = static::getFaceListFromClassifier(self::CLASSIFIER_FACE);
+        if (!is_array($faceList)) {
+            $faceList = [];
+        }
 
         $profileList = static::getFaceListFromClassifier(self::CLASSIFIER_PROFILE);
+        if (!is_array($profileList)) {
+            $profileList = [];
+        }
 
         $faceList = array_merge($faceList, $profileList);
 

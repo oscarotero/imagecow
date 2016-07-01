@@ -360,9 +360,8 @@ $image->resize(200)->format('jpg')->save('image.jpg');
 ### Maintainers:
 
 * @oscarotero (creator)
-* @eusonlito (contributor)
-* @AndreasHeiberg (contributor)
-* @kevbaldwyn (contributor)
+* @eusonlito (collaborator)
+* [and more...](https://github.com/oscarotero/imagecow/graphs/contributors)
 
 ### Thanks to
 

@@ -34,7 +34,7 @@ class Balanced implements CropInterface
         // Turn everything darker than this to pitch black
         $measureImage->blackThresholdImage('#101010');
         // Get the calculated offset for cropping
-        return static::getOffsetBalanced($original, $targetWidth, $targetHeight);
+        return static::getOffsetBalanced($measureImage, $targetWidth, $targetHeight);
     }
 
     /**

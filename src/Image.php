@@ -325,8 +325,11 @@ class Image
 
         list($width, $height) = $this->calculateClientSize($width, $height);
 
-        if (($x === self::CROP_BALANCED) || ($x === self::CROP_ENTROPY) || ($x === self::CROP_FACE)) {
-            list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
+        switch ($x) {
+            case self::CROP_BALANCED:
+            case self::CROP_ENTROPY:
+            case self::CROP_FACE:
+                list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
         }
 
         $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);

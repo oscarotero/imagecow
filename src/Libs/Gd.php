@@ -229,11 +229,11 @@ class Gd extends AbstractLib implements LibInterface
      */
     public function getCropOffsets($width, $height, $method)
     {
-        if (isset(static::$fallbackCropMethods[$method])) {
-            return static::$fallbackCropMethods[$method];
+        if (empty(static::$fallbackCropMethods[$method])) {
+            throw new ImageException("The crop method '$method' is not available for Gd");
         }
 
-        throw new ImageException("The crop method '$method' is not available for Gd");
+        return static::$fallbackCropMethods[$method];
     }
 
     /**

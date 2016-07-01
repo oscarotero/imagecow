@@ -64,7 +64,7 @@ class Face extends Entropy
             'height' => $original->getImageWidth(),
         ];
 
-        parent::getOffsets($original, $targetWidth, $targetHeight);
+        return parent::getOffsets($original, $targetWidth, $targetHeight);
     }
 
     /**

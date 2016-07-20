@@ -306,7 +306,7 @@ Now, in the server side:
 use Imagecow\Image;
 
 $file = __DIR__.'/'.$_GET['file'];
-$transform = isset($_GET['transform']) ? null;
+$transform = isset($_GET['transform']) ? $_GET['transform'] : null;
 
 //Create the image instance
 $image = Image::fromFile($file);

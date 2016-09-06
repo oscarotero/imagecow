@@ -217,7 +217,7 @@ class Gd extends AbstractLib implements LibInterface
      */
     public function resize($width, $height)
     {
-        if (($image = imagescale($this->image, $width, $height, IMG_BICUBIC)) === false) {
+        if (($image = imagescale($this->image, $width, $height)) === false) {
             throw new ImageException('Error resizing the image');
         }
 

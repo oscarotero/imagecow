@@ -296,7 +296,7 @@ class Image
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
         list($width, $height) = $this->calculateClientSize($width, $height);
 
-        if ($width >= $imageWidth) {
+        if ($width >= $imageWidth && !$cover) {
             return $this;
         }
 

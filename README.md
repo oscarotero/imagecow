@@ -277,7 +277,7 @@ $image
 
 ### Responsive images
 
-Imagecow has support for client hints, that allows to generate responsive images without using cookies or javascript code (like in 1.x version of stylecow). Client Hints is introduced by Google becoming a standard. [Here's a deep explain of how to use it](https://www.smashingmagazine.com/2016/01/leaner-responsive-images-client-hints/)
+Imagecow has support for client hints, that allows to generate responsive images without using cookies or javascript code (like in 1.x version of imagecow). Client Hints is introduced by Google becoming a standard. [Here's a deep explain of how to use it](https://www.smashingmagazine.com/2016/01/leaner-responsive-images-client-hints/)
 
 Note that currently this is supported only by [chrome and opera browsers](http://caniuse.com/#feat=client-hints-dpr-width-viewport).
 

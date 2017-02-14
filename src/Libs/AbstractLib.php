@@ -10,6 +10,7 @@ abstract class AbstractLib
     protected $quality = 86;
     protected $background = [255, 255, 255];
     protected $animated = false;
+    protected $progressive = false;
 
     /**
      * {@inheritdoc}

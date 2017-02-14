@@ -158,4 +158,11 @@ interface LibInterface
      * @param bool $animated
      */
     public function setAnimated($animated);
+
+    /**
+     * Defines the image as progressive (if its jpg).
+     *
+     * @param bool $progressive
+     */
+    public function setProgressive($progressive);
 }

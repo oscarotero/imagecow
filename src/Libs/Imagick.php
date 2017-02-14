@@ -348,4 +348,16 @@ class Imagick extends AbstractLib implements LibInterface
         // NOTE: Using setImageOpacity will destroy current alpha channels!
         $this->image->evaluateImage(BaseImagick::EVALUATE_MULTIPLY, $opacity / 100, BaseImagick::CHANNEL_ALPHA);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProgressive($progressive)
+    {
+        if ($progressive) {
+            $this->image->setInterlaceScheme(Imagick::INTERLACE_PLANE);
+        } else {
+            $this->image->setInterlaceScheme(Imagick::INTERLACE_NO);
+        }
+    }
 }

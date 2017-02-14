@@ -320,4 +320,12 @@ class Gd extends AbstractLib implements LibInterface
             }
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProgressive($progressive)
+    {
+        imageinterlace($this->image, $progressive);
+    }
 }

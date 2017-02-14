@@ -433,6 +433,20 @@ class Image
     }
 
     /**
+     * Set the image progressive or not
+     *
+     * @param bool $progressive
+     *
+     * @return self
+     */
+    public function progressive($progressive = true)
+    {
+        $this->image->setProgressive((bool) $progressive);
+
+        return $this;
+    }
+
+    /**
      * Reads the EXIF data from a JPEG and returns an associative array
      * (requires the exif PHP extension enabled).
      *

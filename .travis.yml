@@ -4,12 +4,11 @@ php:
   - 5.5
   - 5.6
   - 7.0
+  - 7.1
 
 script:
-  - phpunit
+  - composer test
 
 before_install:
-  - sudo add-apt-repository -y ppa:moti-p/cc
   - sudo apt-get update
-  - sudo apt-get -y --reinstall install imagemagick
-  - printf "\n" | pecl install imagick-beta
+  - sudo apt-get install imagemagick

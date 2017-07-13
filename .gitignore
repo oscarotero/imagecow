@@ -1,2 +1,4 @@
 tests/images/tmp.*
 local
+vendor/
+composer.lock

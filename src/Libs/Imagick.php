@@ -176,7 +176,11 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public function getWidth()
     {
-        return $this->image->getImageWidth();
+        if ($this->animated) {
+            return $this->image->coalesceImages()->getImageWidth();
+        } else {
+            return $this->image->getImageWidth();
+        }
     }
 
     /**
@@ -184,7 +188,11 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public function getHeight()
     {
-        return $this->image->getImageHeight();
+        if ($this->animated) {
+            return $this->image->coalesceImages()->getImageHeight();
+        } else {
+            return $this->image->getImageHeight();
+        }
     }
 
     /**

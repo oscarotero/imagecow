@@ -1,3 +1,7 @@
+sudo: false
+
+dist: trusty
+
 language: php
 
 php:
@@ -6,6 +10,10 @@ php:
   - 7.0
   - 7.1
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 script:
   - composer test
 
@@ -13,3 +21,4 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y --reinstall install imagemagick
   - printf "\n" | pecl install imagick-beta
+  - composer install

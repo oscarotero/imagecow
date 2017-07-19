@@ -363,9 +363,9 @@ class Imagick extends AbstractLib implements LibInterface
     public function setProgressive($progressive)
     {
         if ($progressive) {
-            $this->image->setInterlaceScheme(Imagick::INTERLACE_PLANE);
+            $this->image->setInterlaceScheme(BaseImagick::INTERLACE_PLANE);
         } else {
-            $this->image->setInterlaceScheme(Imagick::INTERLACE_NO);
+            $this->image->setInterlaceScheme(BaseImagick::INTERLACE_NO);
         }
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-require dirname(__DIR__).'/src/autoloader.php';
+require __DIR__.'/bootstrap.php';
 
 use Imagecow\Image;
 
-$image = Image::fromFile(__DIR__.'/my-image.jpg', 'Gd');
+$image = Image::fromFile(__DIR__.'/my-image.jpg', $library);
 $image->blur();
 
 $image->show();

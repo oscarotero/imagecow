@@ -278,6 +278,30 @@ class Gd extends AbstractLib implements LibInterface
     /**
      * {@inheritdoc}
      */
+    public function blur($loops)
+    {
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+        $loops *= 10;
+
+        $this->resize($width / 4, $height / 4);
+
+        for ($x = 0; $x < $loops; $x++) {
+            if (($x % 10) === 0) {
+                imagefilter($this->image, IMG_FILTER_SMOOTH, -7);
+            }
+
+            imagefilter($this->image, IMG_FILTER_GAUSSIAN_BLUR);
+        }
+
+        imagefilter($this->image, IMG_FILTER_BRIGHTNESS, 10);
+
+        $this->resize($width, $height);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function watermark(LibInterface $image, $x, $y)
     {
         if (!($image instanceof self)) {

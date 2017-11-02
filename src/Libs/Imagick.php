@@ -284,6 +284,23 @@ class Imagick extends AbstractLib implements LibInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function blur($loops)
+    {
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+
+        $this->resize($width / 4, $height / 4);
+
+        for ($i = 0; $i < $loops; $i++) {
+            $this->image->blurImage(10, 100);
+        }
+
+        $this->resize($width, $height);
+    }
+
+    /**
      * Returns a copy of the image compressed and ready to save or print.
      *
      * @return BaseImagick The instance of the image

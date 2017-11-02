@@ -372,6 +372,20 @@ class Image
     }
 
     /**
+     * Apply blur to image
+     *
+     * @param int $loops Quantity of blur effect loop
+     *
+     * @return self
+     */
+    public function blur($loops = 4)
+    {
+        $this->image->blur($loops);
+
+        return $this;
+    }
+
+    /**
      * Define the image compression quality for jpg images.
      *
      * @param int $quality The quality (from 0 to 100)

@@ -291,13 +291,15 @@ class Imagick extends AbstractLib implements LibInterface
         $width = $this->getWidth();
         $height = $this->getHeight();
 
-        $this->resize($width / 4, $height / 4);
+        $this->resize($width / 5, $height / 5);
 
         for ($i = 0; $i < $loops; $i++) {
-            $this->image->blurImage(10, 100);
+            $this->image->blurImage(5, 100);
         }
 
         $this->resize($width, $height);
+
+        $this->image->blurImage(10, 100);
     }
 
     /**

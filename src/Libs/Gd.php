@@ -284,12 +284,12 @@ class Gd extends AbstractLib implements LibInterface
         $height = $this->getHeight();
         $loops *= 10;
 
-        $this->resize($width / 4, $height / 4);
+        $this->resize($width / 5, $height / 5);
 
         for ($x = 0; $x < $loops; $x++) {
-            if (($x % 10) === 0) {
-                imagefilter($this->image, IMG_FILTER_SMOOTH, -7);
-                imagefilter($this->image, IMG_FILTER_BRIGHTNESS, 5);
+            if (($x % 4) === 0) {
+                imagefilter($this->image, IMG_FILTER_SMOOTH, -4);
+                imagefilter($this->image, IMG_FILTER_BRIGHTNESS, 2);
             }
 
             imagefilter($this->image, IMG_FILTER_GAUSSIAN_BLUR);

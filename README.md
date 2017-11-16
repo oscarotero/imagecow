@@ -154,6 +154,16 @@ Set the alpha channel of the image. The value must be between 0 (transparent) to
 $image->opacity(50);
 ```
 
+### blur
+
+`Image::blur($loops = 4)`
+
+Applies the gaussian blur to the image. The more loops, the more the image blurs.
+
+```php
+$image->blur(8);
+```
+
 ### watermark
 
 `Image::watermark($image, $x = 'right', $y = 'bottom')`

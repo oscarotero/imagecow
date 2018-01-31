@@ -587,7 +587,7 @@ class Image
                 break;
 
             case 8:
-                $this->rotate(90);
+                $this->rotate(-90);
                 break;
         }
 

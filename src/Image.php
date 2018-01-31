@@ -575,7 +575,7 @@ class Image
                 break;
 
             case 5:
-                $this->flip()->rotate(-90);
+                $this->flip()->rotate(90);
                 break;
 
             case 6:
@@ -583,7 +583,7 @@ class Image
                 break;
 
             case 7:
-                $this->flop()->rotate(-90);
+                $this->flop()->rotate(90);
                 break;
 
             case 8:

@@ -214,13 +214,16 @@ class Gd extends AbstractLib implements LibInterface
     }
 
     /**
+     * imagescale() is not used due a weird black border:
+     * https://bugs.php.net/bug.php?id=73281&thanks=6
+     * 
      * {@inheritdoc}
      */
     public function resize($width, $height)
     {
-        $mode = ($this->getWidth() < $width) ? IMG_BILINEAR_FIXED : IMG_BICUBIC;
+        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
 
-        if (($image = imagescale($this->image, $width, $height, $mode)) === false) {
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
             throw new ImageException('Error resizing the image');
         }
 
@@ -350,5 +353,37 @@ class Gd extends AbstractLib implements LibInterface
     public function setProgressive($progressive)
     {
         imageinterlace($this->image, $progressive);
+    }
+
+    /**
+     * Creates a new truecolor image
+     *
+     * @param integer $width
+     * @param integer $height
+     * @param array   $background
+     *
+     * @return resource
+     */
+     private function createImage($width, $height, array $background = [0, 0, 0])
+    {
+        if (($image = imagecreatetruecolor($width, $height)) === false) {
+            throw new ImageException('Error creating a image');
+        }
+
+        if (imagesavealpha($image, true) === false) {
+            throw new ImageException('Error saving the alpha chanel of the image');
+        }
+
+        if (isset($background[3])) {
+            $background = imagecolorallocatealpha($image, $background[0], $background[1], $background[2], $background[3]);
+        } else {
+            $background = imagecolorallocate($image, $background[0], $background[1], $background[2]);
+        }
+
+        if (imagefill($image, 0, 0, $background) === false) {
+            throw new ImageException('Error filling the image');
+        }
+
+        return $image;
     }
 }

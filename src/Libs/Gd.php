@@ -67,7 +67,6 @@ class Gd extends AbstractLib implements LibInterface
 
         imagealphablending($this->image, true);
         imagesavealpha($this->image, true);
-        imagesetinterpolation($this->image, IMG_BICUBIC);
     }
 
     /**
@@ -273,6 +272,8 @@ class Gd extends AbstractLib implements LibInterface
         if ($background === false || ($image = imagerotate($this->image, -$angle, $background)) === false) {
             throw new ImageException('Error rotating the image');
         }
+
+        imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
 
         imagedestroy($this->image);
         $this->image = $image;

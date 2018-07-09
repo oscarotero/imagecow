@@ -17,7 +17,7 @@ script:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get -y --reinstall install webp
+  - sudo apt-get -y --reinstall install libwebp-dev
   - sudo apt-get -y --reinstall install imagemagick
   - printf "\n" | pecl install imagick-beta
   - composer install

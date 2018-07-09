@@ -19,13 +19,13 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y --reinstall install libwebp-dev
   - sudo apt-get -y --reinstall install imagemagick
-  - mkdir imagemagick
+  - sudo mkdir imagemagick
   - cd imagemagick
   - sudo apt-get build-dep -y imagemagick
   - sudo apt-get install -y libwebp-dev devscripts
-  - apt-get source imagemagick
+  - sudo apt-get source imagemagick
   - cd imagemagick-*
-  - debuild -uc -us
+  - sudo debuild -uc -us
   - sudo dpkg -i ../*magick*.deb
   - cd ../..
   - printf "\n" | pecl install imagick-beta

@@ -185,11 +185,13 @@ $image->watermark($logo);
 
 Converts the image to other format.
 
-* `$format`: The format name. It can be "jpg", "png" or "gif".
+* `$format`: The format name. It can be "jpg", "png", "gif", or "webp"*.
 
 ```php
 $image->format('png'); // converts to png
 ```
+
+*Note: `webp` format is only supported when using Imagick. [ImageMagick must be built with WEBP support](#installing-imagemagick-with-webp-support).
 
 ### save
 
@@ -352,7 +354,7 @@ $image->resize(100)->save('my-image.png');
 
 #### SvgExtractor.
 
-**Only for Imagick** This class allows generate images from a svg file (usefull for browsers that don't support svg format):
+**Only for Imagick** This class allows generate images from a svg file (useful for browsers that don't support svg format):
 
 ```php
 use Imagecow\Utils\SvgExtractor;
@@ -366,6 +368,40 @@ $image = $svg->get();
 $image->resize(200)->format('jpg')->save('image.jpg');
 ```
 
+### Installing ImageMagick with WEBP support
+#### macOS
+Via Homebrew:
+```bash
+brew install webp
+brew install imagemagick --with-webp
+```
+
+#### CentOS/RHEL
+```bash
+yum install libwebp-devel rpm-build
+mkdir /tmp/imagemagick
+cd /tmp/imagemagick
+yum-builddep ImageMagick -y
+yumdownloader --source ImageMagick
+rpm -ivh ImageMagick*
+sed -i '/BuildRequires:\tghostscript-devel/a BuildRequires:\tlibwebp-devel' /root/rpmbuild/SPECS/ImageMagick.spec
+sed -i '/Requires: pkgconfig/a Requires: libwebp' /root/rpmbuild/SPECS/ImageMagick.spec
+rpmbuild -ba /root/rpmbuild/SPECS/ImageMagick.spec
+rpm -Uvh --force /root/rpmbuild/RPMS/x86_64/ImageMagick-*.rpm
+yum-config-manager --save --setopt=updates.exclude=ImageMagick*;
+```
+
+#### Ubuntu
+```bash
+mkdir /tmp/imagemagick
+cd /tmp/imagemagick
+apt-get build-dep imagemagick
+apt-get install libwebp-dev devscripts
+apt-get source imagemagick
+cd imagemagick-*
+debuild -uc -us
+dpkg -i ../*magick*.deb
+```
 
 ### Maintainers:
 

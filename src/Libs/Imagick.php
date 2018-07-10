@@ -166,7 +166,7 @@ class Imagick extends AbstractLib implements LibInterface
     {
         $format = strtolower($this->image->getImageFormat());
 
-        if (in_array($format, ['jpeg', 'jpg', 'gif', 'png'], true)) {
+        if (in_array($format, ['jpeg', 'jpg', 'gif', 'png', 'webp'], true)) {
             return "image/$format";
         }
     }

@@ -94,4 +94,51 @@ abstract class ImageTest_ extends PHPUnit_Framework_TestCase
 
         unlink($tmpFile);
     }
+
+    public function testWebp()
+    {
+        if(static::$library != 'Imagick') {
+        	$this->assertSame(true, true); // Prevent this test did not perform any assertions
+        	return;
+        }
+
+        $file = __DIR__.'/images/image.webp';
+        $tmpFile = __DIR__.'/images/tmp.'.static::$library.'.image.webp';
+
+        $image = Image::fromFile($file, static::$library);
+
+        $this->assertSame('image/webp', $image->getMimeType());
+
+        $this->assertSame(512, $image->getWidth());
+        $this->assertSame(512, $image->getHeight());
+
+        //Resize
+        $image->resize(500);
+
+        $this->assertSame(500, $image->getWidth());
+        $this->assertSame(500, $image->getHeight());
+
+        //Crop
+        $image->crop(400, 300, Image::CROP_ENTROPY);
+
+        $this->assertSame(400, $image->getWidth());
+        $this->assertSame(300, $image->getHeight());
+
+        $image->crop('50%', '50%');
+
+        $this->assertSame(200, $image->getWidth());
+        $this->assertSame(150, $image->getHeight());
+
+        //Save
+        $image->save($tmpFile);
+
+        $this->assertTrue(is_file($tmpFile));
+
+        $image = Image::fromFile($tmpFile, static::$library);
+
+        $this->assertSame(200, $image->getWidth());
+        $this->assertSame(150, $image->getHeight());
+
+        unlink($tmpFile);
+    }
 }

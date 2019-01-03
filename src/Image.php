@@ -3,37 +3,31 @@
 namespace Imagecow;
 
 use Imagecow\Utils\Dimmensions;
+use Imagecow\Adapters\AdapterInterface;
+use Imagecow\Adapters\GdAdapter;
+use Imagecow\Adapters\ImagickAdapter;
 
-class Image
+final class Image
 {
-    const LIB_GD = 'Gd';
-    const LIB_IMAGICK = 'Imagick';
-
     const CROP_ENTROPY = 'Entropy';
     const CROP_BALANCED = 'Balanced';
     const CROP_FACE = 'Face';
 
-    protected $image;
-    protected $filename;
-    protected $clientHints = [
+    private $adapter;
+    private $filename;
+    private $clientHints = [
         'dpr' => null,
         'viewport-width' => null,
         'width' => null,
     ];
 
     /**
-     * Static function to create a new Imagecow instance from an image file.
-     *
-     * @param string $filename The path of the file
-     * @param string $library  The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
-     *
-     * @return Image
+     * Create a new Imagecow instance from an image file.
      */
-    public static function fromFile($filename, $library = null)
+    public static function fromFile(string $filename, string $adapter = null): Image
     {
-        $class = self::getLibraryClass($library);
-
-        $image = new static($class::createFromFile($filename), $filename);
+        $adapter = self::getAdapterClass($adapter);
+        $image = new static($adapter::createFromFile($filename), $filename);
 
         if ($image->getMimeType() !== 'image/gif') {
             return $image;
@@ -42,7 +36,7 @@ class Image
         $stream = fopen($filename, 'rb');
 
         if (self::isAnimatedGif($stream)) {
-            $image->image->setAnimated(true);
+            $image->adapter->setAnimated(true);
         }
 
         fclose($stream);
@@ -51,18 +45,12 @@ class Image
     }
 
     /**
-     * Static function to create a new Imagecow instance from a binary string.
-     *
-     * @param string $string  The string of the image
-     * @param string $library The name of the image library to use (Gd or Imagick). If it's not defined, detects automatically the library to use.
-     *
-     * @return Image
+     * Create a new Imagecow instance from a string.
      */
-    public static function fromString($string, $library = null)
+    public static function fromString(string $string, string $adapter = null): Image
     {
-        $class = self::getLibraryClass($library);
-
-        $image = new static($class::createFromString($string));
+        $adapter = self::getAdapterClass($adapter);
+        $image = new static($adapter::createFromString($string));
 
         if ($image->getMimeType() !== 'image/gif') {
             return $image;
@@ -74,7 +62,7 @@ class Image
         rewind($stream);
 
         if (self::isAnimatedGif($stream)) {
-            $image->image->setAnimated(true);
+            $image->adapter->setAnimated(true);
         }
 
         fclose($stream);
@@ -84,24 +72,17 @@ class Image
 
     /**
      * Constructor.
-     *
-     * @param Libs\LibInterface $image
-     * @param string            $filename Original filename (used to overwrite)
      */
-    public function __construct(Libs\LibInterface $image, $filename = null)
+    public function __construct(AdapterInterface $adapter, string $filename = null)
     {
-        $this->image = $image;
+        $this->adapter = $adapter;
         $this->filename = $filename;
     }
 
     /**
      * Set the available client hints.
-     *
-     * @param array $clientHints
-     *
-     * @return self
      */
-    public function setClientHints(array $clientHints)
+    public function setClientHints(array $clientHints): self
     {
         $normalize = [];
 
@@ -119,44 +100,20 @@ class Image
     }
 
     /**
-     * Set a default background color used to fill in some transformation functions.
-     *
-     * @param array $background The color in rgb, for example: array(0,127,34)
-     *
-     * @return self
+     * Set a default background color used to fill in some transformation functions
+     * in rgb format, for example: array(0,127,34)
      */
-    public function setBackground(array $background)
+    public function setBackground(array $background): self
     {
-        $this->image->setBackground($background);
+        $this->adapter->setBackground($background);
 
         return $this;
     }
 
     /**
-     * Define the image compression quality for jpg images.
-     *
-     * @param int $quality The quality (from 0 to 100)
-     *
-     * @deprecated Use quality instead
-     *
-     * @return self
-     */
-    public function setCompressionQuality($quality)
-    {
-        error_log('The method `setCompressionQuality()` is deprecated. Use `quality()` instead.');
-
-        return $this->quality($quality);
-    }
-
-    /**
      * Get the fixed size according with the client hints.
-     *
-     * @param int $width
-     * @param int $height
-     *
-     * @return array
      */
-    private function calculateClientSize($width, $height)
+    private function calculateClientSize(int $width, int $height): array
     {
         if ($this->clientHints['width'] !== null && $this->clientHints['width'] < $width) {
             return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
@@ -176,102 +133,77 @@ class Image
 
     /**
      * Inverts the image vertically.
-     *
-     * @return self
      */
-    public function flip()
+    public function flip(): self
     {
-        $this->image->flip();
+        $this->adapter->flip();
 
         return $this;
     }
 
     /**
      * Inverts the image horizontally.
-     *
-     * @return self
      */
-    public function flop()
+    public function flop(): self
     {
-        $this->image->flop();
+        $this->adapter->flop();
 
         return $this;
     }
 
     /**
-     * Saves the image in a file.
-     *
-     * @param string $filename Name of the file where the image will be saved. If it's not defined, The original file will be overwritten.
-     *
-     * @return self
+     * Saves the image in a file (or override the previous opened file).
      */
-    public function save($filename = null)
+    public function save(string $filename = null): self
     {
-        $this->image->save($filename ?: $this->filename);
+        $this->adapter->save($filename ?: $this->filename);
 
         return $this;
     }
 
-    /**
-     * Returns the image instance.
-     *
-     * @return Libs\LibInterface
-     */
-    public function getImage()
+    public function getAdapter(): AdapterInterface
     {
-        return $this->image;
+        return $this->adapter;
     }
 
     /**
      * Gets the image data in a string.
-     *
-     * @return string The image data
      */
-    public function getString()
+    public function getString(): string
     {
-        return $this->image->getString();
+        return $this->adapter->getString();
     }
 
     /**
      * Gets the mime type of the image.
-     *
-     * @return string The mime type
      */
-    public function getMimeType()
+    public function getMimeType(): string
     {
-        return $this->image->getMimeType();
+        return $this->adapter->getMimeType();
     }
 
     /**
-     * Gets the width of the image.
-     *
-     * @return int The width in pixels
+     * Gets the width of the image in pixels.
      */
-    public function getWidth()
+    public function getWidth(): int
     {
-        return $this->image->getWidth();
+        return $this->adapter->getWidth();
     }
 
     /**
-     * Gets the height of the image.
-     *
-     * @return int The height in pixels
+     * Gets the height of the image in pixels.
      */
-    public function getHeight()
+    public function getHeight(): int
     {
-        return $this->image->getHeight();
+        return $this->adapter->getHeight();
     }
 
     /**
-     * Converts the image to other format.
-     *
-     * @param string $format The new format: png, jpg, gif
-     *
-     * @return self
+     * Converts the image to other format (png, jpg, gif or webp).
      */
-    public function format($format)
+    public function format($format): self
     {
-        $this->image->format($format);
+        $this->adapter->format($format);
 
         return $this;
     }
@@ -281,11 +213,8 @@ class Image
      *
      * @param int|string $width  The max width of the image. It can be a number (pixels) or percentaje
      * @param int|string $height The max height of the image. It can be a number (pixels) or percentaje
-     * @param bool       $cover
-     *
-     * @return self
      */
-    public function resize($width, $height = 0, $cover = false)
+    public function resize($width, $height = 0, bool $cover = false): self
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -300,7 +229,7 @@ class Image
             return $this;
         }
 
-        $this->image->resize($width, $height);
+        $this->adapter->resize($width, $height);
 
         return $this;
     }
@@ -312,10 +241,8 @@ class Image
      * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
      * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
      * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
-     *
-     * @return self
      */
-    public function crop($width, $height, $x = 'center', $y = 'middle')
+    public function crop($width, $height, $x = 'center', $y = 'middle'): self
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -326,13 +253,13 @@ class Image
         list($width, $height) = $this->calculateClientSize($width, $height);
 
         if (in_array($x, [self::CROP_BALANCED, self::CROP_ENTROPY, self::CROP_FACE], true)) {
-            list($x, $y) = $this->image->getCropOffsets($width, $height, $x);
+            list($x, $y) = $this->adapter->getCropOffsets($width, $height, $x);
         }
 
         $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);
         $y = Dimmensions::getPositionValue('y', $y, $height, $imageHeight);
 
-        $this->image->crop($width, $height, $x, $y);
+        $this->adapter->crop($width, $height, $x, $y);
 
         return $this;
     }
@@ -344,10 +271,8 @@ class Image
      * @param int|string $height The new height in number (pixels) or percentaje
      * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
      * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
-     *
-     * @return self
      */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle')
+    public function resizeCrop($width, $height, $x = 'center', $y = 'middle'): self
     {
         $this->resize($width, $height, true);
         $this->crop($width, $height, $x, $y);
@@ -356,16 +281,12 @@ class Image
     }
 
     /**
-     * Rotates the image.
-     *
-     * @param int $angle Rotation angle in degrees (anticlockwise)
-     *
-     * @return self
+     * Rotates the image (in degrees, anticlockwise).
      */
-    public function rotate($angle)
+    public function rotate(int $angle): self
     {
         if (($angle = intval($angle)) !== 0) {
-            $this->image->rotate($angle);
+            $this->adapter->rotate($angle);
         }
 
         return $this;
@@ -373,26 +294,18 @@ class Image
 
     /**
      * Apply blur to image
-     *
-     * @param int $loops Quantity of blur effect loop
-     *
-     * @return self
      */
-    public function blur($loops = 4)
+    public function blur(int $loops = 4): self
     {
-        $this->image->blur($loops);
+        $this->adapter->blur($loops);
 
         return $this;
     }
 
     /**
-     * Define the image compression quality for jpg images.
-     *
-     * @param int $quality The quality (from 0 to 100)
-     *
-     * @return self
+     * Define the image compression quality for jpg images (from 0 to 100).
      */
-    public function quality($quality)
+    public function quality(int $quality): self
     {
         $quality = intval($quality);
 
@@ -402,7 +315,7 @@ class Image
             $quality = 100;
         }
 
-        $this->image->setCompressionQuality($quality);
+        $this->adapter->setCompressionQuality($quality);
 
         return $this;
     }
@@ -410,13 +323,10 @@ class Image
     /**
      * Add a watermark to current image.
      *
-     * @param string $file Image to set as watermark
      * @param mixed  $x    Horizontal position
      * @param mixed  $y    Vertical position
-     *
-     * @return self
      */
-    public function watermark(Image $image, $x = 'right', $y = 'bottom')
+    public function watermark(Image $image, $x = 'right', $y = 'bottom'): self
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -427,35 +337,27 @@ class Image
         $x = Dimmensions::getPositionValue('x', $x, $width, $imageWidth);
         $y = Dimmensions::getPositionValue('y', $y, $height, $imageHeight);
 
-        $this->image->watermark($image->getImage(), $x, $y);
+        $this->adapter->watermark($image->getImage(), $x, $y);
 
         return $this;
     }
 
     /**
      * Add opacity to image from 0 (transparent) to 100 (opaque).
-     *
-     * @param int $opacity Opacity value
-     *
-     * @return self
      */
-    public function opacity($opacity)
+    public function opacity(int $opacity): self
     {
-        $this->image->opacity($opacity);
+        $this->adapter->opacity($opacity);
 
         return $this;
     }
 
     /**
      * Set the image progressive or not
-     *
-     * @param bool $progressive
-     *
-     * @return self
      */
-    public function progressive($progressive = true)
+    public function progressive(bool $progressive = true): self
     {
-        $this->image->setProgressive((bool) $progressive);
+        $this->adapter->setProgressive((bool) $progressive);
 
         return $this;
     }
@@ -483,12 +385,8 @@ class Image
 
     /**
      * Transform the image executing various operations of crop, resize, resizeCrop and format.
-     *
-     * @param string $operations The string with all operations separated by "|".
-     *
-     * @return self
      */
-    public function transform($operations = null)
+    public function transform(string $operations = null): self
     {
         //No transform operations, resize to fix the client size
         if (empty($operations)) {
@@ -556,10 +454,8 @@ class Image
     /**
      * Auto-rotate the image according with its exif data
      * Taken from: http://php.net/manual/en/function.exif-read-data.php#76964.
-     *
-     * @return self
      */
-    public function autoRotate()
+    public function autoRotate(): self
     {
         switch ($this->getExifData('Orientation')) {
             case 2:
@@ -599,10 +495,8 @@ class Image
      * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181.
      *
      * @param resource A stream pointer opened by fopen()
-     *
-     * @return bool
      */
-    private static function isAnimatedGif($stream)
+    private static function isAnimatedGif($stream): bool
     {
         $count = 0;
 
@@ -616,12 +510,8 @@ class Image
 
     /**
      * Converts a string with operations in an array.
-     *
-     * @param string $operations The operations string
-     *
-     * @return array
      */
-    private static function parseOperations($operations)
+    private static function parseOperations(string $operations): array
     {
         $valid_operations = ['resize', 'resizecrop', 'crop', 'format', 'quality'];
         $operations = explode('|', str_replace(' ', '', $operations));
@@ -647,28 +537,22 @@ class Image
     /**
      * Checks the library to use and returns its class.
      *
-     * @param string $library The library name (Gd, Imagick)
-     *
      * @throws ImageException if the image library does not exists.
-     *
-     * @return string
      */
-    private static function getLibraryClass($library)
+    private static function getAdapterClass(string $adapter = null): string
     {
-        if (!$library) {
-            $library = Libs\Imagick::checkCompatibility() ? self::LIB_IMAGICK : self::LIB_GD;
+        if (!$adapter) {
+            return ImagickAdapter::checkCompatibility() ? ImagickAdapter::class : GdAdapter::class;
         }
 
-        $class = 'Imagecow\\Libs\\'.$library;
-
-        if (!class_exists($class)) {
-            throw new ImageException('The image library is not valid');
+        if (!class_exists($adapter)) {
+            throw new ImageException(sprintf('The class %s does not exists', $adapter));
         }
 
-        if (!$class::checkCompatibility()) {
-            throw new ImageException("The image library '$library' is not installed in this computer");
+        if (!$adapter::checkCompatibility()) {
+            throw new ImageException(sprintf('The class %s cannot be used in this computer', $adapter));
         }
 
-        return $class;
+        return $adapter;
     }
 }

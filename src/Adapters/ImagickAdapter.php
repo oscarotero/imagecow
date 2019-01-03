@@ -1,34 +1,29 @@
 <?php
+declare(strict_types = 1);
 
-namespace Imagecow\Libs;
+namespace Imagecow\Adapters;
 
-use Imagick as BaseImagick;
-use ImagickPixel as BaseImagickPixel;
+use Imagick;
+use ImagickPixel;
 use Imagecow\ImageException;
 
 /**
  * Imagick library.
  */
-class Imagick extends AbstractLib implements LibInterface
+final class ImagickAdapter implements AdapterInterface
 {
-    protected $image;
+    use CommonTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function checkCompatibility()
+    private $image;
+
+    public static function checkCompatibility(): bool
     {
         return extension_loaded('imagick');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return Imagick
-     */
-    public static function createFromFile($filename)
+    public static function createFromFile(string $filename): AdapterInterface
     {
-        $imagick = new BaseImagick();
+        $imagick = new Imagick();
 
         if ($imagick->readImage($filename) !== true) {
             throw new ImageException("The image file '{$filename}' cannot be loaded");
@@ -37,31 +32,21 @@ class Imagick extends AbstractLib implements LibInterface
         return new static($imagick);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return Imagick
-     */
-    public static function createFromString($string)
+    public static function createFromString(string $string): AdapterInterface
     {
-        $imagick = new BaseImagick();
+        $imagick = new Imagick();
 
         $imagick->readImageBlob($string);
 
         return new static($imagick);
     }
 
-    /**
-     * Constructor of the class.
-     *
-     * @param BaseImagick $image The Imagick instance
-     */
-    public function __construct(BaseImagick $image)
+    public function __construct(Imagick $image)
     {
         $this->image = $image;
 
         //Convert CMYK to RGB
-        if ($this->image->getImageColorspace() !== BaseImagick::COLORSPACE_CMYK) {
+        if ($this->image->getImageColorspace() !== Imagick::COLORSPACE_CMYK) {
             return $this;
         }
 
@@ -72,20 +57,14 @@ class Imagick extends AbstractLib implements LibInterface
         }
 
         $this->image->profileImage('icm', file_get_contents(__DIR__.'/icc/srgb.icm'));
-        $this->image->transformImageColorspace(BaseImagick::COLORSPACE_SRGB);
+        $this->image->transformImageColorspace(Imagick::COLORSPACE_SRGB);
     }
 
-    /**
-     * Destroy the image.
-     */
     public function __destruct()
     {
         $this->image->destroy();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function flip()
     {
         if ($this->image->flipImage() !== true) {
@@ -93,9 +72,6 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function flop()
     {
         if ($this->image->flopImage() !== true) {
@@ -103,10 +79,7 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save($filename)
+    public function save(string $filename)
     {
         $image = $this->getCompressed();
 
@@ -123,20 +96,12 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * Gets the original image object.
-     *
-     * @return object
-     */
-    public function getImage()
+    public function getImage(): Imagick
     {
         return $this->image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getString()
+    public function getString(): string
     {
         $image = $this->getCompressed();
 
@@ -159,10 +124,7 @@ class Imagick extends AbstractLib implements LibInterface
         return $string;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMimeType()
+    public function getMimeType(): string
     {
         $format = strtolower($this->image->getImageFormat());
 
@@ -171,10 +133,7 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getWidth()
+    public function getWidth(): int
     {
         if ($this->animated) {
             return $this->image->coalesceImages()->getImageWidth();
@@ -183,10 +142,7 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeight()
+    public function getHeight(): int
     {
         if ($this->animated) {
             return $this->image->coalesceImages()->getImageHeight();
@@ -195,16 +151,13 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function format($format)
+    public function format(string $format): string
     {
         if (preg_match('/jpe?g/i', $format)) {
             list($r, $g, $b) = $this->background;
 
             $this->image->setImageBackgroundColor("rgb($r,$g,$b)");
-            $this->image = $this->image->mergeImageLayers(BaseImagick::LAYERMETHOD_FLATTEN);
+            $this->image = $this->image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
         }
 
         if ($this->image->setImageFormat($format) !== true) {
@@ -212,21 +165,18 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function resize($width, $height)
+    public function resize(int $maxWidth, int $maxHeight)
     {
         if ($this->animated) {
             $this->image = $this->image->coalesceImages();
 
             foreach ($this->image as $frame) {
-                $frame->scaleImage($width, $height);
+                $frame->scaleImage($maxWidth, $maxHeight);
             }
 
             $this->image = $this->image->deconstructImages();
         } else {
-            if ($this->image->scaleImage($width, $height) !== true) {
+            if ($this->image->scaleImage($maxWidth, $maxHeight) !== true) {
                 throw new ImageException('There was an error resizing the image');
             }
 
@@ -234,10 +184,7 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCropOffsets($width, $height, $method)
+    public function getCropOffsets(int $width, int $height, string $method): array
     {
         $class = 'Imagecow\\Crops\\'.ucfirst(strtolower($method));
 
@@ -248,10 +195,7 @@ class Imagick extends AbstractLib implements LibInterface
         return $class::getOffsets($this->image, $width, $height);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function crop($width, $height, $x, $y)
+    public function crop(int $width, int $height, int $x, int $y)
     {
         if ($this->animated) {
             $this->image = $this->image->coalesceImages();
@@ -271,22 +215,16 @@ class Imagick extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rotate($angle)
+    public function rotate(int $angle)
     {
-        if ($this->image->rotateImage(new BaseImagickPixel('#FFFFFF'), $angle) !== true) {
+        if ($this->image->rotateImage(new ImagickPixel('#FFFFFF'), $angle) !== true) {
             throw new ImageException('There was an error rotating the image');
         }
 
         $this->image->setImagePage(0, 0, 0, 0);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function blur($loops)
+    public function blur(int $loops)
     {
         $width = $this->getWidth();
         $height = $this->getHeight();
@@ -304,10 +242,8 @@ class Imagick extends AbstractLib implements LibInterface
 
     /**
      * Returns a copy of the image compressed and ready to save or print.
-     *
-     * @return BaseImagick The instance of the image
      */
-    private function getCompressed()
+    private function getCompressed(): Imagick
     {
         $image = $this->image;
 
@@ -331,60 +267,51 @@ class Imagick extends AbstractLib implements LibInterface
 
         switch ($format) {
             case 'jpeg':
-                $image->setInterlaceScheme(BaseImagick::INTERLACE_JPEG);
-                $image->setImageCompression(BaseImagick::COMPRESSION_JPEG);
+                $image->setInterlaceScheme(Imagick::INTERLACE_JPEG);
+                $image->setImageCompression(Imagick::COMPRESSION_JPEG);
                 break;
 
             case 'gif':
-                $image->setInterlaceScheme(BaseImagick::INTERLACE_GIF);
+                $image->setInterlaceScheme(Imagick::INTERLACE_GIF);
                 break;
 
             case 'png':
-                $image->setInterlaceScheme(BaseImagick::INTERLACE_PNG);
+                $image->setInterlaceScheme(Imagick::INTERLACE_PNG);
                 break;
         }
 
         return $image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function watermark(LibInterface $image, $x, $y)
     {
         if (!($image instanceof self)) {
             $image = self::createFromString($image->getString());
         }
 
-        $this->image->compositeImage($image->getImage(), BaseImagick::COMPOSITE_DISSOLVE, $x, $y);
+        $this->image->compositeImage($image->getImage(), Imagick::COMPOSITE_DISSOLVE, $x, $y);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function opacity($opacity)
+    public function opacity(int $opacity)
     {
         if ($opacity >= 100 || $opacity < 0) {
             return;
         }
 
-        if ($this->image->getImageAlphaChannel() !== BaseImagick::ALPHACHANNEL_ACTIVATE) {
-            $this->image->setImageAlphaChannel(BaseImagick::ALPHACHANNEL_OPAQUE);
+        if ($this->image->getImageAlphaChannel() !== Imagick::ALPHACHANNEL_ACTIVATE) {
+            $this->image->setImageAlphaChannel(Imagick::ALPHACHANNEL_OPAQUE);
         }
 
         // NOTE: Using setImageOpacity will destroy current alpha channels!
-        $this->image->evaluateImage(BaseImagick::EVALUATE_MULTIPLY, $opacity / 100, BaseImagick::CHANNEL_ALPHA);
+        $this->image->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity / 100, Imagick::CHANNEL_ALPHA);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setProgressive($progressive)
+    public function setProgressive(bool $progressive)
     {
         if ($progressive) {
-            $this->image->setInterlaceScheme(BaseImagick::INTERLACE_PLANE);
+            $this->image->setInterlaceScheme(Imagick::INTERLACE_PLANE);
         } else {
-            $this->image->setInterlaceScheme(BaseImagick::INTERLACE_NO);
+            $this->image->setInterlaceScheme(Imagick::INTERLACE_NO);
         }
     }
 }

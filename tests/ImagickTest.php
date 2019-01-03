@@ -1,6 +1,10 @@
 <?php
 
-class ImagickTest extends ImageTest_
+namespace Imagecow\Tests;
+
+use Imagecow\Adapters\ImagickAdapter;
+
+class ImagickTest extends GdTest
 {
-    protected static $library = 'Imagick';
+    protected static $library = ImagickAdapter::class;
 }

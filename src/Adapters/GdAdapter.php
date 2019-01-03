@@ -1,34 +1,31 @@
 <?php
+declare(strict_types = 1);
 
-namespace Imagecow\Libs;
+namespace Imagecow\Adapters;
 
 use Imagecow\ImageException;
 
 /**
  * GD library.
  */
-class Gd extends AbstractLib implements LibInterface
+final class GdAdapter implements AdapterInterface
 {
+    use CommonTrait;
+
     public static $fallbackCropMethods = [
         'Entropy' => ['center', 'middle'],
         'Balanced' => ['center', 'middle'],
     ];
 
-    protected $image;
-    protected $type;
+    private $image;
+    private $type;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function checkCompatibility()
+    public static function checkCompatibility(): bool
     {
         return extension_loaded('gd');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function createFromFile($filename)
+    public static function createFromFile(string $filename): AdapterInterface
     {
         $data = getImageSize($filename);
 
@@ -43,10 +40,7 @@ class Gd extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function createFromString($string)
+    public static function createFromString(string $string): AdapterInterface
     {
         if (($image = imagecreatefromstring($string))) {
             return new static($image);
@@ -56,11 +50,9 @@ class Gd extends AbstractLib implements LibInterface
     }
 
     /**
-     * Constructor of the class.
-     *
      * @param resource $image The Gd resource.
      */
-    public function __construct($image, $type = null)
+    public function __construct($image, int $type = null)
     {
         $this->image = $image;
         $this->type = isset($type) ? $type : IMAGETYPE_PNG;
@@ -69,34 +61,22 @@ class Gd extends AbstractLib implements LibInterface
         imagesavealpha($this->image, true);
     }
 
-    /**
-     * Destroy the image.
-     */
     public function __destruct()
     {
         imagedestroy($this->image);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function flip()
     {
         imageflip($this->image, IMG_FLIP_VERTICAL);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function flop()
     {
         imageflip($this->image, IMG_FLIP_HORIZONTAL);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save($filename)
+    public function save(string $filename)
     {
         $extension = image_type_to_extension($this->type, false);
         $function = 'image'.$extension;
@@ -116,10 +96,7 @@ class Gd extends AbstractLib implements LibInterface
         return $this->image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getString()
+    public function getString(): string
     {
         $extension = image_type_to_extension($this->type, false);
         $function = 'image'.$extension;
@@ -139,34 +116,22 @@ class Gd extends AbstractLib implements LibInterface
         return ob_get_clean();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMimeType()
+    public function getMimeType(): string
     {
         return image_type_to_mime_type($this->type);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getWidth()
+    public function getWidth(): int
     {
         return imagesx($this->image);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeight()
+    public function getHeight(): int
     {
         return imagesy($this->image);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function format($format)
+    public function format(string $format)
     {
         switch (strtolower($format)) {
             case 'jpg':
@@ -218,15 +183,13 @@ class Gd extends AbstractLib implements LibInterface
 
     /**
      * imagescale() is not used due a weird black border:
-     * https://bugs.php.net/bug.php?id=73281&thanks=6
-     * 
-     * {@inheritdoc}
+     * https://bugs.php.net/bug.php?id=73281
      */
-    public function resize($width, $height)
+    public function resize(int $maxWidth, int $maxHeight)
     {
-        $image = $this->createImage($width, $height, array(0, 0, 0, 127));
+        $image = $this->createImage($maxWidth, $maxHeight, array(0, 0, 0, 127));
 
-        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight()) === false) {
+        if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $maxWidth, $maxHeight, $this->getWidth(), $this->getHeight()) === false) {
             throw new ImageException('Error resizing the image');
         }
 
@@ -234,10 +197,7 @@ class Gd extends AbstractLib implements LibInterface
         $this->image = $image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCropOffsets($width, $height, $method)
+    public function getCropOffsets(int $width, int $height, string $method): array
     {
         if (empty(static::$fallbackCropMethods[$method])) {
             throw new ImageException("The crop method '$method' is not available for Gd");
@@ -246,10 +206,7 @@ class Gd extends AbstractLib implements LibInterface
         return static::$fallbackCropMethods[$method];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function crop($width, $height, $x, $y)
+    public function crop(int $width, int $height, int $x, int $y)
     {
         $crop = [
             'width' => $width,
@@ -266,10 +223,7 @@ class Gd extends AbstractLib implements LibInterface
         $this->image = $image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rotate($angle)
+    public function rotate(int $angle)
     {
         $background = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
 
@@ -283,10 +237,7 @@ class Gd extends AbstractLib implements LibInterface
         $this->image = $image;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function blur($loops)
+    public function blur(int $loops)
     {
         $width = $this->getWidth();
         $height = $this->getHeight();
@@ -306,9 +257,6 @@ class Gd extends AbstractLib implements LibInterface
         $this->resize($width, $height);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function watermark(LibInterface $image, $x, $y)
     {
         if (!($image instanceof self)) {
@@ -318,10 +266,7 @@ class Gd extends AbstractLib implements LibInterface
         imagecopy($this->image, $image->getImage(), $x, $y, 0, 0, $image->getWidth(), $image->getHeight());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function opacity($opacity)
+    public function opacity(int $opacity)
     {
         if ($opacity >= 100 || $opacity < 0) {
             return;
@@ -352,10 +297,7 @@ class Gd extends AbstractLib implements LibInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setProgressive($progressive)
+    public function setProgressive(bool $progressive)
     {
         imageinterlace($this->image, $progressive);
     }
@@ -363,13 +305,9 @@ class Gd extends AbstractLib implements LibInterface
     /**
      * Creates a new truecolor image
      *
-     * @param integer $width
-     * @param integer $height
-     * @param array   $background
-     *
      * @return resource
      */
-     private function createImage($width, $height, array $background = [0, 0, 0])
+    private function createImage(int $width, int $height, array $background = [0, 0, 0])
     {
         if (($image = imagecreatetruecolor($width, $height)) === false) {
             throw new ImageException('Error creating a image');

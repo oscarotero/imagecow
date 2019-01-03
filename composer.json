@@ -18,10 +18,10 @@
 		"issues": "https://github.com/oscarotero/imagecow/issues"
 	},
 	"require": {
-		"php": ">=5.5"
+		"php": ">=7.2"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "^4.8|^6.2"
+		"phpunit/phpunit": "^7.5"
 	},
 	"scripts": {
 		"test": "phpunit"
@@ -29,6 +29,11 @@
 	"autoload": {
 		"psr-4": {
 			"Imagecow\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Imagecow\\Tests\\": "tests"
 		}
 	}
 }

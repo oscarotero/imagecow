@@ -1,8 +1,11 @@
 <?php
 
-use Imagecow\Utils\Dimmensions;
+namespace Imagecow\Tests;
 
-class DimmensionsTest extends PHPUnit_Framework_TestCase
+use Imagecow\Utils\Dimmensions;
+use PHPUnit\Framework\TestCase;
+
+class DimmensionsTest extends TestCase
 {
     public function resizeDataProvider()
     {

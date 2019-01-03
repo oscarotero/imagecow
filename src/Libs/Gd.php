@@ -207,6 +207,10 @@ class Gd extends AbstractLib implements LibInterface
                 $this->type = IMAGETYPE_PNG;
                 break;
 
+            case 'webp':
+                $this->type = IMAGETYPE_WEBP;
+                break;
+
             default:
                 throw new ImageException("The image format '{$format}' is not valid");
         }

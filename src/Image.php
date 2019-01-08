@@ -82,7 +82,7 @@ final class Image
     /**
      * Set the available client hints.
      */
-    public function setClientHints(array $clientHints): self
+    public function clientHints(array $clientHints): self
     {
         $normalize = [];
 
@@ -103,32 +103,11 @@ final class Image
      * Set a default background color used to fill in some transformation functions
      * in rgb format, for example: array(0,127,34)
      */
-    public function setBackground(array $background): self
+    public function background(array $background): self
     {
         $this->adapter->setBackground($background);
 
         return $this;
-    }
-
-    /**
-     * Get the fixed size according with the client hints.
-     */
-    private function calculateClientSize(int $width, int $height): array
-    {
-        if ($this->clientHints['width'] !== null && $this->clientHints['width'] < $width) {
-            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
-        }
-
-        if ($this->clientHints['viewport-width'] !== null && $this->clientHints['viewport-width'] < $width) {
-            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['viewport-width'], null);
-        }
-
-        if ($this->clientHints['dpr'] !== null) {
-            $width *= $this->clientHints['dpr'];
-            $height *= $this->clientHints['dpr'];
-        }
-
-        return [$width, $height];
     }
 
     /**
@@ -185,17 +164,21 @@ final class Image
     /**
      * Gets the width of the image in pixels.
      */
-    public function getWidth(): int
+    public function getWidth(int $percentage = null): int
     {
-        return $this->adapter->getWidth();
+        $width = $this->adapter->getWidth();
+
+        return isset($percentage) ? ($percentage / 100) * $width : $width;
     }
 
     /**
      * Gets the height of the image in pixels.
      */
-    public function getHeight(): int
+    public function getHeight(int $percentage = null): int
     {
-        return $this->adapter->getHeight();
+        $height = $this->adapter->getHeight();
+
+        return isset($percentage) ? ($percentage / 100) * $height : $height;
     }
 
     /**
@@ -219,8 +202,13 @@ final class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = Dimmensions::getIntegerValue('x', $width, $imageWidth);
-        $height = Dimmensions::getIntegerValue('y', $height, $imageHeight);
+        if ($percentage = self::getPercentage($width)) {
+            $width = $this->getWidth($percentage);
+        }
+
+        if ($percentage = self::getPercentage($height)) {
+            $height = $this->getHeight($percentage);
+        }
 
         list($width, $height) = Dimmensions::getResizeDimmensions($imageWidth, $imageHeight, $width, $height, $cover);
         list($width, $height) = $this->calculateClientSize($width, $height);
@@ -239,16 +227,21 @@ final class Image
      *
      * @param int|string $width  The new width of the image. It can be a number (pixels) or percentaje
      * @param int|string $height The new height of the image. It can be a number (pixels) or percentaje
-     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
-     * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje or one of the Image::CROP_* constants
+     * @param int|string $y      The "y" position to crop. It can be number (pixels) or percentaje
      */
-    public function crop($width, $height, $x = 'center', $y = 'middle'): self
+    public function crop($width, $height, $x = '50%', $y = '50%'): self
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
 
-        $width = Dimmensions::getIntegerValue('x', $width, $imageWidth);
-        $height = Dimmensions::getIntegerValue('y', $height, $imageHeight);
+        if ($percentage = self::getPercentage($width)) {
+            $width = $this->getWidth($percentage);
+        }
+
+        if ($percentage = self::getPercentage($height)) {
+            $height = $this->getHeight($percentage);
+        }
 
         list($width, $height) = $this->calculateClientSize($width, $height);
 
@@ -269,10 +262,10 @@ final class Image
      *
      * @param int|string $width  The new width in number (pixels) or percentaje
      * @param int|string $height The new height in number (pixels) or percentaje
-     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje, [left, center, right] or one of the Image::CROP_* constants
-     * @param int|string $y      The "y" position to crop. It can be number (pixels), percentaje or [top, middle, bottom]
+     * @param int|string $x      The "x" position to crop. It can be number (pixels), percentaje or one of the Image::CROP_* constants
+     * @param int|string $y      The "y" position to crop. It can be number (pixels) or percentaje
      */
-    public function resizeCrop($width, $height, $x = 'center', $y = 'middle'): self
+    public function resizeCrop($width, $height, $x = '50%', $y = '50%'): self
     {
         $this->resize($width, $height, true);
         $this->crop($width, $height, $x, $y);
@@ -323,10 +316,10 @@ final class Image
     /**
      * Add a watermark to current image.
      *
-     * @param mixed  $x    Horizontal position
-     * @param mixed  $y    Vertical position
+     * @param string|int  $x Horizontal position
+     * @param string|int  $y Vertical position
      */
-    public function watermark(Image $image, $x = 'right', $y = 'bottom'): self
+    public function watermark(Image $image, $x = '100%', $y = '100%'): self
     {
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
@@ -491,6 +484,27 @@ final class Image
     }
 
     /**
+     * Get the fixed size according with the client hints.
+     */
+    private function calculateClientSize(int $width, int $height): array
+    {
+        if ($this->clientHints['width'] !== null && $this->clientHints['width'] < $width) {
+            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['width'], null);
+        }
+
+        if ($this->clientHints['viewport-width'] !== null && $this->clientHints['viewport-width'] < $width) {
+            return Dimmensions::getResizeDimmensions($width, $height, $this->clientHints['viewport-width'], null);
+        }
+
+        if ($this->clientHints['dpr'] !== null) {
+            $width *= $this->clientHints['dpr'];
+            $height *= $this->clientHints['dpr'];
+        }
+
+        return [$width, $height];
+    }
+
+    /**
      * Check whether the image is an animated gif.
      * Copied from: https://github.com/Sybio/GifFrameExtractor/blob/master/src/GifFrameExtractor/GifFrameExtractor.php#L181.
      *
@@ -554,5 +568,47 @@ final class Image
         }
 
         return $adapter;
+    }
+
+    private static function getPercentage($value): ?float
+    {
+        if (is_string($value)) {
+            if (substr($value, -1) === '%') {
+                return floatval(substr($value, 0, -1));
+            }
+
+            throw new ImageException(sprintf('Invalid value: %s', $value));
+        }
+
+        return null;
+    }
+
+    /**
+     * Calculates the x/y position.
+     *
+     * @param string|int $position
+     * @param int        $cropWidth
+     *
+     * @return int
+     */
+    private function getPositionX($position, int $cropWidth): int
+    {
+        $width = $this->getWidth();
+
+        if ($percentage = self::getPercentage($position)) {
+            $position = $this->getWidth($percentage) - ($cropWidth / 100 * $percentage);
+        }
+
+        //Offset
+        $offset = isset($split[2]) ? $split[1].$split[2] : 0;
+
+        if (is_numeric($offset)) {
+            $offset = (int) $offset;
+        } else {
+            $offset = static::getIntegerValue($direction, $offset, $oldValue, true);
+        }
+
+        return $value + $offset;
+
     }
 }

@@ -10,7 +10,7 @@ Created by Oscar Otero <http://oscarotero.com> <oom@oscarotero.com>
 
 It's a php library to manipulate images to web.
 
-* PHP >= 5.5
+* PHP >= 7.2
 * Use GD2 or Imagick libraries
 * Very simple, fast and easy to use. There is not a lot of features, just the basics: crop, resize, resizeCrop, etc.
 
@@ -21,7 +21,7 @@ use Imagecow\Image;
 
 Image::fromFile('my-image.gif')
     ->autoRotate()
-    ->resizeCrop(300, 400, 'center', 'middle')
+    ->resizeCrop(300, 400)
     ->format('png')
     ->save('converted-image.png')
     ->show();
@@ -87,10 +87,10 @@ Crops the image:
 * `$y`: The vertical offset of the crop. As with $x, it can be a number or percentage. You can also use the keywords `top`, `middle` and `bottom`. If it's not defined, used the value by default (`middle`).
 
 ```php
-$image->crop(200, 300);                 // crops to 200x300px
-$image->crop(200, 300, 'left', 'top');  // crops to 200x300px from left and top
-$image->crop(200, 300, 20, '50%');      // crops to 200x300px from 20px left and 50% top
-$image->crop('50%', '50%');             // crops to half size
+$image->crop(200, 300);            // crops to 200x300px (from center)
+$image->crop(200, 300, 0, 0);      // crops to 200x300px from top-left corner
+$image->crop(200, 300, 20, '50%'); // crops to 200x300px from 20px left and vertically centered
+$image->crop('50%', '50%');        // crops to half size
 ```
 
 #### Automatic cropping
@@ -111,14 +111,14 @@ $image->crop(500, 200, Image::CROP_BALANCED); // The same as above but using the
 
 ### resizeCrop
 
-`Image::resizeCrop($width, $height, $x = 'center', $y = 'middle')`
+`Image::resizeCrop($width, $height, $x = '50%', $y = '50%')`
 
 Resizes and crops the image. See [resize](resize) and [crop](crop) for the arguments description.
 
 ```php
-$image->resizeCrop(200, 300);                  //Resizes and crops to 200x300px.
-$image->resizeCrop('50%', 300);                //Resizes and crops to half width and 300px height
-$image->resizeCrop(200, 300, 'left', '100%'); //Resizes and crops to 200x300px from left and bottom
+$image->resizeCrop(200, 300);                       //Resizes and crops to 200x300px.
+$image->resizeCrop('50%', 300);                     //Resizes and crops to half width and 300px height
+$image->resizeCrop(200, 300, '0%', '100%');         //Resizes and crops to 200x300px from left and bottom
 $image->resizeCrop(200, 300, Image::CROP_BALANCED); //Resizes and crops to 200x300px using the CROP_BALANCED method
 ```
 
@@ -166,7 +166,7 @@ $image->blur(8);
 
 ### watermark
 
-`Image::watermark($image, $x = 'right', $y = 'bottom')`
+`Image::watermark($image, $x = '100%', $y = '100%')`
 
 Applies a image as a watermark. You can configure the position and opacity.
 
@@ -204,16 +204,16 @@ $image->save('my-new-image.png'); // save to this file
 $image->save(); // overwrite file
 ```
 
-### setBackground
+### background
 
-`Image::setBackground(array $background)`
+`Image::background(array $background)`
 
 Set a default background used in some transformations: for example on convert a transparent png to jpg.
 
 * `$background`: An array with the RGB value of the color
 
 ```php
-$image->setBackground(array(255, 255, 255)); // set the background to white
+$image->background(array(255, 255, 255)); // set the background to white
 ```
 
 ### quality
@@ -228,9 +228,9 @@ Defines the image compression quality for jpg images
 $image->quality(80); // change the quality to 80
 ```
 
-### setClientHints
+### clientHints
 
-`Image::setClientHints(array $clientHints)`
+`Image::clientHints(array $clientHints)`
 
 Defines the client hints to fix the final size of the image and generate responsive images. The available client hints are:
 
@@ -239,7 +239,7 @@ Defines the client hints to fix the final size of the image and generate respons
 * `viewport-width` The viewport width
 
 ```php
-$image->setClientHints([
+$image->clientHints([
     'dpr' => 2,
     'width' => 300,
     'viewport-width' => 1024,
@@ -324,7 +324,7 @@ $transform = isset($_GET['transform']) ? $_GET['transform'] : null;
 $image = Image::fromFile($file);
 
 //Set the client hints
-$image->setClientHints([
+$image->clientHints([
     'dpr' => isset($_SERVER['HTTP_DPR']) ? $_SERVER['HTTP_DPR'] : null,
     'width' => isset($_SERVER['HTTP_WIDTH']) ? $_SERVER['HTTP_WIDTH'] : null,
     'viewport-width' => isset($_SERVER['HTTP_VIEWPORT_WIDTH']) ? $_SERVER['HTTP_VIEWPORT_WIDTH'] : null,
@@ -334,43 +334,11 @@ $image->setClientHints([
 $image->transform($transform)->show();
 ```
 
-### Other utils
-
-#### IconExtractor.
-
-**Only for Imagick**. Class to extract the images from an .ico file and convert to png.
-
-```php
-use Imagecow\Utils\IconExtractor;
-
-$icon = new IconExtractor('favicon.ico');
-
-//Gets the better image from the icon (quality = color_depth + (width * height))
-$image = $icon->getBetterQuality();
-
-//Do imagecow stuff
-$image->resize(100)->save('my-image.png');
-```
-
-#### SvgExtractor.
-
-**Only for Imagick** This class allows generate images from a svg file (useful for browsers that don't support svg format):
-
-```php
-use Imagecow\Utils\SvgExtractor;
-
-$svg = new SvgExtractor('image.svg');
-
-//Gets the image
-$image = $svg->get();
-
-//Now you can execute the imagecow methods:
-$image->resize(200)->format('jpg')->save('image.jpg');
-```
-
 ### Installing ImageMagick with WEBP support
+
 #### macOS
 Via Homebrew:
+
 ```bash
 brew install webp
 brew install imagemagick --with-webp

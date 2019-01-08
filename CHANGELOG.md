@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - All protected methods/properties are now private
 - All classes are final
 - Renamed internal classes (Libs -> Adapters)
+- Renamed `Image::setBackground()` to `Image::background()`
+- Renamed `Image::setClientHints()` to `Image::clientHints()`
 
 ### Removed
 
@@ -24,3 +26,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - IconExtractor utility
 - SvgExtractor utility
 - Removed autoloader.php, use Composer or any other psr-4 loader
+- Removed `top`, `right`, `bottom` and `left` keywords. Use percentages instead.

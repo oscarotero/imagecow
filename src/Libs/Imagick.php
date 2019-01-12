@@ -18,7 +18,7 @@ class Imagick extends AbstractLib implements LibInterface
      */
     public static function checkCompatibility()
     {
-        return extension_loaded('imagick');
+        return extension_loaded('imagick') && !empty(BaseImagick::queryformats());
     }
 
     /**

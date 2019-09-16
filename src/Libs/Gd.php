@@ -100,8 +100,9 @@ class Gd extends AbstractLib implements LibInterface
     {
         $extension = image_type_to_extension($this->type, false);
         $function = 'image'.$extension;
+        $quality = $extension === 'jpeg' ? $this->quality : -1;
 
-        if (!function_exists($function) || ($function($this->image, $filename) === false)) {
+        if (!function_exists($function) || $function($this->image, $filename, $quality) === false) {
             throw new ImageException("The image format '{$extension}' cannot be saved to '{$filename}'");
         }
     }
@@ -130,11 +131,8 @@ class Gd extends AbstractLib implements LibInterface
 
         ob_start();
 
-        if ($extension === 'jpeg') {
-            $function($this->image, null, $this->quality);
-        } else {
-            $function($this->image);
-        }
+        $quality = $extension === 'jpeg' ? $this->quality : -1;
+        $function($this->image, null, $quality);
 
         return ob_get_clean();
     }

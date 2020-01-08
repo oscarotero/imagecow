@@ -13,4 +13,6 @@ $image->watermark($watermark, $x = 'right', $y = 'bottom');
 
 $image->quality($quality);
 $image->resize(500, 500);
+
+// $image->save('my-image-low.jpg');
 $image->show();

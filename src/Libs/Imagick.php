@@ -221,12 +221,12 @@ class Imagick extends AbstractLib implements LibInterface
             $this->image = $this->image->coalesceImages();
 
             foreach ($this->image as $frame) {
-                $frame->scaleImage($width, $height);
+                $frame->resizeImage($width, $height, BaseImagick::FILTER_LANCZOS, 0.8);
             }
 
             $this->image = $this->image->deconstructImages();
         } else {
-            if ($this->image->scaleImage($width, $height) !== true) {
+            if ($this->image->resizeImage($width, $height, BaseImagick::FILTER_LANCZOS, 0.8) !== true) {
                 throw new ImageException('There was an error resizing the image');
             }
 
